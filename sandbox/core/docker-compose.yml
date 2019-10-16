@@ -30,5 +30,6 @@ services:
     image: jembi/openhim-console
     ports:
         - "9000:80"
-    volumes:
-      - ./default.json:/usr/share/nginx/html/config/default.json
+    # volumes cause an error with go-instant
+    # volumes:
+    #   - ./default.json:/usr/share/nginx/html/config/default.json

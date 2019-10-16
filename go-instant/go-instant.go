@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/cavaliercoder/grab"
 	"github.com/docker/docker/api/types"
@@ -69,7 +71,7 @@ func getstarted() {
 
 	// Grab the sandbox core compose file.
 	resp, err := grab.Get(
-		"sandbox/core/", "https://github.com/openhie/instant/blob/strawperson/sandbox/core/docker-compose.yml")
+		"sandbox/core/", "https://raw.github.com/openhie/instant/strawperson/sandbox/core/docker-compose.yml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,6 +80,68 @@ func getstarted() {
 	color.Green.Println("You're ready to go! \nOpen a Windows cmd, PowerShell, or shell in Linux/Mac.")
 	color.Green.Println("...then navigate to the sandbox/core directory and run 'docker-compose up'")
 
+}
+
+func composeup() {
+	fmt.Println("Running on", runtime.GOOS)
+	// docker-compose -f docker-compose-test.yml down
+	switch runtime.GOOS {
+	case "linux":
+		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+	case "darwin":
+		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+	case "windows":
+		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
+		if err := cmd.Run(); err != nil {
+			fmt.Println("Error: ", err)
+		}
+	default:
+		fmt.Println("What operating system is this?", runtime.GOOS)
+
+	}
+}
+
+func composedown() {
+	fmt.Println("Running on", runtime.GOOS)
+	// docker-compose -f docker-compose-test.yml down
+	switch runtime.GOOS {
+	case "linux":
+		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+	case "darwin":
+		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+	case "windows":
+		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
+		if err := cmd.Run(); err != nil {
+			fmt.Println("Error: ", err)
+		}
+	default:
+		fmt.Println("What operating system is this?", runtime.GOOS)
+
+	}
 }
 
 func help() {
@@ -91,7 +155,7 @@ func main() {
 
 	prompt := promptui.Select{
 		Label: "If you're just starting, choose Get Started, otherwise choose as you wish...",
-		Items: []string{"Get Started", "Debug", "Help", "OpenHIE Core", "Kitchen Sink"},
+		Items: []string{"Get Started", "Start Containers [experimental]", "Stop Containers [experimental]", "Debug", "Help", "OpenHIE Core", "Kitchen Sink", "Quit"},
 	}
 
 	_, result, err := prompt.Run()
@@ -111,6 +175,16 @@ func main() {
 		debug()
 	}
 
+	if result == "Start Containers [experimental]" {
+		fmt.Printf("You chose %q\n", result)
+		composeup()
+	}
+
+	if result == "Stop Containers [experimental]" {
+		fmt.Printf("You chose %q\n", result)
+		composedown()
+	}
+
 	if result == "Help" {
 		fmt.Printf("You chose %q\n", result)
 		help()
@@ -126,6 +200,11 @@ func main() {
 		fmt.Printf("You chose %q\n", result)
 		debug()
 		getstarted()
+	}
+
+	if result == "Quit" {
+		fmt.Printf("You chose %q\n", result)
+		os.Exit(1)
 	}
 
 }
