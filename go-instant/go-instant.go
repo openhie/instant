@@ -15,6 +15,24 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
+// https://gist.github.com/nanmu42/4fbaf26c771da58095fa7a9f14f23d27
+func openBrowser(url string) {
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // func debug does checks on simple but potentially troublesome issues
 func debug() {
 
@@ -77,8 +95,8 @@ func getstarted() {
 	}
 
 	fmt.Println("Download saved to", resp.Filename)
-	color.Green.Println("You're ready to go! \nOpen a Windows cmd, PowerShell, or shell in Linux/Mac.")
-	color.Green.Println("...then navigate to the sandbox/core directory and run 'docker-compose up'")
+	// color.Green.Println("You're ready to go! \nOpen a Windows cmd, PowerShell, or shell in Linux/Mac.")
+	// color.Green.Println("...then navigate to the sandbox/core directory and run 'docker-compose up'")
 
 }
 
@@ -111,6 +129,10 @@ func composeup() {
 		fmt.Println("What operating system is this?", runtime.GOOS)
 
 	}
+
+	color.Green.Println("A browser will open http://localhost:9000.")
+	openBrowser("http://localhost:9000")
+
 }
 
 func composedown() {
@@ -155,56 +177,35 @@ func main() {
 
 	prompt := promptui.Select{
 		Label: "If you're just starting, choose Get Started, otherwise choose as you wish...",
-		Items: []string{"Get Started", "Start Containers [experimental]", "Stop Containers [experimental]", "Debug", "Help", "OpenHIE Core", "Kitchen Sink", "Quit"},
+		Items: []string{"Get Started", "Start Containers", "Stop Containers", "Debug", "Help", "OpenHIE Core", "Kitchen Sink", "Quit"},
 	}
 
 	_, result, err := prompt.Run()
-
 	if err != nil {
 		fmt.Printf("Prompt failed %v\n", err)
 		return
 	}
+	fmt.Printf("You chose %q\n", result)
 
-	if result == "Get Started" {
-		fmt.Printf("You chose %q\n", result)
+	switch result {
+	case "Get Started":
 		getstarted()
-	}
-
-	if result == "Debug" {
-		fmt.Printf("You chose %q\n", result)
-		debug()
-	}
-
-	if result == "Start Containers [experimental]" {
-		fmt.Printf("You chose %q\n", result)
 		composeup()
-	}
-
-	if result == "Stop Containers [experimental]" {
-		fmt.Printf("You chose %q\n", result)
+	case "Debug":
+		debug()
+	case "Start Containers":
+		composeup()
+	case "Stop Containers":
 		composedown()
-	}
-
-	if result == "Help" {
-		fmt.Printf("You chose %q\n", result)
+	case "Help":
 		help()
-	}
-
-	if result == "OpenHIE Core" {
-		fmt.Printf("You chose %q\n", result)
+	case "OpenHIE Core":
 		debug()
 		getstarted()
-	}
-
-	if result == "Kitchen Sink" {
-		fmt.Printf("You chose %q\n", result)
+	case "Kitchen Sink":
 		debug()
 		getstarted()
-	}
-
-	if result == "Quit" {
-		fmt.Printf("You chose %q\n", result)
+	case "Quit":
 		os.Exit(1)
 	}
-
 }
