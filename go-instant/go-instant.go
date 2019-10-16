@@ -35,7 +35,6 @@ func openBrowser(url string) {
 
 // func debug does checks on simple but potentially troublesome issues
 func debug() {
-
 	// Get the current working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -94,15 +93,12 @@ func getstarted() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Download saved to", resp.Filename)
-	// color.Green.Println("You're ready to go! \nOpen a Windows cmd, PowerShell, or shell in Linux/Mac.")
-	// color.Green.Println("...then navigate to the sandbox/core directory and run 'docker-compose up'")
+	fmt.Println("Downloaded", resp.Filename)
 
 }
 
 func composeup() {
 	fmt.Println("Running on", runtime.GOOS)
-	// docker-compose -f docker-compose-test.yml down
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
@@ -137,7 +133,6 @@ func composeup() {
 
 func composedown() {
 	fmt.Println("Running on", runtime.GOOS)
-	// docker-compose -f docker-compose-test.yml down
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
