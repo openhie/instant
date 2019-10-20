@@ -33,3 +33,10 @@ services:
     # volumes cause an error with go-instant
     # volumes:
     #   - ./default.json:/usr/share/nginx/html/config/default.json
+
+  # change host port to 8081 because openhim core is at 8080
+  hapi:
+    container_name: hapi-fhir
+    image: arihealth/hapi-fhir-cdr-oauth
+    ports: 
+        - "8080:8081"

@@ -3,19 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 
-	"github.com/cavaliercoder/grab"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gookit/color"
 	"github.com/manifoldco/promptui"
 )
 
-// https://gist.github.com/nanmu42/4fbaf26c771da58095fa7a9f14f23d27
+// also see: https://stackoverflow.com/questions/39320371/how-start-web-server-to-open-page-in-browser-in-golang
 func openBrowser(url string) {
 	var err error
 	switch runtime.GOOS {
@@ -32,16 +35,13 @@ func openBrowser(url string) {
 		log.Fatal(err)
 	}
 }
-
-// func debug does checks on simple but potentially troublesome issues
 func debug() {
-	// Get the current working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
 		color.Red.Println("Can't get current working directory... this is not a great error.")
 		panic(err)
 	} else {
-		color.Green.Println("Running go-instant [v-alpha] from:", cwd)
+		color.Green.Println("Running goinstant [v-alpha] from:", cwd)
 	}
 
 	// ctx := context.Background()
@@ -66,50 +66,33 @@ func debug() {
 	}
 
 	// fmt.Println(reflect.TypeOf(containers).String())
-	// List running containers.
 	for _, container := range containers {
 		fmt.Printf("ContainerID: %s Status: %s Image: %s\n", container.ID[:10], container.State, container.Image)
 	}
 
 }
 
-func getstarted() {
-	// Create some places to put downloaded compose files. This command won't wipe out anything.
-	if _, err := os.Stat("sandbox/core/"); os.IsNotExist(err) {
-		os.MkdirAll("sandbox/core/", 0700)
-	}
-
-	// This one will actually remove stuff.
-	err := os.Remove("sandbox/core/docker-compose.yml")
+func composeGet(url string) string {
+	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err)
-		// return
+		color.Red.Println("Are you connected to the Internet? Error:", err)
 	}
-
-	// Grab the sandbox core compose file.
-	resp, err := grab.Get(
-		"sandbox/core/", "https://raw.github.com/openhie/instant/strawperson/sandbox/core/docker-compose.yml")
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		color.Red.Println("Strange error reading the downloaded body. Error:", err)
 	}
-
-	fmt.Println("Downloaded", resp.Filename)
-
+	fmt.Println(string(body))
+	return (string(body))
 }
 
-func composeup() {
+func composeUp(composeFile string) {
+
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
-	case "linux":
-		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
-		}
-	case "darwin":
-		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
+	case "linux", "darwin":
+		cmd := exec.Command("docker-compose", "-f", "-", "up", "-d")
+		cmd.Stdin = strings.NewReader(composeFile)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
@@ -117,33 +100,29 @@ func composeup() {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 	case "windows":
-		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "sandbox/core/docker-compose.yml", "up", "-d")
+		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "-", "up", "-d")
+		cmd.Stdin = strings.NewReader(composeFile)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			fmt.Println("Error: ", err)
 		}
 	default:
 		fmt.Println("What operating system is this?", runtime.GOOS)
-
 	}
 
-	color.Green.Println("A browser will open http://localhost:9000.")
-	openBrowser("http://localhost:9000")
-
+	color.Green.Println("A browser will open http://localhost:27517")
+	color.Red.Println("Enter 'Control C' key combination to stop the utility.")
+	color.Println("Then stop containers by running 'goinstant' again and choosing 'Stop OpenHIE")
+	openBrowser("http://localhost:27517")
 }
 
-func composedown() {
+func composeDown(composeFile string) {
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
-	case "linux":
-		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
-		}
-	case "darwin":
-		cmd := exec.Command("docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
+	case "linux", "darwin":
+		cmd := exec.Command("docker-compose", "-f", "-", "down")
+		cmd.Stdin = strings.NewReader(composeFile)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
@@ -151,7 +130,10 @@ func composedown() {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 	case "windows":
-		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "sandbox/core/docker-compose.yml", "down")
+		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "-", "down")
+		cmd.Stdin = strings.NewReader(composeFile)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			fmt.Println("Error: ", err)
 		}
@@ -162,17 +144,16 @@ func composedown() {
 }
 
 func help() {
-	fmt.Printf("This app is used to troubleshoot and help with Instant OpenHIE. \n")
+	fmt.Printf("This is a utility to help run Instant OpenHIE on your personal computer.. \n")
 	fmt.Printf("You don't need this app for Instant OpenHIE if you're comfortable with the command line. \n")
-	fmt.Printf("The way this app works is that it creates a folder wherever the app is installed. \n")
-	fmt.Printf("Then it downloads docker-compose files from 'github.com/openhie/instant'.\n")
+	fmt.Printf("The utility downloads docker-compose files from 'github.com/openhie/instant'.\n")
 }
 
 func main() {
 
 	prompt := promptui.Select{
-		Label: "If you're just starting, choose Get Started, otherwise choose as you wish...",
-		Items: []string{"Get Started", "Start Containers", "Stop Containers", "Debug", "Help", "OpenHIE Core", "Kitchen Sink", "Quit"},
+		Label: "Choose Get Started if this is your first time; otherwise choose as you wish. Enjoy!",
+		Items: []string{"Start Instant OpenHIE", "Stop Instant OpenHIE", "Debug", "Help", "Quit"},
 	}
 
 	_, result, err := prompt.Run()
@@ -182,25 +163,28 @@ func main() {
 	}
 	fmt.Printf("You chose %q\n", result)
 
+	stack := "https://raw.github.com/openhie/instant/strawperson/sandbox/core/docker-compose.yml"
+
 	switch result {
-	case "Get Started":
-		getstarted()
-		composeup()
+	case "Start Instant OpenHIE":
+		debug()
+		stuff := composeGet(stack)
+		composeUp(stuff)
+
+		box := packr.New("someBoxName", "./templates")
+		http.Handle("/", http.FileServer(box))
+		// this will stay open and block opening a new browser
+		http.ListenAndServe(":27517", nil)
+
+	case "Stop Instant OpenHIE":
+		stuff := composeGet(stack)
+		composeDown(stuff)
 	case "Debug":
 		debug()
-	case "Start Containers":
-		composeup()
-	case "Stop Containers":
-		composedown()
 	case "Help":
 		help()
-	case "OpenHIE Core":
-		debug()
-		getstarted()
-	case "Kitchen Sink":
-		debug()
-		getstarted()
 	case "Quit":
 		os.Exit(1)
 	}
+
 }
