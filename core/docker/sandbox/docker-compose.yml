@@ -30,13 +30,16 @@ services:
     image: jembi/openhim-console
     ports:
         - "9000:80"
-    # volumes cause an error with go-instant
+    # volumes cause an error with goinstant
     # volumes:
     #   - ./default.json:/usr/share/nginx/html/config/default.json
 
-  # change host port to 8081 because openhim core is at 8080
-  hapi:
-    container_name: hapi-fhir
-    image: arihealth/hapi-fhir-cdr-oauth
+  # available on localhost:3447/fhir/stu3
+  hearth:
+    container_name: hearth
+    image: jembi/hearth
+    # note different config than openhim
+    environment: 
+      - mongodb__url=mongodb://mongo/hearth
     ports: 
-        - "8080:8081"
+      - "3447:3447"
