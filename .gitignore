@@ -1,5 +1,6 @@
 # go-instant
 *-packr.go
+goinstant/bin/*
 
 # Logs
 logs

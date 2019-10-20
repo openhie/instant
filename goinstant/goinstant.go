@@ -152,7 +152,7 @@ func help() {
 func main() {
 
 	prompt := promptui.Select{
-		Label: "Choose Get Started if this is your first time; otherwise choose as you wish. Enjoy!",
+		Label: "Choose Start Instant OpenHIE if this is your first time",
 		Items: []string{"Start Instant OpenHIE", "Stop Instant OpenHIE", "Debug", "Help", "Quit"},
 	}
 
