@@ -1,0 +1,57 @@
+version: '2.1'
+services:
+  db_web:
+    image: postgres:9.6.4
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER-ocl}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD-Ocl123}
+    volumes:
+      - db_web_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: "exit 0"
+  web:
+    image: openconceptlab/oclweb:${ENVIRONMENT-production}
+    depends_on:
+      - db_web
+    links:
+      - "db_web:dbweb.openconceptlab.org"
+    ports:
+      - "7000:7000"
+    environment:
+      - BASE_URL=${BASE_URL-http://localhost:7000}
+      - DATABASE_URL=postgres://${POSTGRES_USER-ocl}:${POSTGRES_PASSWORD-Ocl123}@dbweb.openconceptlab.org:5432/ocl
+      - WAIT_FOR=dbweb.openconceptlab.org:5432
+      - ENVIRONMENT=${ENVIRONMENT-production}
+      - OCL_API_HOST=${OCL_API_HOST-http://172.17.0.1:8000}
+      - OCL_API_TOKEN=${OCL_API_TOKEN-891b4b17feab99f3ff7e5b5d04ccc5da7aa96da6}
+      - ROOT_PASSWORD=${ROOT_PASSWORD-Root123}
+      - EMAIL_HOST=${EMAIL_HOST-smtp.gmail.com}
+      - EMAIL_PORT=${EMAIL_PORT-587}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS-true}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER-no-reply@openconceptlab.org}
+      - EMAIL_HOST_PASSWORD
+      - SECRET_KEY
+      - SENTRY_DSN_KEY
+      - IMPORT_DEMO_DATA=${IMPORT_DEMO_DATA-false}
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7000"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+  backup:
+    image: openmrs/cron-backup:1.0.0
+    depends_on:
+      - web
+    volumes:
+      - db_web_data:/db_web_data
+      - ${BACKUP_DIR-./backups}:/backup
+    environment:
+      - DIRS=/db_web_data:dbweb
+      - SCHEDULE=0 0 * * *
+    restart: always
+    healthcheck:
+      test: "exit 0"
+volumes:
+  db_web_data:
