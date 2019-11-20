@@ -163,7 +163,7 @@ func main() {
 	}
 	fmt.Printf("You chose %q\n", result)
 
-	stack := "https://raw.github.com/openhie/instant/strawperson/core/docker/sandbox/docker-compose.yml"
+	stack := "https://raw.github.com/openhie/instant/strawperson/core/docker/docker-compose.yml"
 
 	switch result {
 	case "Start Instant OpenHIE":
