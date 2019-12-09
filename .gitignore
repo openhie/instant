@@ -1,3 +1,7 @@
+# go-instant
+*-packr.go
+goinstant/bin/*
+
 # Logs
 logs
 *.log
@@ -59,3 +63,6 @@ typings/
 
 # next.js build output
 .next
+
+# mac
+.DS_Store

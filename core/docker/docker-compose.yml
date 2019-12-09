@@ -1,0 +1,45 @@
+# copied from https://github.com/jembi/openhim-common/blob/master/docker-compose.yml
+version: '3'
+
+services:
+  mongo:
+    container_name: openhim-mongo
+    ports:
+      - "27017:27017"
+    image: mongo:3.4
+    
+  core:
+    container_name: openhim-core
+    image: jembi/openhim-core
+    environment:
+      - mongo_url=mongodb://mongo/openhim
+      - mongo_atnaUrl=mongodb://mongo/openhim
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+      - "5050:5050"
+      - "5051:5051"
+      - "5052:5052"
+      - "7788:7788"
+    depends_on:
+      - mongo
+  
+  console:
+    container_name: openhim-console
+    image: jembi/openhim-console
+    ports:
+        - "9000:80"
+    # volumes cause an error with goinstant
+    # volumes:
+    #   - ./default.json:/usr/share/nginx/html/config/default.json
+
+  # available on localhost:3447/fhir/stu3
+  hearth:
+    container_name: hearth
+    image: jembi/hearth
+    # note different config than openhim
+    environment: 
+      - mongodb__url=mongodb://mongo/hearth
+    ports: 
+      - "3447:3447"
