@@ -1,16 +1,15 @@
-# copied from https://github.com/jembi/openhim-common/blob/master/docker-compose.yml
-version: '3'
+version: '3.3'
 
 services:
   mongo:
     container_name: openhim-mongo
-    ports:
-      - "27017:27017"
-    image: mongo:3.4
-    
+    image: mongo:4.2
+    volumes:
+      - './data/mongo:/data/db'
+
   core:
     container_name: openhim-core
-    image: jembi/openhim-core
+    image: jembi/openhim-core:5
     environment:
       - mongo_url=mongodb://mongo/openhim
       - mongo_atnaUrl=mongodb://mongo/openhim
@@ -21,25 +20,38 @@ services:
       - "5050:5050"
       - "5051:5051"
       - "5052:5052"
-      - "7788:7788"
     depends_on:
       - mongo
-  
+
   console:
     container_name: openhim-console
-    image: jembi/openhim-console
+    image: jembi/openhim-console:1.13
     ports:
         - "9000:80"
-    # volumes cause an error with goinstant
-    # volumes:
-    #   - ./default.json:/usr/share/nginx/html/config/default.json
 
-  # available on localhost:3447/fhir/stu3
-  hearth:
-    container_name: hearth
-    image: jembi/hearth
-    # note different config than openhim
-    environment: 
-      - mongodb__url=mongodb://mongo/hearth
-    ports: 
-      - "3447:3447"
+  fhir:
+    container_name: hapi-fhir
+    image: hapiproject/hapi:4.1
+    ports:
+      - "3447:8080"
+    environment:
+      - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
+    volumes:
+      - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
+    # depends_on:
+    #   - mysql
+
+  # HAPI FHIR with MYSQL is throwing an error right now so cannot be used:
+  #   java.sql.SQLSyntaxErrorException: Specified key was too long; max key length is 3072 bytes
+  # This seems to be an error in code that I cannot work around, we will need to wait for a fix.
+  #
+  # mysql:
+  #   image: mysql:5.7
+  #   container_name: hapi-mysql
+  #   command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+  #   environment:
+  #     MYSQL_DATABASE: 'hapi'
+  #     MYSQL_USER: 'admin'
+  #     MYSQL_PASSWORD: 'admin'
+  #     MYSQL_ROOT_PASSWORD: 'admin'
+  #   # add data volume
