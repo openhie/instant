@@ -34,9 +34,9 @@ services:
     image: hapiproject/hapi:4.1
     ports:
       - "3447:8080"
-    environment:
-      - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
     # For mysql setup:
+    # environment:
+    #   - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
     # volumes:
     #   - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
     # depends_on:
