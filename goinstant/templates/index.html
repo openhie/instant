@@ -5,36 +5,66 @@
 
     <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
+
+
+    <script language="javascript" type="text/javascript">
+        function packageTotal() {
+
+            if (document.getElementById('basicProgram').checked) {
+                // Basic package is checked
+                window.location.href = "http://localhost:27517/usecase.html";
+
+            } else if (document.getElementById('proProgram').checked) {
+                // Pro package is checked
+                window.location.href = "http://localhost:27517/debug.html";
+            }
+        }
+    </script>
 </head>
 
-<img src="https://ohie.org/wp-content/uploads/2014/10/logo-4-e1413301504185.png" style="float: left;" />
+<body>
 
-<br><br><br>
+    <img src="https://ohie.org/wp-content/uploads/2014/10/logo-4-e1413301504185.png" style="float: left;" />
 
-<h1>Welcome to Instant OpenHIE!</h1>
+    <br><br><br>
+    <h1>Welcome to Instant OpenHIE!</h1>
+    <hr>
+    <h2>Step One: Choose how you will run it</h2>
+    <hr>
 
-<hr>
+    <form name="platform">
 
-<p>Here are some links to help get started.</p>
-<p>When done, go back to the app console and use 'Control + C' to interrupt.</p>
-<p>Then double-click again and choose 'Stop Instant OpenHIE'.</p>
+        <br />
+        <input type="radio" name="programType" id="basicProgram" value="Docker" checked /> Docker Desktop
+        <br>
 
-<hr>
+        <p class="tab2">
+            Default. Only Docker is currently supported.
+        </p>
 
-<h3>OpenHIM Console and Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:9000', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('https://openhim.readthedocs.io/en/latest/', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button>
+        <p class="tab2">
+            <a href="https://www.docker.com/products/docker-desktop">Install</a> Docker before continuing. Admin privileges are required.
+        </p>
 
-<h3>Hearth FHIR Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:3447/fhir/stu3', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('https://github.com/jembi/hearth/wiki', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/jembi/hearth', '_blank')">Code</button>
+        <input type="radio" name="programType" id="proProgram" value="Kubernetes" disabled /> Kubernetes Cluster
+
+        <p class="tab2">
+            Disabled. Kubernetes clusters will be supported in a future version.
+        </p>
+
+        <input type="button" class="mdc-button mdc-button--raised mdc-button--secondary" value="Get Started" onclick="javascript:packageTotal();">
+
+    </form>
+
+    <br>
+
+    <h2>Debug Menu</h2>
+    <button class="mdc-button mdc-button--raised"
+        onclick="window.open('https://openhim.readthedocs.io/en/latest/', '_blank')">Docs</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom"
+        onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button>
+
+
+</body>
 
 </html>
