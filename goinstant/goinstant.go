@@ -11,12 +11,6 @@ import (
 	"github.com/openhie/instant/goinstant/pkg"
 )
 
-func help() {
-	fmt.Printf("This is a utility to help run Instant OpenHIE on your personal computer.. \n")
-	fmt.Printf("You don't need this app for Instant OpenHIE if you're comfortable with the command line. \n")
-	fmt.Printf("The utility downloads docker-compose files from 'github.com/openhie/instant'.\n")
-}
-
 func main() {
 
 	prompt := promptui.Select{
@@ -44,8 +38,13 @@ func main() {
 		color.Println("Then stop containers by running 'goinstant' again and choosing 'Stop OpenHIE")
 		pkg.OpenBrowser("http://localhost:27517")
 
+		http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintln(w, "Hello, you hit foo!")
+		})
+
 		box := packr.New("someBoxName", "./templates")
 		http.Handle("/", http.FileServer(box))
+
 		// this will stay open and block opening a new browser
 		http.ListenAndServe(":27517", nil)
 
@@ -55,7 +54,7 @@ func main() {
 	case "Debug":
 		pkg.Debug()
 	case "Help":
-		help()
+		pkg.Help()
 	case "Quit":
 		os.Exit(1)
 	}
