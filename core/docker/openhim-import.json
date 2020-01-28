@@ -1,0 +1,85 @@
+{
+  "Users": [
+    {
+      "groups": [
+        "admin"
+      ],
+      "firstname": "Super",
+      "surname": "User",
+      "email": "root@openhim.org",
+      "passwordAlgorithm": "sha512",
+      "passwordHash": "09ca8119d775c33bffa112dab6a037d7365b94d572e1a79dcb7670e245da6a53281cfea9f122806ad298959cf1d5fceedce88f7b4694cde2472268d6e73ad6d4",
+      "passwordSalt": "4ddea4cfc230dc1bce662dec476a6f1e",
+      "expiry": null,
+      "locked": false,
+      "token": null,
+      "tokenType": null
+    }
+  ],
+  "Clients": [],
+  "Channels": [
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT",
+        "OPTIONS",
+        "HEAD",
+        "TRACE",
+        "CONNECT",
+        "PATCH"
+      ],
+      "type": "http",
+      "allow": [],
+      "whitelist": [],
+      "authType": "public",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "FHIR Server",
+          "secured": false,
+          "host": "hapi-fhir",
+          "port": 8080,
+          "path": "",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "FHIR Server",
+      "description": "A FHIR server (HAPI FHIR)",
+      "urlPattern": "^/hapi-fhir-jpaserver/fhir/.*$",
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "5e2eca110bb0420011f0cd84",
+        "name": "Super User"
+      },
+      "alerts": []
+    }
+  ],
+  "Mediators": [],
+  "ContactGroups": []
+}

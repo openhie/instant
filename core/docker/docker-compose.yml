@@ -13,6 +13,7 @@ services:
     environment:
       - mongo_url=mongodb://mongo/openhim
       - mongo_atnaUrl=mongodb://mongo/openhim
+      - api_authenticationTypes=["token", "basic"]
     ports:
       - "8080:8080"
       - "5000:5000"
@@ -34,25 +35,38 @@ services:
     image: hapiproject/hapi:4.1
     ports:
       - "3447:8080"
-    # For mysql setup:
-    # environment:
-    #   - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
-    # volumes:
-    #   - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
-    # depends_on:
-    #   - mysql
+    environment:
+      - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
+    volumes:
+      - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
+    depends_on:
+      - mysql
 
-  # HAPI FHIR with MYSQL is throwing an error right now so cannot be used:
-  #   java.sql.SQLSyntaxErrorException: Specified key was too long; max key length is 3072 bytes
-  # This seems to be an error in code that I cannot work around, we will need to wait for a fix.
-  #
-  # mysql:
-  #   image: mysql:5.7
-  #   container_name: hapi-mysql
-  #   command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
-  #   environment:
-  #     MYSQL_DATABASE: 'hapi'
-  #     MYSQL_USER: 'admin'
-  #     MYSQL_PASSWORD: 'admin'
-  #     MYSQL_ROOT_PASSWORD: 'admin'
-  #   # add data volume
+  mysql:
+    container_name: hapi-mysql
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    environment:
+      MYSQL_DATABASE: 'hapi'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'admin123'
+      MYSQL_ROOT_PASSWORD: 'root123'
+    # add data volume
+
+  # container for executing a bash scripts for setting up the config for the relevant services
+  config-importer:
+    container_name: config-importer
+    build:
+      context: .
+      dockerfile: Dockerfile.importer
+    environment:
+      OPENHIM_API_SERVER: 'https://openhim-core:8080'
+      OPENHIM_API_USERNAME: 'root@openhim.org'
+      OPENHIM_API_PASSWORD: 'openhim-password'
+    volumes:
+      - "./importer.sh:/importer.sh"
+    command: "/bin/sh ./importer.sh" # execute the bash script for importing component config
+    # ensure all relevant services are running before executing the importer
+    depends_on:
+      - core
+      - fhir
