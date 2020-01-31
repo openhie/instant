@@ -49,8 +49,8 @@ services:
     environment:
       MYSQL_DATABASE: 'hapi'
       MYSQL_USER: 'admin'
-      MYSQL_PASSWORD: 'admin123'
-      MYSQL_ROOT_PASSWORD: 'root123'
+      MYSQL_PASSWORD: 'instant101'
+      MYSQL_ROOT_PASSWORD: 'instant101'
     # add data volume
 
   # container for executing a bash scripts for setting up the config for the relevant services
