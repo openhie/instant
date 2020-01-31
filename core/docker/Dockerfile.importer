@@ -1,6 +1,5 @@
 FROM alpine
 
 # Install prerequisites
-RUN apt-get update && apt-get install -y curl
 
 RUN apk add --no-cache curl
