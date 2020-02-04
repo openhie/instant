@@ -51,7 +51,7 @@ services:
       MYSQL_USER: 'admin'
       MYSQL_PASSWORD: 'instant101'
       MYSQL_ROOT_PASSWORD: 'instant101'
-    add data volume
+    # add data volume
 
   # container for executing a bash scripts for setting up the config for the relevant services
   config-importer:
