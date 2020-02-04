@@ -65,12 +65,8 @@ services:
       OPENHIM_API_PASSWORD: 'openhim-password'
     volumes:
         - type: bind
-          source: ./importer.sh
-          target: /importer.sh
-        - type: bind
-          source: ./openhim-import.json
-          target: /openhim-import.json
-    command: 'sh importer.sh'
+          source: ./import
+          target: /import
     # ensure all relevant services are running before executing the importer
     depends_on:
       - core

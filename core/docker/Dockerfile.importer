@@ -1,5 +1,5 @@
-FROM alpine
+FROM node:erbium-alpine
 
-# Install prerequisites
+WORKDIR /import
 
-RUN apk add --no-cache curl
+RUN npm install

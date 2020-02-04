@@ -1,0 +1,13 @@
+{
+  "name": "config-importer",
+  "version": "0.0.0",
+  "description": "Importer scripts for Instant OpenHIE",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "wait-on": "^4.0.0"
+  }
+}
