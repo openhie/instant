@@ -60,9 +60,11 @@ services:
       context: importer
       dockerfile: Dockerfile
     environment:
-      OPENHIM_API_SERVER: 'https://openhim-core:8080'
+      OPENHIM_API_HOSTNAME: 'openhim-core'
+      OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
       OPENHIM_API_PASSWORD: 'openhim-password'
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
       - type: bind
         source: ./openhim-import.json

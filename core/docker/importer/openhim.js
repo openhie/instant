@@ -6,7 +6,7 @@ const path = require('path')
 const waitOn = require('wait-on')
 
 const OPENHIM_API_HOSTNAME =
-  process.env.OPENHIM_API_SERVER || 'https://openhim-core'
+  process.env.OPENHIM_API_HOSTNAME || 'openhim-core'
 const OPENHIM_API_PASSWORD =
   process.env.OPENHIM_API_PASSWORD || 'openhim-password'
 const OPENHIM_API_PORT = process.env.OPENHIM_API_PORT || 8080
@@ -15,7 +15,7 @@ const OPENHIM_API_USERNAME =
 
 exports.importOpenHIMConfig = () => {
   const opts = {
-    resources: [`${OPENHIM_API_HOSTNAME}:${OPENHIM_API_PORT}/heartbeat`],
+    resources: [`https://${OPENHIM_API_HOSTNAME}:${OPENHIM_API_PORT}/heartbeat`],
     delay: 1000, // initial delay in ms, default 0
     interval: 2000, // poll interval in ms, default 250ms
     timeout: 30000, // timeout in ms, default Infinity
@@ -51,6 +51,7 @@ const openHIMConfig = () => {
   const data = JSON.stringify(jsonData)
 
   const options = {
+    protocol: 'https:',
     hostname: OPENHIM_API_HOSTNAME,
     port: OPENHIM_API_PORT,
     path: '/metadata',
