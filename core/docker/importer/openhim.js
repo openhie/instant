@@ -32,6 +32,7 @@ exports.importOpenHIMConfig = () => {
   waitOn(opts)
     .then(function() {
       // once here, all resources are available
+      console.log('OpenHIM API Available')
       openHIMConfig()
     })
     .catch(function(err) {
@@ -64,7 +65,15 @@ const openHIMConfig = () => {
   }
 
   const req = https.request(options, res => {
-    console.log(`Status code: ${res.statusCode}`)
+    if (res.statusCode == 401) {
+      throw new Error(`Incorrect OpenHIM API credentials`)
+    }
+
+    if (res.statusCode != 201) {
+      throw new Error(`Failed to import OpenHIM config: ${res.statusCode}`)
+    }
+
+    console.log('Successfully Imported OpenHIM Config')
   })
 
   req.on('error', error => {
