@@ -69,6 +69,7 @@ services:
       - type: bind
         source: ./openhim-import.json
         target: /importer/openhim-import.json
+    command: 'npm start'
     # ensure all relevant services are running before executing the importer
     depends_on:
       - core

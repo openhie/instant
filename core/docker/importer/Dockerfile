@@ -11,5 +11,3 @@ COPY . .
 
 # this file isnt needed as we are already dockerized
 RUN rm Dockerfile
-
-CMD ["npm", "start"]
