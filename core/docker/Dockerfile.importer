@@ -1,5 +1,0 @@
-FROM node:erbium-alpine
-
-WORKDIR /import
-
-RUN npm install
