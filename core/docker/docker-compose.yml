@@ -53,7 +53,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'instant101'
     # add data volume
 
-  # container for executing a bash scripts for setting up the config for the relevant services
+  # container for executing a node script for setting up the OpenHIM config
   config-importer:
     container_name: config-importer
     build:
