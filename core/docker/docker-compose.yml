@@ -49,23 +49,27 @@ services:
     environment:
       MYSQL_DATABASE: 'hapi'
       MYSQL_USER: 'admin'
-      MYSQL_PASSWORD: 'admin123'
-      MYSQL_ROOT_PASSWORD: 'root123'
+      MYSQL_PASSWORD: 'instant101'
+      MYSQL_ROOT_PASSWORD: 'instant101'
     # add data volume
 
   # container for executing a bash scripts for setting up the config for the relevant services
   config-importer:
     container_name: config-importer
     build:
-      context: .
-      dockerfile: Dockerfile.importer
+      context: importer
+      dockerfile: Dockerfile
     environment:
-      OPENHIM_API_SERVER: 'https://openhim-core:8080'
+      OPENHIM_API_HOSTNAME: 'openhim-core'
+      OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
       OPENHIM_API_PASSWORD: 'openhim-password'
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
-      - "./importer.sh:/importer.sh"
-    command: "/bin/sh ./importer.sh" # execute the bash script for importing component config
+      - type: bind
+        source: ./openhim-import.json
+        target: /importer/openhim-import.json
+    command: 'npm start'
     # ensure all relevant services are running before executing the importer
     depends_on:
       - core
