@@ -69,7 +69,8 @@ services:
       - type: bind
         source: ./openhim-import.json
         target: /importer/openhim-import.json
-    command: 'npm start'
+    # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
+    command: sh -c "wait-on -t 30000 https-get://openhim-core:8080/heartbeat && node openhimConfig.js"
     # ensure all relevant services are running before executing the importer
     depends_on:
       - core
