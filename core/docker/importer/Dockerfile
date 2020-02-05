@@ -2,9 +2,7 @@ FROM node:erbium-alpine
 
 WORKDIR /importer
 
-COPY package.json package-lock.json ./
-
-RUN npm install
+RUN npm install -g wait-on
 
 # copy all files in this directory into the docker image
 COPY . .
