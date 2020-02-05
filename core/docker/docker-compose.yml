@@ -55,7 +55,7 @@ services:
 
   # container for executing a node script for setting up the OpenHIM config
   config-importer:
-    container_name: config-importer
+    container_name: openhim-config-importer
     build:
       context: importer
       dockerfile: Dockerfile
