@@ -21,10 +21,6 @@ exports.importOpenHIMConfig = () => {
     timeout: 30000, // timeout in ms, default Infinity
     tcpTimeout: 1000, // tcp timeout in ms, default 300ms
     window: 1000, // stabilization time in ms, default 750ms
-    auth: {
-      user: OPENHIM_API_USERNAME,
-      pass: OPENHIM_API_PASSWORD
-    },
     strictSSL: false
   }
 
