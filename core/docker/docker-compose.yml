@@ -33,8 +33,6 @@ services:
   fhir:
     container_name: hapi-fhir
     image: hapiproject/hapi:4.1
-    ports:
-      - "3447:8080"
     environment:
       - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
     volumes:
@@ -54,7 +52,7 @@ services:
     volumes:
       - './data/mysql:/var/lib/mysql'
 
-  # container for executing a bash scripts for setting up the config for the relevant services
+  # container for executing config import scripts for setting up relevant initial config
   config-importer:
     container_name: config-importer
     build:
