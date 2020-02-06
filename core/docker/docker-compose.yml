@@ -51,25 +51,3 @@ services:
       MYSQL_ROOT_PASSWORD: 'instant101'
     volumes:
       - './data/mysql:/var/lib/mysql'
-
-  # container for executing config import scripts for setting up relevant initial config
-  config-importer:
-    container_name: config-importer
-    build:
-      context: importer
-      dockerfile: Dockerfile
-    environment:
-      OPENHIM_API_HOSTNAME: 'openhim-core'
-      OPENHIM_API_PORT: 8080
-      OPENHIM_API_USERNAME: 'root@openhim.org'
-      OPENHIM_API_PASSWORD: 'openhim-password'
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
-    volumes:
-      - type: bind
-        source: ./openhim-import.json
-        target: /importer/openhim-import.json
-    command: 'npm start'
-    # ensure all relevant services are running before executing the importer
-    depends_on:
-      - core
-      - fhir

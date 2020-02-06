@@ -39,10 +39,16 @@ Additional `docker-compose` files are available for extra environment configurat
 * **docker-compose.yml**: Main `docker-compose` script to create the services
 * **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configuration to be used in a development environment (Open service ports for access etc)
 
-The below command specifies the two `docker-compose` files that need to be executed for the development configuration
+The below command specifies the three `docker-compose` files that need to be executed for the development configuration
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
+```
+
+The below command specifies the two `docker-compose` files that need to be executed for a production-like configuration
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
 ```
 
 ## Accessing the services
