@@ -23,19 +23,35 @@ docker-compose up
 Some additional flags can be passed to the `docker-compose` command making it a bit easier to work with.
 
 * `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
+* `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
 * `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new images has been released but not yet pulled onto the host machine.
 
 ```bash
 docker-compose up -d --force-recreate
 ```
 
+## Environment configuration
+
+By running the above command to get started with the Core Component we create all the services that need to be defined, but this script might have some limitations depending on the type of environment you want to run the configuration
+
+Additional `docker-compose` files are available for extra environment configuration
+
+* **docker-compose.yml**: Main `docker-compose` script to create the services
+* **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configuration to be used in a development environment (Open service ports for access etc)
+
+The below command specifies the two `docker-compose` files that need to be executed for the development configuration
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
 ## Accessing the services
 
 ### OpenHIM
 
-Console: http://localhost:9000<br />
-Username: root@openhim.org<br />
-Password: instant101
+* Console: <http://localhost:9000>
+* Username: **root@openhim.org**
+* Password: **instant101**
 
 ### HAPI FHIR
 
@@ -43,7 +59,7 @@ This service should not be publicly accessible and only accessed via the Interop
 
 ## Testing the Core Component
 
-As part of the Core Component setup we also do some initial importation of config for connecting the services together. 
+As part of the Core Component setup we also do some initial importation of config for connecting the services together.
 
 * OpenHIM: Import a public channel configuration that routes requests to the HAPI FHIR services
 * HAPI FHIR: *Not config import yet*

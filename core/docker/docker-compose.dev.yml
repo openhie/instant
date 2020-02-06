@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  mongo:
+    container_name: openhim-mongo
+    image: mongo:4.2
+    ports:
+      - "27017:27017"
+
+  fhir:
+    container_name: hapi-fhir
+    image: hapiproject/hapi:4.1
+    ports:
+      - "3447:8080"
+
+  mysql:
+    container_name: hapi-mysql
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
