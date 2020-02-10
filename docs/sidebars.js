@@ -10,6 +10,13 @@ module.exports = {
     'Introduction': [
       'introduction/overview',
       'introduction/community'
+    ],
+    'Architecture': [
+      'architecture/overview'
+    ],
+    'Components': [
+      'components/core',
+      'components/health-worker-force'
     ]
   }
 };
