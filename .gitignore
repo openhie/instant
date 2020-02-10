@@ -69,3 +69,10 @@ typings/
 
 # docker data volumes
 **/data
+
+# production
+/docs/build
+
+# generated files
+/docs/.docusaurus
+/docs/.cache-loader
