@@ -1,26 +1,26 @@
 module.exports = {
   title: 'InstantHIE',
-  tagline: 'Simplifying setting up of an OpenHIE',
+  tagline: 'Simplifying OpenHIE Setup',
   url: 'https://your-docusaurus-test-site.com',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'OpenHIE',
+  projectName: 'Instant OpenHIE',
   themeConfig: {
     navbar: {
       title: 'InstantHIE',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.svg'
       },
       links: [
-        {to: 'docs/doc1', label: 'Docs', position: 'left'},
+        { to: 'docs/doc1', label: 'Docs', position: 'left' },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/openhie/instant',
           label: 'GitHub',
-          position: 'right',
-        },
-      ],
+          position: 'right'
+        }
+      ]
     },
     footer: {
       style: 'dark',
@@ -30,13 +30,13 @@ module.exports = {
           items: [
             {
               label: 'OpenHIE',
-              href: 'https://ohie.org/',
+              href: 'https://ohie.org/'
             }
-          ],
-        },
+          ]
+        }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} OpenHIE`,
-    },
+      copyright: `Copyright © ${new Date().getFullYear()} OpenHIE`
+    }
   },
   presets: [
     [
@@ -44,13 +44,12 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/facebook/docusaurus/edit/master/website/',
+          editUrl: 'https://github.com/facebook/docusaurus/edit/master/website/'
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      },
-    ],
-  ],
-};
+          customCss: require.resolve('./src/css/custom.css')
+        }
+      }
+    ]
+  ]
+}
