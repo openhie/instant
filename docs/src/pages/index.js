@@ -23,7 +23,7 @@ const features = [
     )
   },
   {
-    title: <>Components</>,
+    title: <>Packages</>,
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
       <>
