@@ -16,7 +16,7 @@ module.exports = {
     ],
     'Components': [
       'components/core',
-      'components/health-worker-force'
+      'components/health-workforce'
     ]
   }
 };
