@@ -4,7 +4,7 @@ title: Packages
 sidebar_label: Packages
 keywords:
   - InstantHIE
-  - Overview
+  - Packages
   - Architecture
 description: A description of the instant OpenHIE package architecture
 ---
