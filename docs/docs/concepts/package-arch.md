@@ -9,7 +9,7 @@ keywords:
 description: A description of the instant OpenHIE package architecture
 ---
 
-The fundamental concept of Instant OpenHIE is that it can be extended to support additional use cases and workflows. This will be achieved through packages. A **core package** will be produced in this first phase which other packages will all derive from. A package will either extend directly from the core package or from another package.
+The fundamental concept of Instant OpenHIE is that it can be extended to support additional use cases and workflows. This is achieved through packages. A [**core package**](packages/core.md) has been produced which other packages will all derive from. A package will either extend directly from the core package or from another existing package.
 
 Each package will contain the following sorts of technical artefacts:
 * Docker compose scripts for setting up the applications required for this package’s use cases and workflows
@@ -20,3 +20,5 @@ Each package will contain the following sorts of technical artefacts:
 The below diagram shows how packages will extend off each other to add use cases of increasing complexity.
 
 ![](package-arch.png)
+
+See [creating packages](../packages/creating-packages) for more information on how to create your own pacakges to extend instant OpenHIE.
