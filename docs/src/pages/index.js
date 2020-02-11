@@ -38,17 +38,17 @@ const features = [
     )
   },
   {
-    title: <>Architecture</>,
+    title: <>Concepts</>,
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
         Instant OpenHIE provides an easy way to setup, explore and develop with
-        the OpenHIE Architecture. It allows packages to be added that support a
+        the OpenHIE Architecture. It allows packages to be added that support
         multiple different use cases and workflows specified by OpenHIE. Each
         package contains scripts to stand up and configure applications that
         support these various workflows.
       <br /><br />
-        View the <a href="docs/architecture/overview">Architecture section</a> to learn more.
+        View the <a href="docs/concepts/overview">Concepts section</a> to learn more.
       </>
     )
   }

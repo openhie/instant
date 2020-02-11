@@ -9,13 +9,15 @@ module.exports = {
   'docs': {
     'Introduction': [
       'introduction/overview',
+      'introduction/getting-started',
       'introduction/community'
     ],
-    'Architecture': [
-      'architecture/overview',
-      'architecture/package-arch'
+    'Concepts': [
+      'concepts/overview',
+      'concepts/package-arch'
     ],
     'Packages': [
+      'packages/creating-packages',
       'packages/core',
       'packages/health-workforce'
     ]
