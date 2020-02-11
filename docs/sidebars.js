@@ -15,9 +15,9 @@ module.exports = {
       'architecture/overview',
       'architecture/package-arch'
     ],
-    'Components': [
-      'components/core',
-      'components/health-workforce'
+    'Packages': [
+      'packages/core',
+      'packages/health-workforce'
     ]
   }
 };
