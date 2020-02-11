@@ -12,7 +12,8 @@ module.exports = {
       'introduction/community'
     ],
     'Architecture': [
-      'architecture/overview'
+      'architecture/overview',
+      'architecture/package-arch'
     ],
     'Components': [
       'components/core',

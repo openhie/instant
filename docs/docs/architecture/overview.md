@@ -2,11 +2,13 @@
 id: overview
 title: Overview
 sidebar_label: Overview
-keywords: 
+keywords:
   - InstantHIE
   - Overview
   - Architecture
 description: An overview of the InstantHIE architecture
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Instant OpenHIE provides multiple sets of scripts to configure and setup HIE components for particular use cases and workflows. Each of these are organised into self contained packages and each of these packages may depend on other packages. This allows highly complex infrastructure to be setup in time once more packages are created.
+
+Each of these packages will contain scripts which will setup containerised applications, configure them and ensure necessary data is loaded into them. Docker will be used to containerise each of the necessary application and to enable them to be easily deployed.

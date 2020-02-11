@@ -42,13 +42,13 @@ const features = [
     imageUrl: 'img/undraw_docusaurus_react.svg',
     description: (
       <>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum
+        Instant OpenHIE provides an easy way to setup, explore and develop with
+        the OpenHIE Architecture. It allows packages to be added that support a
+        multiple different use cases and workflows specified by OpenHIE. Each
+        package contains scripts to stand up and configure applications that
+        support these various workflows.
+      <br /><br />
+        View the <a href="docs/architecture/overview">Architecture section</a> to learn more.
       </>
     )
   }
