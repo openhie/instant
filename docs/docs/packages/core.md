@@ -32,9 +32,9 @@ Select a deployment platform below to follow the getting started steps in settin
 }>
 <TabItem value="dockerCompose">
 
-Before we proceed with creating our Core package components, we need to ensure we are on the correct directory containing our `docker-compose` script.
+Before we proceed with creating our Core package components, we need to ensure we are in the correct directory containing our `docker-compose` script.
 
-Once you are in the correct working directory (`core/docker/`) we can proceed to execute our `docker-compose` script by running the below command which will create all the services and print our their logs in the terminal.
+Once you are in the correct working directory (`core/docker/`) we can proceed to execute our `docker-compose` script by running the below command which will create all the services and print out their logs in the terminal.
 
 ```bash
 docker-compose up
@@ -46,7 +46,7 @@ Some additional flags can be passed to the `docker-compose` command making it a 
 
 * `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
 * `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
-* `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new images has been released but not yet pulled onto the host machine.
+* `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new image has been released but not yet pulled onto the host machine.
 
 ```bash
 docker-compose up -d --force-recreate
