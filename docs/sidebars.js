@@ -9,6 +9,7 @@ module.exports = {
   'docs': {
     'Introduction': [
       'introduction/overview',
+      'introduction/vision',
       'introduction/getting-started',
       'introduction/community'
     ],
