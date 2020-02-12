@@ -7,6 +7,11 @@ module.exports = {
   organizationName: 'openhie',
   projectName: 'instant',
   themeConfig: {
+    algolia: {
+      apiKey: '',
+      indexName: 'InstantHIE',
+      algoliaOptions: {}, // Optional, if provided by Algolia
+    },
     navbar: {
       title: 'InstantHIE',
       logo: {
@@ -36,6 +41,9 @@ module.exports = {
         }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} OpenHIE`
+    },
+    prism: {
+      theme: require('prism-react-renderer/themes/nightOwl'),
     }
   },
   presets: [
