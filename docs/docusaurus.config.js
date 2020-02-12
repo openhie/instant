@@ -1,11 +1,11 @@
 module.exports = {
   title: 'InstantHIE',
   tagline: 'Simplifying OpenHIE Setup',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  url: 'https://openhie.github.io',
+  baseUrl: '/instant/',
   favicon: 'img/favicon.ico',
-  organizationName: 'OpenHIE',
-  projectName: 'Instant OpenHIE',
+  organizationName: 'openhie',
+  projectName: 'instant',
   themeConfig: {
     navbar: {
       title: 'InstantHIE',
