@@ -1,5 +1,9 @@
 # Website
 
+The InstantHIE website can be accessed online at the following URL
+
+https://openhie.github.io/instant/
+
 This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern static website generator.
 
 ## Installation
