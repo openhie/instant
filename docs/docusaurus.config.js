@@ -11,7 +11,7 @@ module.exports = {
       title: 'InstantHIE',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg'
+        src: 'img/logo.png'
       },
       links: [
         {to: 'docs/introduction/overview', label: 'Docs', position: 'left'},

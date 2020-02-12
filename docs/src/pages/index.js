@@ -77,6 +77,11 @@ function Home() {
     >
       <header className={classnames('hero hero--primary', styles.heroBanner)}>
         <div className="container">
+          <img
+            className="logo_header"
+            src={useBaseUrl("/img/logo.png")}
+            alt="Project Logo"
+          />
           <h1 className="hero__title">{siteConfig.title}</h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
