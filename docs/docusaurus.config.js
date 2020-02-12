@@ -1,12 +1,17 @@
 module.exports = {
   title: 'InstantHIE',
   tagline: 'Simplifying OpenHIE Setup',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  url: 'https://openhie.github.io',
+  baseUrl: '/instant/',
   favicon: 'img/favicon.ico',
-  organizationName: 'OpenHIE',
-  projectName: 'Instant OpenHIE',
+  organizationName: 'openhie',
+  projectName: 'instant',
   themeConfig: {
+    algolia: {
+      apiKey: '',
+      indexName: 'InstantHIE',
+      algoliaOptions: {}, // Optional, if provided by Algolia
+    },
     navbar: {
       title: 'InstantHIE',
       logo: {
@@ -36,6 +41,9 @@ module.exports = {
         }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} OpenHIE`
+    },
+    prism: {
+      theme: require('prism-react-renderer/themes/nightOwl'),
     }
   },
   presets: [
