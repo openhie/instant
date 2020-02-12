@@ -12,13 +12,12 @@ const features = [
     imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+        The Instant OpenHIE project aims to reduce the costs and skills required 
+        for software developers to deploy an OpenHIE architecture for quicker 
+        initial solution testing and as a starting point for faster production 
+        implementation and customization.
+        <br /><br />
+        View the <a href="docs/introduction/overview">Introduction section</a> to learn more.
       </>
     )
   },
@@ -32,7 +31,7 @@ const features = [
         multiple different use cases and workflows specified by OpenHIE. Each
         package contains scripts to stand up and configure applications that
         support these various workflows.
-      <br /><br />
+        <br /><br />
         View the <a href="docs/concepts/overview">Concepts section</a> to learn more.
       </>
     )
