@@ -9,7 +9,7 @@ import styles from './styles.module.css'
 const features = [
   {
     title: <>Introduction</>,
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    imageUrl: 'img/feature.introduction.svg',
     description: (
       <>
         The Instant OpenHIE project aims to reduce the costs and skills required 
@@ -23,7 +23,7 @@ const features = [
   },
   {
     title: <>Concepts</>,
-    imageUrl: 'img/undraw_docusaurus_react.svg',
+    imageUrl: 'img/feature.concepts.svg',
     description: (
       <>
         Instant OpenHIE provides an easy way to setup, explore and develop with
@@ -38,7 +38,7 @@ const features = [
   },
   {
     title: <>Packages</>,
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    imageUrl: 'img/feature.packages.svg',
     description: (
       <>
         The fundamental concept of Instant OpenHIE is that it can be extended 
