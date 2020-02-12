@@ -9,10 +9,13 @@ module.exports = {
   'docs': {
     'Introduction': [
       'introduction/overview',
+      'introduction/getting-started',
       'introduction/community'
     ],
-    'Architecture': [
-      'architecture/overview'
+    'Concepts': [
+      'concepts/overview',
+      'concepts/package-arch',
+      'concepts/creating-packages',
     ],
     'Packages': [
       'packages/core',
