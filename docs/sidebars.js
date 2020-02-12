@@ -14,10 +14,10 @@ module.exports = {
     ],
     'Concepts': [
       'concepts/overview',
-      'concepts/package-arch'
+      'concepts/package-arch',
+      'concepts/creating-packages',
     ],
     'Packages': [
-      'packages/creating-packages',
       'packages/core',
       'packages/health-workforce'
     ]
