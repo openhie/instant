@@ -41,13 +41,11 @@ const features = [
     imageUrl: 'img/undraw_docusaurus_tree.svg',
     description: (
       <>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum
+        The fundamental concept of Instant OpenHIE is that it can be extended 
+        to support additional use cases and workflows. This is achieved through 
+        packages
+        <br /><br />
+        View the <a href="docs/concepts/package-arch">Packages section</a> to learn more.
       </>
     )
   }
@@ -78,6 +76,11 @@ function Home() {
     >
       <header className={classnames('hero hero--primary', styles.heroBanner)}>
         <div className="container">
+          <img
+            className="logo_header"
+            src={useBaseUrl("/img/logo.png")}
+            alt="Project Logo"
+          />
           <h1 className="hero__title">{siteConfig.title}</h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
