@@ -22,7 +22,7 @@ Each package will contain the following sorts of technical artefacts:
 The below diagram shows how packages will extend off each other to add use cases of increasing complexity.
 
 <div class="text--center">
-  <img alt="Package architecture" src={useBaseUrl('img/package-arch.png')} />;
+  <img alt="Package architecture" src={useBaseUrl('img/package-arch.png')} />
 </div>
 
 See [creating packages](creating-packages.md) for more information on how to create your own pacakges to extend instant OpenHIE.
