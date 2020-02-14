@@ -13,7 +13,7 @@ This is a Go app and can be built as a native binary for any operating system. S
 
 Run the app using `go run goinstant.go` or build the binary using `go build`. To build releases, create a tag and upload the binaries built. A convenience bash script is included to build binaries.
 
-Note: this script won't work if you have a `goistant/data/` folder that gets created when when starting up the docker-compose files through the go app. Delete this first: `sudo rm -r goisntant/data`
+Note: this script won't work if you have a `goinstant/data/` folder that gets created when when starting up the docker-compose files through the go app. Delete this first: `sudo rm -r goinstant/data`
 
 ```sh
 bash ./buildreleases.sh
