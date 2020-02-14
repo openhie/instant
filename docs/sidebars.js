@@ -10,7 +10,7 @@ module.exports = {
     'Introduction': [
       'introduction/overview',
       'introduction/vision',
-      'introduction/getting-started',
+      'introduction/running',
       'introduction/community'
     ],
     'Concepts': [
