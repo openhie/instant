@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: core
+  name: core
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: core
+  template:
+    metadata:
+      labels:
+        app: core
+    spec:
+      containers:
+      - env:
+        - name: api_authenticationTypes
+          value: '["token", "basic"]'
+        - name: mongo_atnaUrl
+          value: mongodb://mongo/openhim
+        - name: mongo_url
+          value: mongodb://mongo/openhim
+        image: jembi/openhim-core:5
+        name: openhim-core
+        ports:
+        - containerPort: 8080
+        - containerPort: 5000
+        - containerPort: 5001
+        - containerPort: 5050
+        - containerPort: 5051
+        - containerPort: 5052
+      restartPolicy: Always
