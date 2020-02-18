@@ -7,6 +7,7 @@ services:
     build:
       context: importer
       dockerfile: Dockerfile
+    # TODO might need to change this to an OpenHIE organization
     image: jembi/instantohie-config-importer
     restart: "no"
     environment:
