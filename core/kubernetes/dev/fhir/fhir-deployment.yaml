@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fhir
+  name: fhir
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fhir
+  template:
+    metadata:
+      labels:
+        app: fhir
+    spec:
+      containers:
+        - image: hapiproject/hapi:4.1
+          name: hapi-fhir
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JAVA_OPTS
+              value: -Dhapi.properties=/usr/local/tomcat/conf/hapi.properties
+          volumeMounts:
+            - name: hapi-fhir-config
+              mountPath: /usr/local/tomcat/conf/hapi.properties
+              subPath: hapi.properties
+      volumes:
+        - name: hapi-fhir-config
+          configMap:
+            name: hapi-fhir-config
+      restartPolicy: Always

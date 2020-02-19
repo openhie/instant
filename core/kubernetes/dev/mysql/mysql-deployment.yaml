@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: hapi-mysql
+        env:
+          - name: MYSQL_DATABASE
+            value: hapi
+          - name: MYSQL_ROOT_PASSWORD
+            value: instant101
+          - name: MYSQL_USER
+            value: admin
+          - name: MYSQL_PASSWORD
+            value: instant101
+        ports:
+        - containerPort: 3306
+          name: mysql
+      restartPolicy: Always
