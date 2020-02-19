@@ -1,0 +1,7 @@
+configMapGenerator:
+  - name: importer-config
+    files:
+    - config/volume/openhim-import.json
+    - config/volume/openhimConfig.js
+resources:
+  - config/config-importer-job.yaml
