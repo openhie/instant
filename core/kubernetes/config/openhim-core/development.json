@@ -136,8 +136,6 @@
     "startupDelay": 500
   },
   "certificateManagement": {
-    "watchFSForCert": false,
-    "certPath": "/etc/letsencrypt/live/openhim.jembi.org/cert.pem",
-    "keyPath": "/etc/letsencrypt/live/openhim.jembi.org/privkey.pem"
+    "watchFSForCert": false
   }
 }
