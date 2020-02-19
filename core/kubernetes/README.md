@@ -39,7 +39,7 @@ Edit the console-config configMap:
 kubectl edit configmap console-config
 ```
 
-Go to the line "host" and replace the value "{enter-openhim-core-service-url-here}" with the **host** and the `port` value of the openhim-core you copied. Example:
+Go to the line "host" and replace the value "{enter-openhim-core-service-host-here}" with the **host** and the `port` value of the openhim-core you copied. Example:
 
 ```json
 "host": "192.168.99.101",
@@ -47,20 +47,19 @@ Go to the line "host" and replace the value "{enter-openhim-core-service-url-her
 ```
 
 > Remember to remove the protocol and path from the url`
-
+[]
 Save the file
 
 ```sh
 press escape
-:w
-:q
+:wq
 ```
 
 Restart the deployments
 
 ```sh
-./k8s/k8s.sh down
-./k8s/k8s.sh up
+./k8s.sh down
+./k8s.sh up
 ```
 
 In a new terminal, expose the OpenHIM Console service with the following:
