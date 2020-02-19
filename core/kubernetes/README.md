@@ -46,8 +46,8 @@ Go to the line "host" and replace the value "{enter-openhim-core-service-host-he
 "port": 32289
 ```
 
-> Remember to remove the protocol and path from the url`
-[]
+> Remember to remove the protocol and path from the url
+
 Save the file
 
 ```sh
