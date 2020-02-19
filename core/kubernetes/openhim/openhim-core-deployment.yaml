@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openhim-core-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: openhim-core
+  template:
+    metadata:
+      labels:
+        component: openhim-core
+    spec:
+      containers:
+        - name: openhim-core
+          image: jembi/openhim-core:5
+          ports:
+            - containerPort: 8080
+            - containerPort: 5000
+            - containerPort: 5001
+          volumeMounts:
+            - name: core-config
+              mountPath: /usr/src/app/config/development.json
+              subPath: development.json
+          env:
+            - name: NODE_ENV
+              value: development
+      volumes:
+        - name: core-config
+          configMap:
+            name: core-config
+        

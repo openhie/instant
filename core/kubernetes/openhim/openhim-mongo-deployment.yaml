@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openhim-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: openhim-mongo
+  template:
+    metadata:
+      labels:
+        component: openhim-mongo
+    spec:
+      volumes:
+        - name: openhim-mongo-storage
+          persistentVolumeClaim:
+            claimName: openhim-mongo-volume-claim
+      containers:
+        - name: openhim-mongo
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: openhim-mongo-storage
+              mountPath: /data/db
+              subPath: mongo
+
+
