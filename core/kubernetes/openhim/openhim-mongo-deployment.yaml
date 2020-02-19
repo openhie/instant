@@ -25,5 +25,3 @@ spec:
             - name: openhim-mongo-storage
               mountPath: /data/db
               subPath: mongo
-
-
