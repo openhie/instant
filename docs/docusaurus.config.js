@@ -8,8 +8,8 @@ module.exports = {
   projectName: 'instant',
   themeConfig: {
     algolia: {
-      apiKey: '',
-      indexName: 'InstantHIE',
+      apiKey: '43dfdd6f76217eafc0e68ada109a0251',
+      indexName: 'instant',
       algoliaOptions: {}, // Optional, if provided by Algolia
     },
     navbar: {
