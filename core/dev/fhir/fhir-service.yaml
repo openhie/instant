@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fhir
+  name: fhir
+spec:
+  ports:
+  - name: "3447"
+    port: 3447
+    targetPort: 8080
+  selector:
+    app: fhir
