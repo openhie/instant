@@ -1,0 +1,14 @@
+{
+  "version": "1.13.0",
+  "minimumCoreVersion": "4.0.0",
+  "protocol": "https",
+  "host": "{enter-openhim-core-service-url-here}",
+  "hostPath": "",
+  "port": 8082,
+  "title": "Admin Console",
+  "footerTitle": "OpenHIM Administration Console",
+  "footerPoweredBy": "<a href='http://openhim.org/' target='_blank'>Powered by OpenHIM</a>",
+  "loginBanner": "",
+  "mediatorLastHeartbeatWarningSeconds": 60,
+  "mediatorLastHeartbeatDangerSeconds": 120
+}
