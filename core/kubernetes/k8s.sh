@@ -2,6 +2,7 @@
 
 if [ "$1" == "up" ]; then
     kubectl apply -f ./openhim
+    kubectl apply -f ./hapi-fhir
     kubectl get services
     kubectl get ingress
 
@@ -11,6 +12,8 @@ if [ "$1" == "up" ]; then
 elif [ "$1" == "down" ]; then
     kubectl delete deployment openhim-console-deployment
     kubectl delete deployment openhim-core-deployment
+    kubectl delete deployment hapi-fhir-server-deployment
+    kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
     kubectl delete deployment --all --grace-period 2
     kubectl delete service --all --grace-period 2
