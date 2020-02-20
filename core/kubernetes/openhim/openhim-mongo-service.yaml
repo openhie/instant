@@ -6,5 +6,6 @@ spec:
   selector:
     component: openhim-mongo
   ports:
-    - port: 27017
+    - name: mongo-27017
+      port: 27017
       targetPort: 27017
