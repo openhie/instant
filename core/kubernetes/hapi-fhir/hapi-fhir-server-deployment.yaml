@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hapi-fhir-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: hapi-fhir-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: hapi-fhir-server
+    spec:
+      containers:
+        - name: hapi-fhir-server
+          image: hapiproject/hapi:4.1
+          env:
+            - name: JAVA_OPTS
+              value: "'-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'"
+          volumeMounts:
+            - name: hapi-fhir-config
+              mountPath: /usr/local/tomcat/conf/hapi.properties
+              subPath: hapi.properties
+      restartPolicy: Always
+      volumes:
+        - name: hapi-fhir-config
+          configMap:
+            name: hapi-fhir-config
