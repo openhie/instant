@@ -9,6 +9,7 @@ spec:
   tls:
     - hosts:
       - openhim-core.api.instant
+      - openhim-core.ssl.instant
   rules:
   - host: openhim-core.api.instant
     http:
@@ -17,3 +18,17 @@ spec:
         backend:
           serviceName: openhim-core-service
           servicePort: 8082
+  - host: openhim-core.ssl.instant
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: openhim-core-service
+          servicePort: 5000
+  - host: openhim-core.non-ssl.instant
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: openhim-core-service
+          servicePort: 5001
