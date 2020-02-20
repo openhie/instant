@@ -1,6 +1,6 @@
 {
   "version": "1.13.0",
-  "minimumCoreVersion": "4.0.0",
+  "minimumCoreVersion": "5.2.0",
   "protocol": "https",
   "host": "{enter-openhim-core-service-url-here}",
   "hostPath": "",

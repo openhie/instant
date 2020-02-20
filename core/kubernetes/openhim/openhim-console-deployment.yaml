@@ -21,9 +21,6 @@ spec:
             - name: console-config
               mountPath: /usr/share/nginx/html/config/default.json
               subPath: default.json
-          env:
-            - name: NODE_ENV
-              value: development
       volumes:
         - name: console-config
           configMap:

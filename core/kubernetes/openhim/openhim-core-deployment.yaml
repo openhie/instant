@@ -30,4 +30,3 @@ spec:
         - name: core-config
           configMap:
             name: core-config
-        

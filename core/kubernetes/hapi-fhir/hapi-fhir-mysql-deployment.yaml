@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: hapi-fhir-mysql
+  name: hapi-fhir-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: hapi-fhir-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: hapi-fhir-mysql
+    spec:
+      containers:
+        - name: hapi-fhir-mysql
+          image: mysql:5.7
+          command: ['/bin/sh']
+          args: ['-c','mysqld --character-set-server=utf8 --collation-server=utf8_general_ci']
+          env:
+            - name: MYSQL_DATABASE
+              value: hapi
+            - name: MYSQL_PASSWORD
+              value: instant101
+            - name: MYSQL_ROOT_PASSWORD
+              value: instant101
+            - name: MYSQL_USER
+              value: admin
+          volumeMounts:
+            - name: hapi-fhir-mysql
+              mountPath: /var/lib/mysql
+      restartPolicy: Always
+      volumes:
+        - name: hapi-fhir-mysql
+          persistentVolumeClaim:
+            claimName: hapi-fhir-mysql-volume-claim

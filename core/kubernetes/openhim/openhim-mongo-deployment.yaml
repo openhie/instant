@@ -18,12 +18,10 @@ spec:
             claimName: openhim-mongo-volume-claim
       containers:
         - name: openhim-mongo
-          image: mongo
+          image: mongo:4.2
           ports:
             - containerPort: 27017
           volumeMounts:
             - name: openhim-mongo-storage
               mountPath: /data/db
               subPath: mongo
-
-
