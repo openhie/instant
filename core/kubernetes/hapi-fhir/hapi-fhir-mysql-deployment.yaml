@@ -19,8 +19,6 @@ spec:
       containers:
         - name: hapi-fhir-mysql
           image: mysql:5.7
-          command: ['/bin/sh']
-          args: ['-c','mysqld --character-set-server=utf8 --collation-server=utf8_general_ci']
           env:
             - name: MYSQL_DATABASE
               value: hapi
