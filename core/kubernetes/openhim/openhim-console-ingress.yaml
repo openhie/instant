@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: openhim-console-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+      - openhim-console.instant
+  rules:
+  - host: openhim-console.instant
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: openhim-console-service
+          servicePort: 80
