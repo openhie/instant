@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    component: hapi-fhir-mysql
-  name: hapi-fhir-mysql
+  name: hapi-fhir-mysql-deployment
 spec:
   replicas: 1
   selector:
