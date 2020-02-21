@@ -12,28 +12,28 @@ spec:
   template:
     spec:
       containers:
-      # TODO change once openhim scripts are done
-      - args:
-        - sh
-        - -c
-        - wait-on -t 30000 https-get://openhim-core:8080/heartbeat && node openhimConfig.js
-        env:
-          - name: NODE_TLS_REJECT_UNAUTHORIZED
-            value: "0"
-          - name: OPENHIM_API_HOSTNAME
-            value: openhim-core # TODO need to update this when the OpenHIM scripts are done
-          - name: OPENHIM_API_PASSWORD
-            value: openhim-password
-          - name: OPENHIM_API_PORT
-            value: "8080"
-          - name: OPENHIM_API_USERNAME
-            value: root@openhim.org
-        image: jembi/instantohie-config-importer
-        name: core-config-importer
-        resources: {}
-        volumeMounts:
-          - mountPath: /importer
-            name: core-config
+        # TODO change once openhim scripts are done
+        - args:
+            - sh
+            - -c
+            - wait-on -t 30000 https-get://openhim-core:8080/heartbeat && node openhimConfig.js
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: '0'
+            - name: OPENHIM_API_HOSTNAME
+              value: openhim-core # TODO need to update this when the OpenHIM scripts are done
+            - name: OPENHIM_API_PASSWORD
+              value: openhim-password
+            - name: OPENHIM_API_PORT
+              value: '8080'
+            - name: OPENHIM_API_USERNAME
+              value: root@openhim.org
+          image: jembi/instantohie-config-importer
+          name: core-config-importer
+          resources: {}
+          volumeMounts:
+            - mountPath: /importer
+              name: core-config
       restartPolicy: Never
       volumes:
         - name: core-config
