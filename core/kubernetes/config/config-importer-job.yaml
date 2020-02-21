@@ -1,7 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: config-importer
+  app.kubernetes.io/name: core-config-importer
+  app.kubernetes.io/instance: core-config-importer-1
+  app.kubernetes.io/version: "0.1"
+  app.kubernetes.io/component: config-importer
+  app.kubernetes.io/part-of: core-package
 spec:
   template:
     spec:
@@ -9,7 +13,7 @@ spec:
       - args:
         - sh
         - -c
-        - wait-on -t 30000 https-get://openhim-core:8080/heartbeat && node openhimConfig.js
+        - wait-on -t 30000 https-get://openhim-core:8080/heartbeat && node openhimConfig.js # TODO change once openhim scripts are done
         env:
         - name: NODE_TLS_REJECT_UNAUTHORIZED
           value: "0"
@@ -22,13 +26,13 @@ spec:
         - name: OPENHIM_API_USERNAME
           value: root@openhim.org
         image: jembi/instantohie-config-importer
-        name: instantohie-config-importer
+        name: core-config-importer
         resources: {}
         volumeMounts:
         - mountPath: /importer
-          name: importer-config
+          name: core-config
       restartPolicy: Never
       volumes:
-      - name: importer-config
+      - name: core-config
         configMap:
-          name: importer-config
+          name: core-config
