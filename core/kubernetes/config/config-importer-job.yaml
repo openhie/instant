@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: core-config-importer
     app.kubernetes.io/instance: core-config-importer-1
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: '0.1'
     app.kubernetes.io/component: config-importer
     app.kubernetes.io/part-of: core-package
 spec:
