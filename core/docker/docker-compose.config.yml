@@ -3,10 +3,12 @@ version: '3.3'
 services:
   # container for executing config import scripts for setting up initial config
   config-importer:
-    container_name: openhim-config-importer
+    container_name: core-config-importer
     build:
       context: importer
       dockerfile: Dockerfile
+    image: jembi/instantohie-config-importer
+    restart: "no"
     environment:
       OPENHIM_API_HOSTNAME: 'openhim-core'
       OPENHIM_API_PORT: 8080
