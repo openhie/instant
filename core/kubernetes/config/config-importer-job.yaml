@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: core-config-importer
+  name: openhim-config-importer-job
   labels:
-    app.kubernetes.io/name: core-config-importer
-    app.kubernetes.io/instance: core-config-importer-1
+    app.kubernetes.io/name: openhim-config-importer
+    app.kubernetes.io/instance: openhim-config-importer-1
     app.kubernetes.io/version: '0.1'
     app.kubernetes.io/component: config-importer
     app.kubernetes.io/part-of: core-package
@@ -29,13 +29,13 @@ spec:
             - name: OPENHIM_API_USERNAME
               value: root@openhim.org
           image: jembi/instantohie-config-importer
-          name: core-config-importer
+          name: openhim-config-importer
           resources: {}
           volumeMounts:
             - mountPath: /importer
-              name: core-config
+              name: openhim-config-importer-config
       restartPolicy: Never
       volumes:
-        - name: core-config
+        - name: openhim-config-importer-config
           configMap:
-            name: core-config
+            name: openhim-config-importer-config
