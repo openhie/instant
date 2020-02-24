@@ -3,6 +3,14 @@
 if [ "$1" == "up" ]; then
     kubectl apply -f ./openhim
     kubectl apply -f ./hapi-fhir
+
+    if [ "$2" == "dev" ]; then
+        kubectl apply -f ../dev/openhim
+        kubectl apply -f ../dev/hapi-fhir
+        
+        echo -e "\nCurrently in development mode\n"
+    fi
+
     kubectl get services
     kubectl get ingress
 
