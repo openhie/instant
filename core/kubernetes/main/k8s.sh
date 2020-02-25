@@ -1,6 +1,7 @@
 #!/bin/bash
 
 if [ "$1" == "up" ]; then
+    minikube addons enable ingress
     kubectl apply -k .
     kubectl get services
     kubectl get ingress
