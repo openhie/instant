@@ -27,10 +27,10 @@ spec:
             - name: MYSQL_USER
               value: admin
           volumeMounts:
-            - name: hapi-fhir-mysql
+            - name: core-hapi-fhir-mysql-volume
               mountPath: /var/lib/mysql
       restartPolicy: Always
       volumes:
-        - name: hapi-fhir-mysql
+        - name: core-hapi-fhir-mysql-volume
           persistentVolumeClaim:
             claimName: hapi-fhir-mysql-volume-claim
