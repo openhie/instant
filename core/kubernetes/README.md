@@ -29,3 +29,14 @@ Once you are in the correct working directory (`core/kubernetes/`) we can procee
 ./setup.sh
 ```
 
+To run in development mode, where the OpenHIM mongo database, HAPI fhir server and the MySQL database can be accessed directly through their urls, run the following command
+
+```bash
+./setup.sh dev
+```
+
+To retrieve the urls for the Mongo, MySQL and HAPI fhir server (in dev mode) run the following command in the dev folder
+
+```bash
+./dev-urls.sh
+```
