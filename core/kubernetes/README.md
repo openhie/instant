@@ -36,3 +36,13 @@ To tear down this deployment use the opposing command:
 ```bash
 kubectl delete -k ./main/
 ```
+
+### Initial OpenHIM Config
+
+We have included a useful script to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. Use the following command to implement:
+
+```bash
+kubectl apply -k ./importer/
+```
+
+> This script can be duplicated and modified to implement custom imports
