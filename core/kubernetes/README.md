@@ -34,3 +34,9 @@ To run in development mode, where the OpenHIM mongo database, HAPI fhir server a
 ```bash
 ./setup.sh dev
 ```
+
+To retrieve the urls for the Mongo, MySQL and HAPI fhir server (in dev mode) run the following command in the dev folder
+
+```bash
+./dev-urls.sh
+```
