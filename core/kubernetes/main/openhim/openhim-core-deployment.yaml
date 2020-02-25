@@ -20,13 +20,12 @@ spec:
             - containerPort: 5000
             - containerPort: 5001
           volumeMounts:
-            - name: core-config
-              mountPath: /usr/src/app/config/development.json
-              subPath: development.json
+            - name: core-openhim-core-volume
+              mountPath: /usr/src/app/config
           env:
             - name: NODE_ENV
               value: development
       volumes:
-        - name: core-config
+        - name: core-openhim-core-volume
           configMap:
-            name: core-config
+            name: core-openhim-core-configmap
