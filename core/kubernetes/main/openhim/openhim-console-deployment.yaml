@@ -18,10 +18,9 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: console-config
-              mountPath: /usr/share/nginx/html/config/default.json
-              subPath: default.json
+            - name: core-openhim-console-volume
+              mountPath: /usr/share/nginx/html/config/
       volumes:
-        - name: console-config
+        - name: core-openhim-console-volume
           configMap:
-            name: console-config
+            name: core-openhim-console-configmap

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hapi-fhir-mysql-volume-claim
+  name: hapi-fhir-server-volume-claim
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gi
+      storage: 10Mi
