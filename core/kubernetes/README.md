@@ -23,9 +23,16 @@ minikube addons enable ingress
 
 Before we proceed with creating our Core Package services, we need to ensure we are on the correct directory containing our bash setup scripts.
 
-Once you are in the correct working directory (`core/kubernetes/`) we can proceed to execute our bash script by running the below command which will create all the pods, volumes and services.
+Once you are in the correct working directory (`core/kubernetes/`) we can proceed to execute create our core instant ohie deployment with the following command:
 
 ```bash
-./setup.sh
+kubectl apply -k ./main/
 ```
 
+This will deploy the OpenHIM and HAPI-FHIR along with all their services and dependencies.
+
+To tear down this deployment use the opposing command:
+
+```bash
+kubectl delete -k ./main/
+```
