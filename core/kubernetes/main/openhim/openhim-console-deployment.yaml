@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openhim-console-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: openhim-console
+  template:
+    metadata:
+      labels:
+        component: openhim-console
+    spec:
+      containers:
+        - name: openhim-console
+          image: jembi/openhim-console:1.13
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: core-openhim-console-volume
+              mountPath: /usr/share/nginx/html/config/
+      volumes:
+        - name: core-openhim-console-volume
+          configMap:
+            name: core-openhim-console-configmap

@@ -51,7 +51,7 @@
           "forwardAuthHeader": false,
           "name": "FHIR Server",
           "secured": false,
-          "host": "hapi-fhir",
+          "host": "hapi-fhir-server-service",
           "port": 8080,
           "path": "",
           "pathTransform": "",
