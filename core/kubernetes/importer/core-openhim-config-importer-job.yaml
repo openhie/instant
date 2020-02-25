@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: openhim-config-importer-job
+  name: core-openhim-config-importer-job
   labels:
     app.kubernetes.io/name: openhim-config-importer
     app.kubernetes.io/instance: openhim-config-importer-1
@@ -12,8 +12,9 @@ spec:
   template:
     spec:
       containers:
-        # TODO change once openhim scripts are done
-        - args:
+        - name: openhim-config-importer
+          image: jembi/instantohie-config-importer
+          args:
             - sh
             - -c
             - wait-on -t 30000 https-get://openhim-core-service:8082/heartbeat && node openhimConfig.js
@@ -28,14 +29,11 @@ spec:
               value: '8082'
             - name: OPENHIM_API_USERNAME
               value: root@openhim.org
-          image: jembi/instantohie-config-importer
-          name: openhim-config-importer
-          resources: {}
           volumeMounts:
             - mountPath: /importer
-              name: openhim-config-importer-config
+              name: core-openhim-config-importer-config
       restartPolicy: Never
       volumes:
-        - name: openhim-config-importer-config
+        - name: core-openhim-config-importer-config
           configMap:
-            name: openhim-config-importer-config
+            name: core-openhim-config-importer-configmap
