@@ -9,7 +9,7 @@ getExposedServices () {
 	trimmedMysqlUrl=$(sed 's/http:\/\///g' <<< "$mysqlUrl")
 	echo -e "The HAPI FHIR MySQL url:\n $trimmedMysqlUrl\n"
 
-	echo -e "HAPI FHIR server is accessible at:\n https://hapi-fhir-server-dev.instant/hapi-fhir-jpaserver/fhir/"
+	echo -e "HAPI FHIR server is accessible at:\n https://$(kubectl get ingress hapi-fhir-server-ingress -o jsonpath="{..host}")/hapi-fhir-jpaserver/fhir/"
 }
 
 applyDevScripts () {
@@ -17,8 +17,15 @@ applyDevScripts () {
 		kubectl apply -k .
 		echo -e "\nCurrently in development mode\n"
 
+		# create HOST entry for ingress
+    sudo sed -i "/HOST alias for kubernetes Minikube development/d" /etc/hosts
+    echo -e "\n$(minikube ip) $(kubectl get ingress hapi-fhir-server-ingress -o jsonpath="{..host}") # HOST alias for kubernetes Minikube development" | sudo tee -a /etc/hosts
+
 		getExposedServices
 	elif [ "$1" == "destroy" ]; then
+		# delete host entry on destroy
+		sudo sed -i "/HOST alias for kubernetes Minikube development/d" /etc/hosts
+
 		kubectl delete -k .
 	else
 		echo "Valid options are: up or destroy"

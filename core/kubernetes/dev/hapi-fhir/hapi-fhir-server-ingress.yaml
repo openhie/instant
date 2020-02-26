@@ -9,10 +9,10 @@ spec:
     - hosts:
       - hapi-fhir-server-dev.instant
   rules:
-  - host: hapi-fhir-server-dev.instant
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: hapi-fhir-server-service
-          servicePort: 8080
+    - host: hapi-fhir-server-dev.instant
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: hapi-fhir-server-service
+            servicePort: 8080
