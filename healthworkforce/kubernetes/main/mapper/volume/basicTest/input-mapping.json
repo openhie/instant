@@ -1,0 +1,10 @@
+{
+  "requestBody.sku": "Envelope.Request.Item.SKU",
+  "requestBody.upc": "Envelope.Request.Item.UPC",
+  "requestBody.title": "Envelope.Request.Item.ShortTitle",
+  "requestBody.description": "Envelope.Request.Item.ShortDescription",
+  "requestBody.length": "Envelope.Request.Item.Dimensions.Length",
+  "requestBody.width": "Envelope.Request.Item.Dimensions.Width",
+  "requestBody.height": "Envelope.Request.Item.Dimensions.Height",
+  "requestBody.inventory.onHandQty": "Envelope.Request.Item.Inventory"
+}

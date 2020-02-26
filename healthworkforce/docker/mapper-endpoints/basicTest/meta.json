@@ -1,0 +1,10 @@
+{
+  "name": "Test",
+  "endpoint": {
+    "pattern": "/test"
+  },
+  "transformation": {
+    "input": "XML",
+    "output": "JSON"
+  }
+}

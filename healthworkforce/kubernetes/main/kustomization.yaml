@@ -1,0 +1,9 @@
+configMapGenerator:
+  - name: healthworkforce-mapper-configmap
+    files:
+      - ./mapper/volume/basicTest/input-mapping.json
+      - ./mapper/volume/basicTest/input-validation.json
+      - ./mapper/volume/basicTest/meta.json
+
+resources:
+  - ./mapper/mapper-deployment.yaml
