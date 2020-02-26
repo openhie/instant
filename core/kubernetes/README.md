@@ -44,10 +44,10 @@ The OpenHIM console will be accessible on http://openhim-console.instant/ and co
 
 ### Initial OpenHIM Config
 
-We have included a useful set of scripts to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `importer` directory, use the following command to implement:
+We have included a useful set of scripts to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
 
 ```bash
-./k8s.sh up
+./importer/k8s.sh up
 ```
 
 > These scripts can be duplicated and modified to implement custom imports
@@ -55,7 +55,7 @@ We have included a useful set of scripts to initialise the OpenHIM and set it up
 To clean up the remaining job and pods from a successful setup run the following:
 
 ```bash
-./k8s.sh clean
+./importer/k8s.sh clean
 ```
 
 Once the config is done HAPI FHIR will be accessible on: https://openhim-core.ssl.instant/hapi-fhir-jpaserver/fhir/
