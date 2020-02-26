@@ -25,6 +25,22 @@ This bash script will enable `ingress` on minikube then proceed to apply the kub
 
 > On first run the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
+#### View running Kubernetes resources
+
+Execute the below commands to see the running Kubernetes resources and the state that they are in.
+
+To display all resource: (Some new resources are not listed here)
+
+```sh
+kubectl get all
+```
+
+To view all the ingress resources: (Services that are exposed publicly)
+
+```sh
+kubectl get ingress
+```
+
 To tear down this deployment use the opposing command:
 
 ```bash
