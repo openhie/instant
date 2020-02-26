@@ -13,8 +13,10 @@ getExposedServices () {
 }
 
 applyDevScripts () {
+	kustomizationFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
 	if [ "$1" == "up" ]; then
-		kubectl apply -k .
+		kubectl apply -k $kustomizationFilePath
 		echo -e "\nCurrently in development mode\n"
 
 		# create HOST entry for ingress
@@ -26,7 +28,7 @@ applyDevScripts () {
 		# delete host entry on destroy
 		sudo sed -i "/HOST alias for kubernetes Minikube development/d" /etc/hosts
 
-		kubectl delete -k .
+		kubectl delete -k $kustomizationFilePath
 	else
 		echo "Valid options are: up or destroy"
 	fi

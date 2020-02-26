@@ -15,10 +15,10 @@ For the Kubernetes deployment to work as expected, we need to ensure we have `mi
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
 
-Once you are in the correct working directory (`core/kubernetes/main`) we can proceed to create our core instant ohie deployment with the following command:
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
 
 ```bash
-./k8s.sh up
+./main/k8s.sh up
 ```
 
 This bash script will enable `ingress` on minikube then proceed to apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR). This script will also implement the HOST mapping which is needed to access the OpenHIM Core and Console locally (on linux).
@@ -28,13 +28,13 @@ This bash script will enable `ingress` on minikube then proceed to apply the kub
 To tear down this deployment use the opposing command:
 
 ```bash
-./k8s.sh down
+./main/k8s.sh down
 ```
 
 To completely remove all project components use the following option:
 
 ```bash
-./k8s.sh destroy
+./main/k8s.sh destroy
 ```
 
 ### Initial OpenHIM Config
@@ -47,14 +47,10 @@ kubectl apply -k ./importer/
 
 > This script can be duplicated and modified to implement custom imports
 
+### Development mode for exposed services
+
 To run in development mode, where the OpenHIM mongo database, HAPI fhir server and the MySQL database can be accessed directly through their urls, run the following command
 
 ```bash
-./setup.sh dev
-```
-
-To retrieve the urls for the Mongo, MySQL and HAPI fhir server (in dev mode) run the following command in the dev folder
-
-```bash
-./dev-urls.sh
+./dev/k8s.dev.sh
 ```
