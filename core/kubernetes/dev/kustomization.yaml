@@ -1,0 +1,4 @@
+resources:
+  - ./openhim/openhim-mongo-dev-service.yaml
+  - ./hapi-fhir/hapi-fhir-mysql-dev-service.yaml
+  - ./hapi-fhir/hapi-fhir-server-ingress.yaml
