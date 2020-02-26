@@ -11,6 +11,14 @@ This package consists of two services:
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
+Once installed, we can start the minikube service be executing the below command:
+
+```sh
+minikube start --cpus 4 --memory 8192
+```
+
+This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
+
 ### Getting Started
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
