@@ -14,6 +14,10 @@ spec:
       labels:
         component: hapi-fhir-server
     spec:
+      initContainers:
+        - name: check-mysql-status
+          image: busybox:1.28
+          command: ['sh', '-c', 'until telnet hapi-fhir-mysql-service 3306; do echo MySQL not running yet; sleep 10; done;']
       containers:
         - name: hapi-fhir-server
           image: hapiproject/hapi:4.1
