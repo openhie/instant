@@ -37,6 +37,11 @@ To completely remove all project components use the following option:
 ./main/k8s.sh destroy
 ```
 
+The OpenHIM console will be accessible on http://openhim-console.instant/ and core will be accessible on:
+* API: http://openhim-core.api.instant/
+* HTTPS routing: https://openhim-core.ssl.instant/
+* HTTP routing: http://openhim-core.non-ssl.instant/
+
 ### Initial OpenHIM Config
 
 We have included a useful set of scripts to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `importer` directory, use the following command to implement:
@@ -51,6 +56,14 @@ To clean up the remaining job and pods from a successful setup run the following
 
 ```bash
 ./k8s.sh clean
+```
+
+Once the config is done HAPI FHIR will be accessible on: https://openhim-core.ssl.instant/hapi-fhir-jpaserver/fhir/
+
+You may test that the OpenHIM is routing requests to HAPI FHIR by running:
+
+```bash
+./test.sh
 ```
 
 ### Development mode for exposed services
