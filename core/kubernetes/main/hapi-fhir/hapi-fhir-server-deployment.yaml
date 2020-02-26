@@ -23,6 +23,7 @@ spec:
           volumeMounts:
             - name: core-hapi-fhir-server-volume
               mountPath: /usr/local/tomcat/conf/hapi.properties
+              subPath: hapi.properties
       restartPolicy: Always
       volumes:
         - name: core-hapi-fhir-server-volume
