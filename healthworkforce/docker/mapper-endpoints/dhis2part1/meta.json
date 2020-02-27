@@ -48,7 +48,7 @@
         "id": "dhis2Part2",
         "config": {
           "method": "post",
-          "url": "http://mapper-service:3003/dhis2part2",
+          "url": "http://localhost:3003/dhis2part2",
           "headers": {
             "Content-Type": "application/json"
           }

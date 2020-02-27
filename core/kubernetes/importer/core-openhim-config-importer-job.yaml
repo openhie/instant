@@ -37,7 +37,7 @@ spec:
           volumeMounts:
             - mountPath: /importer
               name: core-openhim-config-importer-config
-      restartPolicy: Never
+      restartPolicy: OnFailure
       volumes:
         - name: core-openhim-config-importer-config
           configMap:
