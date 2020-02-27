@@ -22,8 +22,10 @@ spec:
           ports:
             - containerPort: 3003
           volumeMounts:
-            - name: healthworkforce-mapper-volume
-              mountPath: /endpoints/basicTest
+            - name: healthworkforce-mapper-volume-dhis1
+              mountPath: /app/endpoints/dhis2part1
+            - name: healthworkforce-mapper-volume-dhis2
+              mountPath: /app/endpoints/dhis2part2
           env:
             - name: OPENHIM_URL
               value: https://openhim-core.api.instant
@@ -32,6 +34,9 @@ spec:
             - name: OPENHIM_PASSWORD
               value: instant101
       volumes:
-        - name: healthworkforce-mapper-volume
+        - name: healthworkforce-mapper-volume-dhis1
           configMap:
-            name: healthworkforce-mapper-configmap
+            name: healthworkforce-mapper-configmap-dhis1
+        - name: healthworkforce-mapper-volume-dhis2
+          configMap:
+            name: healthworkforce-mapper-configmap-dhis2

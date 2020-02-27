@@ -1,0 +1,30 @@
+{
+  "constants.resourceType": "resourceType",
+  "constants.type": "type",
+  "requestBody.consolidated.displayName": "entry[].resource.name",
+  "constants.entry.identifier": {
+    "key": "entry[].resource.identifier",
+    "transform": {
+      "function": "oneToAllElements"
+    }
+  },
+  "requestBody.consolidated.id": "entry[].resource.identifier[].value",
+  "constants.entry.resourceType": {
+    "key": "entry[].resource.resourceType",
+    "transform": {
+      "function": "oneToAllElements"
+    }
+  },
+  "constants.entry.request.method": {
+    "key": "entry[].request.method",
+    "transform": {
+      "function": "oneToAllElements"
+    }
+  },
+  "constants.entry.request.url": {
+    "key": "entry[].request.url",
+    "transform": {
+      "function": "oneToAllElements"
+    }
+  }
+}
