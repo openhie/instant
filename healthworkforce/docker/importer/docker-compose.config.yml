@@ -22,4 +22,3 @@ services:
         target: /importer
     # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
     command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js"
-
