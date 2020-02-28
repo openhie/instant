@@ -4,8 +4,8 @@ The InstantHIE Core Package is the base of the InstantHIE architecture.
 
 This package consists of two services:
 
-* Interoperability Layer - [OpenHIM](http://openhim.org/)
-* FHIR Server - [HAPI FHIR](https://hapifhir.io/)
+- Interoperability Layer - [OpenHIM](http://openhim.org/)
+- FHIR Server - [HAPI FHIR](https://hapifhir.io/)
 
 ## Minikube (local)
 
@@ -61,10 +61,11 @@ To completely remove all project components use the following option:
 ./main/k8s-mini.sh destroy
 ```
 
-The OpenHIM console will be accessible on http://openhim-console.instant/ and core will be accessible on:
-* API: http://openhim-core.api.instant/
-* HTTPS routing: https://openhim-core.ssl.instant/
-* HTTP routing: http://openhim-core.non-ssl.instant/
+The OpenHIM console will be accessible on <http://openhim-console.instant/> and core will be accessible on:
+
+- API: <http://openhim-core.api.instant/>
+- HTTPS routing: <https://openhim-core.ssl.instant/>
+- HTTP routing: <http://openhim-core.non-ssl.instant/>
 
 ### Initial OpenHIM Config
 
@@ -82,7 +83,7 @@ To clean up the remaining job and pods from a successful setup run the following
 ./importer/k8s.sh clean
 ```
 
-Once the config is done HAPI FHIR will be accessible on: https://openhim-core.ssl.instant/hapi-fhir-jpaserver/fhir/
+Once the config is done HAPI FHIR will be accessible on: <https://openhim-core.ssl.instant/hapi-fhir-jpaserver/fhir/>
 
 You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 
