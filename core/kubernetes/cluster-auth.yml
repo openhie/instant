@@ -1,0 +1,30 @@
+apiVersion: v1 
+kind: ConfigMap 
+
+metadata: 
+  name: instantHIE-cluster-auth
+
+data: 
+  mapRoles: | 
+    - rolearn: arn:aws:iam::703704474391:role/eksServicePolicyRole 
+      username: system:node:{{EC2PrivateDNSName}} 
+      groups: 
+        - system:bootstrappers 
+        - system:nodes 
+  mapUsers: | 
+    - userarn: arn:aws:iam::703704474391:user/Martin 
+      username: Martin 
+      groups: 
+        - system:masters
+    - userarn: arn:aws:iam::703704474391:user/Bradford
+      username: Bradford 
+      groups: 
+        - system:masters
+    - userarn: arn:aws:iam::703704474391:user/Matthew
+      username: Matthew 
+      groups: 
+        - system:masters
+    - userarn: arn:aws:iam::703704474391:user/Ryan
+      username: Ryan 
+      groups: 
+        - system:masters
