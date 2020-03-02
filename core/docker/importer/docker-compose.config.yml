@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: jembi/instantohie-config-importer
-    restart: "no"
+    restart: on-failure
     environment:
       OPENHIM_API_HOSTNAME: 'openhim-core'
       OPENHIM_API_PORT: 8080
