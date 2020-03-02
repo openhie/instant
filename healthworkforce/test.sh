@@ -1,4 +1,4 @@
-echo -e "\nMapping medaitor test..."
+echo -e "\nMapping mediator test..."
 
 HOST=$1
 
