@@ -87,7 +87,7 @@ Once the config is done HAPI FHIR will be accessible on: https://openhim-core.ss
 You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ```bash
-./test.sh
+./test.sh openhim-core.ssl.instant
 ```
 
 ### Development mode for exposed services
