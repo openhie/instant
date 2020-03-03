@@ -9,7 +9,6 @@ if [ "$1" == "up" ]; then
 
     minikubeIP=$(minikube ip)
     corePort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[0].nodePort})
-    consolePort=$(kubectl get service openhim-console-service -o=jsonpath={.spec.ports[0].nodePort})
 
     # Injecting minikube ip as the hostname of the OpenHIM Core into Console config file
     sed -i -E "s/(\"host\": \")\S*(\")/\1${minikubeIP}\2/" $openhimConsoleVolumePath
@@ -17,8 +16,11 @@ if [ "$1" == "up" ]; then
     # Injecting OpenHIM Core port into Console config file
     sed -i -E "s/(\"port\": )\S*(,)/\1${corePort}\2/" $openhimConsoleVolumePath
 
-    printf "\n\nOpenHIM Console Url\n-------------------\nhttp://"$minikubeIP":"$consolePort"\n\n"
+    kubectl apply -k $kustomizationFilePath/openhim
 
+    consolePort=$(kubectl get service openhim-console-service -o=jsonpath={.spec.ports[0].nodePort})
+
+    printf "\n\nOpenHIM Console Url\n-------------------\nhttp://"$minikubeIP":"$consolePort"\n\n"
 elif [ "$1" == "down" ]; then
     kubectl delete deployment openhim-console-deployment
     kubectl delete deployment openhim-core-deployment
