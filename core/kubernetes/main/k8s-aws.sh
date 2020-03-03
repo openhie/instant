@@ -33,7 +33,9 @@ if [ "$1" == "up" ]; then
 
     printf "\nHAPI FHIR Url\n--------------\n"$fhirServerUrl"\n\n\n"
 
+    # Injecting OpenHIM Core Api url into Console config file
     sed -i -E "s/(\"host\": \")\S*(\")/\1${openhimApiUrl}\2/" $openhimConsoleVolumePath
+    # Injecting OpenHIM Core port into Console config file
     sed -i -E "s/(\"port\": )\S*(,)/\18082\2/" $openhimConsoleVolumePath
 
     kubectl apply -k $kustomizationFilePath/openhim
