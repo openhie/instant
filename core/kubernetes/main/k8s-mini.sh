@@ -6,9 +6,6 @@ if [ "$1" == "up" ]; then
     minikube addons enable ingress
     kubectl apply -k $kustomizationFilePath
 
-    kubectl get services
-    kubectl get ingress
-
     # create HOST entry for ingress
     sudo sed -i "/HOST alias for kubernetes Minikube/d" /etc/hosts
     echo -e "\n$(minikube ip) $(kubectl get ingress -o jsonpath="{..host}") # HOST alias for kubernetes Minikube" | sudo tee -a /etc/hosts
