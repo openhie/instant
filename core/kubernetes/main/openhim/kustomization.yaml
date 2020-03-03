@@ -10,5 +10,3 @@ resources:
   - ./openhim-console-deployment.yaml
   # service
   - ./openhim-console-service.yaml
-  # ingress
-  - ./openhim-console-ingress.yaml

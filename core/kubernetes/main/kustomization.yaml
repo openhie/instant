@@ -21,5 +21,3 @@ resources:
   - ./hapi-fhir/hapi-fhir-server-service.yaml
   - ./openhim/openhim-core-service.yaml
   - ./openhim/openhim-mongo-service.yaml
-  # ingress
-  - ./openhim/openhim-core-ingress.yaml
