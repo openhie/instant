@@ -9,10 +9,28 @@ openhimConsoleUrl=''
 if [ "$1" == "up" ]; then
     kubectl apply -k $kustomizationFilePath
 
-    openhimApiUrl=$(kubectl get service openhim-core-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-    fhirServerUrl=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+    tempCore=0
 
-    printf "\n\nOpenHIM Api Url\n---------------\n"$openhimApiUrl"\n"
+    while [ $tempCore -le 0 ];
+    do
+        echo "OpenHIM Core not ready. Sleep 10"
+        sleep 10
+        openhimApiUrl=$(kubectl get service openhim-core-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        tempCore=$(expr length "$openhimApiUrl")
+    done
+
+    printf "\n\nOpenHIM Api Url\n---------------\n"$openhimApiUrl"\n\n\n"
+
+    tempFhir=$(expr length "$fhirServerUrl")
+
+    while [ $tempFhir -le 0 ];
+    do
+        echo "HAPI-FHIR not ready. Sleep 5"
+        sleep 5
+        fhirServerUrl=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        tempFhir=$(expr length "$fhirServerUrl")
+    done
+
     printf "\nHAPI FHIR Url\n--------------\n"$fhirServerUrl"\n\n\n"
 
     sed -i -E "s/(\"host\": \")\S*(\")/\1${openhimApiUrl}\2/" $openhimConsoleVolumePath
@@ -20,9 +38,18 @@ if [ "$1" == "up" ]; then
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    openhimConsoleUrl=$(kubectl get service openhim-console-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+    tempConsole=0
+
+    while [ $tempConsole -le 0 ];
+    do
+        echo "OpenHIM Console not ready. Sleep 5"
+        sleep 5
+        openhimConsoleUrl=$(kubectl get service openhim-console-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        tempConsole=$(expr length "$openhimConsoleUrl")
+    done
 
     printf "\n\nOpenHIM Console Url\n-------------------\nhttp://"$openhimConsoleUrl"\n\n"
+    printf "AWS is creating "
 
 elif [ "$1" == "down" ]; then
     kubectl delete deployment openhim-console-deployment
@@ -32,6 +59,7 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
     kubectl delete -k $kustomizationFilePath
+    kubectl delete -k $kustomizationFilePath/openhim
 else
     echo "Valid options are: up, down, or destroy"
 fi
