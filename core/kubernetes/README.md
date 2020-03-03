@@ -19,36 +19,6 @@ minikube start --cpus 4 --memory 8192
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
 
-## AWS Cloud
-
-Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
-
-* You have created all the various users and permissions as required.
-* You have given the users the relevant access to to the AWS services
-* You have generated an access token for your AWS user
-
-### Create the cluster
-
-Before we can deploy our Kubernetes infrastructure we need to make sure we have created a cluster for us to deploy to. Execute the below command to create the cluster within AWS EKS
-
-```sh
-eksctl create cluster -f cluster.yml
-```
-
-### Configure cluster users
-
-Once the cluster has been created successfully, we also need to give access to the various users accessing the cluster. Update the `cluster-auth.yml` file with the users that need access and replace the `data.mapRoles.rolearn` with the arn of the role created to manage this cluster. Execute the below command to find the ARN of the role linked to the cluster:
-
-```sh
-kubectl describe configmap -n kube-system aws-auth
-```
-
-Once the `cluster.auth.yml` file has been updated, execute the below command to apply the users to cluster.
-
-```sh
-kubectl apply -f cluster-auth.yml
-```
-
 ### Getting Started
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
@@ -131,6 +101,13 @@ To run in development mode, where the OpenHIM mongo database, HAPI fhir server a
 
 ## AWS CLI
 
+Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
+
+- You have created all the various users and permissions as required.
+- You have given the users the relevant access to to the AWS services
+- You have generated an access token for your AWS user 
+- You have installed all the relevant CLI tools
+
 Useful links:
 
 - [EKS](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
@@ -161,10 +138,38 @@ sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 ```
 
-### Create Cluster
+### Install Kubectl
 
 ```sh
-eksctl create cluster --name OHIE --version 1.14 --region eu-west-2 --nodegroup-name ohie-workers --node-type t3.medium --nodes 3 --nodes-min 1 --nodes-max 8 --ssh-access --ssh-public-key ~/.ssh/<rsa>.pub --managed
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+kubectl version --client
+```
+
+### Create the cluster
+
+Before we can deploy our Kubernetes infrastructure we need to make sure we have created a cluster for us to deploy to. Execute the below command to create the cluster within AWS EKS
+
+```sh
+eksctl create cluster -f cluster.yml
+```
+
+### Configure cluster users
+
+Once the cluster has been created successfully, we also need to give access to the various users accessing the cluster. Update the `cluster-auth.yml` file with the users that need access and replace the `data.mapRoles.rolearn` with the arn of the role created to manage this cluster. Execute the below command to find the ARN of the role linked to the cluster:
+
+```sh
+kubectl describe configmap -n kube-system aws-auth
+```
+
+Once the `cluster.auth.yml` file has been updated, execute the below command to give the users access to the cluster.
+
+```sh
+kubectl apply -f cluster-auth.yml
 ```
 
 ### Access an existing cluster
@@ -198,15 +203,27 @@ kubectl config use context <context-name>
 ### Kill cluster
 
 ```sh
-eksctl delete cluster --name OHIE
+eksctl delete cluster -f cluster.yml
 ```
 
 ### Deploy Scripts via Kubernetes
 
-Run the scripts as normal after checking your cluster context is correct.
+Before we trigger the deployment scripts, we need to ensure that our kubernetes config is pointing to the correct cluster. Execute the below command to conform the cluster in use is the correct one:
 
 ```sh
 kubectl config get-contexts
+```
 
+Deploy the Core Package to kubernetes by executing the below command:
+
+```sh
 ./k8s-aws.sh up
+```
+
+#### Config import
+
+Trigger the config importer deploy scripts to load the `Core Package` with some sample setup configuration. Execute the below command to import the config:
+
+```sh
+./importer/k8s.sh up
 ```
