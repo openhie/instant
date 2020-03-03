@@ -2,9 +2,6 @@ configMapGenerator:
   - name: core-hapi-fhir-server-configmap
     files:
       - ./hapi-fhir/volume/hapi.properties
-  - name: core-openhim-console-configmap
-    files:
-      - ./openhim/volume/openhim-console/default.json
   - name: core-openhim-core-configmap
     files:
       - ./openhim/volume/openhim-core/development.json
@@ -17,15 +14,12 @@ resources:
   # deployments
   - ./hapi-fhir/hapi-fhir-mysql-deployment.yaml
   - ./hapi-fhir/hapi-fhir-server-deployment.yaml
-  - ./openhim/openhim-console-deployment.yaml
   - ./openhim/openhim-core-deployment.yaml
   - ./openhim/openhim-mongo-deployment.yaml
   # services
   - ./hapi-fhir/hapi-fhir-mysql-service.yaml
   - ./hapi-fhir/hapi-fhir-server-service.yaml
   - ./openhim/openhim-core-service.yaml
-  - ./openhim/openhim-console-service.yaml
   - ./openhim/openhim-mongo-service.yaml
   # ingress
   - ./openhim/openhim-core-ingress.yaml
-  - ./openhim/openhim-console-ingress.yaml
