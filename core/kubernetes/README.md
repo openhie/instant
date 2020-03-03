@@ -104,7 +104,7 @@ To run in development mode, where the OpenHIM mongo database, HAPI fhir server a
 Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
 
 - You have created all the various users and permissions as required.
-- You have given the users the relevant access to to the AWS services
+- You have given the users the relevant access to the AWS services
 - You have generated an access token for your AWS user 
 - You have installed all the relevant CLI tools
 
@@ -141,7 +141,7 @@ eksctl version
 ### Install Kubectl
 
 ```sh
-curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt` /bin/linux/amd64/kubectl
 
 chmod +x ./kubectl
 
@@ -169,7 +169,7 @@ kubectl describe configmap -n kube-system aws-auth
 Once the `cluster.auth.yml` file has been updated, execute the below command to give the users access to the cluster.
 
 ```sh
-kubectl apply -f cluster-auth.yml
+kubectl replace -f cluster-auth.yml
 ```
 
 ### Access an existing cluster
@@ -217,7 +217,7 @@ kubectl config get-contexts
 Deploy the Core Package to kubernetes by executing the below command:
 
 ```sh
-./k8s-aws.sh up
+./main/k8s-aws.sh up
 ```
 
 #### Config import
