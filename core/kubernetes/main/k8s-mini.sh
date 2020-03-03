@@ -27,6 +27,7 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
     kubectl delete -k $kustomizationFilePath
+    kubectl delete -k $kustomizationFilePath/openhim
 else
     echo "Valid options are: up, down, or destroy"
 fi
