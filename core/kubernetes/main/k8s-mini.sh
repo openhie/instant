@@ -9,6 +9,10 @@ if [ "$1" == "up" ]; then
 
     minikubeIP=$(minikube ip)
     corePort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[0].nodePort})
+    fhirPort=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.spec.ports[0].nodePort})
+
+    printf "\n\nOpenHIM Api Url\n---------------\nhttp://"$minikubeIP":"$corePort"\n\n"
+    printf "\nHAPI FHIR Url\n--------------\nhttp://"$minikubeIP":"$fhirPort"\n\n\n"
 
     # Injecting minikube ip as the hostname of the OpenHIM Core into Console config file
     sed -i -E "s/(\"host\": \")\S*(\")/\1${minikubeIP}\2/" $openhimConsoleVolumePath
