@@ -19,6 +19,9 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-server-deployment
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
+    # delete host entry on destroy
+    sudo sed -i "/HOST alias for kubernetes Minikube/d" /etc/hosts
+
     kubectl delete -k $kustomizationFilePath
 else
     echo "Valid options are: up, down, or destroy"
