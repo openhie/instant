@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/component: config-importer
     app.kubernetes.io/part-of: core-package
 spec:
-  backoffLimit: 0
+  backoffLimit: 3
   template:
     spec:
       initContainers:
