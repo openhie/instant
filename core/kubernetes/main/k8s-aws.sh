@@ -9,26 +9,26 @@ openhimConsoleUrl=''
 if [ "$1" == "up" ]; then
     kubectl apply -k $kustomizationFilePath
 
-    tempCore=0
+    coreUrlLength=0
 
-    while [ $tempCore -le 0 ];
+    while [ $coreUrlLength -le 0 ];
     do
         echo "OpenHIM Core not ready. Sleep 10"
         sleep 10
         openhimApiUrl=$(kubectl get service openhim-core-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-        tempCore=$(expr length "$openhimApiUrl")
+        coreUrlLength=$(expr length "$openhimApiUrl")
     done
 
     printf "\n\nOpenHIM Api Url\n---------------\n"$openhimApiUrl"\n\n\n"
 
-    tempFhir=$(expr length "$fhirServerUrl")
+    fhirUrlLength=$(expr length "$fhirServerUrl")
 
-    while [ $tempFhir -le 0 ];
+    while [ $fhirUrlLength -le 0 ];
     do
         echo "HAPI-FHIR not ready. Sleep 5"
         sleep 5
         fhirServerUrl=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-        tempFhir=$(expr length "$fhirServerUrl")
+        fhirUrlLength=$(expr length "$fhirServerUrl")
     done
 
     printf "\nHAPI FHIR Url\n--------------\n"$fhirServerUrl"\n\n\n"
@@ -38,14 +38,14 @@ if [ "$1" == "up" ]; then
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    tempConsole=0
+    consoleUrlLength=0
 
-    while [ $tempConsole -le 0 ];
+    while [ $consoleUrlLength -le 0 ];
     do
         echo "OpenHIM Console not ready. Sleep 5"
         sleep 5
         openhimConsoleUrl=$(kubectl get service openhim-console-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-        tempConsole=$(expr length "$openhimConsoleUrl")
+        consoleUrlLength=$(expr length "$openhimConsoleUrl")
     done
 
     printf "\n\nOpenHIM Console Url\n-------------------\nhttp://"$openhimConsoleUrl"\n\n"
