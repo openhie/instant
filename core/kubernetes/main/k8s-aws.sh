@@ -51,7 +51,7 @@ if [ "$1" == "up" ]; then
     done
 
     printf "\n\nOpenHIM Console Url\n-------------------\nhttp://"$openhimConsoleUrl"\n\n"
-    printf "AWS is creating "
+    printf "AWS has created the Url for OpenHIM console but it may take a few minutes for the DNS to propogate\n\n"
 
 elif [ "$1" == "down" ]; then
     kubectl delete deployment openhim-console-deployment
