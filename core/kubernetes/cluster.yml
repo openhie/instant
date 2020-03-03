@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: instantHIE
+  name: instanthie
   region: eu-west-2
   version: '1.14'
 

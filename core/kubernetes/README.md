@@ -19,6 +19,36 @@ minikube start --cpus 4 --memory 8192
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
 
+## AWS Cloud
+
+Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
+
+* You have created all the various users and permissions as required.
+* You have given the users the relevant access to to the AWS services
+* You have generated an access token for your AWS user
+
+### Create the cluster
+
+Before we can deploy our Kubernetes infrastructure we need to make sure we have created a cluster for us to deploy to. Execute the below command to create the cluster within AWS EKS
+
+```sh
+eksctl create cluster -f cluster.yml
+```
+
+### Configure cluster users
+
+Once the cluster has been created successfully, we also need to give access to the various users accessing the cluster. Update the `cluster-auth.yml` file with the users that need access and replace the `data.mapRoles.rolearn` with the arn of the role created to manage this cluster. Execute the below command to find the ARN of the role linked to the cluster:
+
+```sh
+kubectl describe configmap -n kube-system aws-auth
+```
+
+Once the `cluster.auth.yml` file has been updated, execute the below command to apply the users to cluster.
+
+```sh
+kubectl apply -f cluster-auth.yml
+```
+
 ### Getting Started
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
