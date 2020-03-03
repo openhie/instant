@@ -105,7 +105,7 @@ Some prerequisites are required before we can continue to deploy our Kubernetes 
 
 - You have created all the various users and permissions as required.
 - You have given the users the relevant access to the AWS services
-- You have generated an access token for your AWS user 
+- You have generated an access token for your AWS user
 - You have installed all the relevant CLI tools
 
 Useful links:
@@ -197,7 +197,7 @@ kubectl replace -f cluster-auth.yml
 ```sh
 kubectl config get-contexts
 
-kubectl config use context <context-name>
+kubectl config use-context <context-name>
 ```
 
 ### Kill cluster
