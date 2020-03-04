@@ -166,21 +166,21 @@ kubectl replace -f cluster-auth.yml
 
 1. See the available clusters
 
-    ```sh
-    eksctl get clusters
-    ```
+   ```sh
+   eksctl get clusters
+   ```
 
 1. Create config file locally to reference existing cluster
 
-    ```sh
-    eksctl utils write-kubeconfig --cluster <cluster-name>
-    ```
+   ```sh
+   eksctl utils write-kubeconfig --cluster <cluster-name>
+   ```
 
 1. Check current cluster context
 
-    ```sh
-    kubectl config get-contexts
-    ```
+   ```sh
+   kubectl config get-contexts
+   ```
 
 ### Switch cluster context
 

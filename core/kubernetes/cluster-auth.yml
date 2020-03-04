@@ -1,29 +1,29 @@
-apiVersion: v1 
-kind: ConfigMap 
+apiVersion: v1
+kind: ConfigMap
 
 metadata:
   name: aws-auth
   namespace: kube-system
 
-data: 
-  mapRoles: | 
+data:
+  mapRoles: |
     - rolearn: arn:aws:iam::703704474391:role/eksctl-iHIE-nodegroup-ihie-worker-NodeInstanceRole-4K9AW44RS7EX
-      username: system:node:{{EC2PrivateDNSName}} 
-      groups: 
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
         - system:bootstrappers
         - system:nodes
-  mapUsers: | 
+  mapUsers: |
     - userarn: arn:aws:iam::703704474391:user/Martin
       username: Martin
-      groups: 
+      groups:
         - system:masters
     - userarn: arn:aws:iam::703704474391:user/Bradford
       username: Bradford
-      groups: 
+      groups:
         - system:masters
     - userarn: arn:aws:iam::703704474391:user/Matthew
       username: Matthew
-      groups: 
+      groups:
         - system:masters
     - userarn: arn:aws:iam::703704474391:user/Ryan
       username: Ryan
