@@ -22,7 +22,7 @@ cloud_setup () {
     do
         echo "OpenHIM Core not ready. Sleep 10"
         sleep 10
-        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
         coreUrlLength=$(expr length "$openhimCoreHostname")
     done
 
@@ -43,7 +43,7 @@ cloud_setup () {
     do
         echo "HAPI-FHIR not ready. Sleep 5"
         sleep 5
-        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
         fhirUrlLength=$(expr length "$hapiFhirServerHostname")
     done
 
@@ -55,7 +55,7 @@ cloud_setup () {
     do
         echo "OpenHIM Console not ready. Sleep 5"
         sleep 5
-        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
         consoleUrlLength=$(expr length "$openhimConsoleHostname")
     done
 
