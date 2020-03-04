@@ -29,7 +29,9 @@ Once you are in the correct working directory (`core/kubernetes`) we can proceed
 ./main/k8s.sh up
 ```
 
-This bash script will enable `ingress` on minikube then proceed to apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR). This script will also implement the HOST mapping which is needed to access the OpenHIM Core and Console locally (on linux).
+The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialised yet.
+
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR).
 
 > On first run the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
@@ -43,12 +45,6 @@ To display all resource: (Some new resources are not listed here)
 kubectl get all
 ```
 
-To view all the ingress resources: (Services that are exposed publicly)
-
-```sh
-kubectl get ingress
-```
-
 To tear down this deployment use the opposing command:
 
 ```bash
@@ -60,12 +56,6 @@ To completely remove all project components use the following option:
 ```bash
 ./main/k8s.sh destroy
 ```
-
-The OpenHIM console will be accessible on <http://openhim-console.instant/> and core will be accessible on:
-
-- API: <http://openhim-core.api.instant/>
-- HTTPS routing: <https://openhim-core.ssl.instant/>
-- HTTP routing: <http://openhim-core.non-ssl.instant/>
 
 ### Initial OpenHIM Config
 
