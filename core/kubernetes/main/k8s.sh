@@ -16,14 +16,13 @@ openhimCoreTransactionPort='5001'
 openhimCoreTransactionSSLPort='5000'
 
 cloud_setup () {
-    coreUrlLength=$(expr length "$openhimCoreHostname")
-
-    while [ $coreUrlLength -le 0 ];
-    do
-        echo "OpenHIM Core not ready. Sleep 10"
-        sleep 10
+    while
         openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
         coreUrlLength=$(expr length "$openhimCoreHostname")
+        (( coreUrlLength <= 0 ))
+    do
+        echo "OpenHIM Core not ready. Sleep 5"
+        sleep 5
     done
 
     openhimCoreMediatorApiUrl="https://$openhimCoreHostname:$openhimCoreMediatorSSLPort"
@@ -39,24 +38,26 @@ cloud_setup () {
 
     fhirUrlLength=$(expr length "$hapiFhirServerHostname")
 
-    while [ $fhirUrlLength -le 0 ];
+    while
+        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        fhirUrlLength=$(expr length "$hapiFhirServerHostname")
+        (( fhirUrlLength <= 0 ))
     do
         echo "HAPI-FHIR not ready. Sleep 5"
         sleep 5
-        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
-        fhirUrlLength=$(expr length "$hapiFhirServerHostname")
     done
 
     hapiFhirServerUrl="http://$hapiFhirServerHostname:$hapiFhirPort"
 
     consoleUrlLength=$(expr length "$openhimConsoleHostname")
 
-    while [ $consoleUrlLength -le 0 ];
+    while
+        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        consoleUrlLength=$(expr length "$openhimConsoleHostname")
+        (( consoleUrlLength <= 0 ))
     do
         echo "OpenHIM Console not ready. Sleep 5"
         sleep 5
-        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
-        consoleUrlLength=$(expr length "$openhimConsoleHostname")
     done
 
     openhimConsoleUrl="http://$openhimConsoleHostname:$openhimConsolePort"
