@@ -28,7 +28,7 @@ spec:
               mountPath: /app/endpoints/dhis2part2
           env:
             - name: OPENHIM_URL
-              value: https://openhim-core.api.instant
+              value: https://openhim-core-service:8082
             - name: OPENHIM_USERNAME
               value: root@openhim.org
             - name: OPENHIM_PASSWORD
