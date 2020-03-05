@@ -76,7 +76,61 @@ docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
 </TabItem>
 <TabItem value="kubernetes">
 
-Coming soon...
+**Local installation**
+
+To be able to deploy a Kubernetes clusters, you either need a Cloud Services provider account that provides a Kubernetes service or you could deploy to a locally run Kubernetes instance called `Minikube`
+
+Follow the steps outlined [here](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube on your machine.
+
+Once minikube has been installed, we need to start it so that we can deploy out Kubernetes scripts to it. Execute the below command to start minikube
+
+```sh
+minikube start --cpus 4 --memory 8192
+```
+
+Once the cluster is created, you will be able to see the Kubernetes cluster you are deploying to be executing the below command
+
+```sh
+kubectl config current-context
+```
+
+**Cloud Services installation**
+
+You could create this Kubernetes cluster on a Cloud Services provider like, AWS, Google Cloud and Azure. This will however incur some costs for making use of these services.
+
+If you do have an account with once of these, you will need to ensure you setup a cluster using the relevant provider SDK.
+
+AWS Example: Once the relevant SDK's have been downloaded for AWS, you can execute the below command to create the `instanthie` cluster. Creating cluster can take some time to complete.
+
+```sh
+eksctl create cluster -f cluster.yml
+```
+
+Once the cluster is created, you will be able to see the Kubernetes cluster you are deploying to be executing the below command
+
+```sh
+kubectl config current-context
+```
+
+**Deploying Kubernetes scripts**
+
+Before we proceed with creating our Core package components, we need to ensure we are in the correct directory containing our `kubernetes` script.
+
+Once you are in the correct working directory (`core/kubernetes/`) we can proceed to execute our `k8s` script by running the below command which will create all the services and output the results.
+
+```bash
+./main/k8s.sh up
+```
+
+We can also execute the impoert script which will configure some OpenHIM settings for us to be able to communicate successfully with the FHIR server
+
+```sh
+./importer/k8s.sh up
+```
+
+Once the Kubernetes scripts have finished executing we are able to connect to our Core package through the OpenHIM.
+
+The link to the OpenHIM will be printed in the output of the `./main/k8s.sh` script
 
 </TabItem>
 </Tabs>
@@ -84,7 +138,7 @@ Coming soon...
 ## Accessing the services
 
 * **OpenHIM**
-  * Console: <http://localhost:9000>
+  * Console: <http://localhost:9000> - or displayed in the output of the startup script
   * Username: **root@openhim.org**
   * Password: **instant101**
 * **HAPI FHIR**

@@ -66,6 +66,7 @@
       "name": "FHIR Server",
       "description": "A FHIR server (HAPI FHIR)",
       "urlPattern": "^/hapi-fhir-jpaserver/fhir/.*$",
+      "priority": 1,
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,

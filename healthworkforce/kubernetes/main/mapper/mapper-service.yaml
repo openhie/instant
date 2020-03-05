@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapper-service
+spec:
+  type: LoadBalancer
+  selector:
+    component: mapper
+  ports:
+    - name: mapper-3003
+      port: 3003
+      targetPort: 3003

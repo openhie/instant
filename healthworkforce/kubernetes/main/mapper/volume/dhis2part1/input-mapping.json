@@ -1,0 +1,20 @@
+{
+  "lookupRequests.dhisOrg1.organisationUnits[]": {
+    "key": "consolidated[]",
+    "transform": {
+      "function": "appendArray"
+    }
+  },
+  "lookupRequests.dhisOrg2.organisationUnits[]": {
+    "key": "consolidated[]",
+    "transform": {
+      "function": "appendArray"
+    }
+  },
+  "lookupRequests.dhisOrg3.organisationUnits[]": {
+    "key": "consolidated[]",
+    "transform": {
+      "function": "appendArray"
+    }
+  }
+}

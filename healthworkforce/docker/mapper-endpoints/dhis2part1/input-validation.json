@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "lookupRequests": {
+      "type": "object",
+      "properties": {
+        "dhis-orgs": {
+          "type": "object",
+          "properties": {
+            "organisationUnits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
