@@ -10,7 +10,7 @@ module.exports = {
     algolia: {
       apiKey: '43dfdd6f76217eafc0e68ada109a0251',
       indexName: 'instant',
-      algoliaOptions: {}, // Optional, if provided by Algolia
+      algoliaOptions: {} // Optional, if provided by Algolia
     },
     navbar: {
       title: 'InstantHIE',
@@ -19,7 +19,7 @@ module.exports = {
         src: 'img/logo.png'
       },
       links: [
-        {to: 'docs/introduction/overview', label: 'Docs', position: 'left'},
+        { to: 'docs/introduction/overview', label: 'Docs', position: 'left' },
         {
           href: 'https://github.com/openhie/instant',
           label: 'GitHub',
@@ -43,7 +43,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} OpenHIE`
     },
     prism: {
-      theme: require('prism-react-renderer/themes/nightOwl'),
+      theme: require('prism-react-renderer/themes/nightOwl')
     }
   },
   presets: [
