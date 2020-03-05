@@ -20,7 +20,8 @@ module.exports = {
     ],
     'Packages': [
       'packages/core',
-      'packages/health-workforce'
+      'packages/health-workforce',
+      'packages/overview'
     ]
   }
 };
