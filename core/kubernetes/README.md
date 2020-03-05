@@ -9,6 +9,13 @@ This package consists of two services:
 
 ## Kubernetes Host Environment Setup
 
+> If you are working with multiple cluster hosting clients you may need to switch cluster contexts for you deployments. See the below commands:
+
+```sh
+kubectl config get-contexts
+kubectl config use-context <context-name>
+```
+
 ### Minikube (local)
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
@@ -21,7 +28,12 @@ minikube start --cpus 4 --memory 8192
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
 
-### AWS CLI
+### Amazon Web Services
+
+Useful links:
+
+- [AWS Cli Setup guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [Amazon Elastic Kubernetes Service(EKS) Quickstart](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
 
 Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
 
@@ -29,10 +41,6 @@ Some prerequisites are required before we can continue to deploy our Kubernetes 
 - You have given the users the relevant access to the AWS services
 - You have generated an access token for your AWS user
 - You have installed all the relevant CLI tools
-
-Useful links:
-
-- [EKS](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
 
 #### Install AWS Cli
 
@@ -114,35 +122,57 @@ kubectl replace -f cluster-auth.yml
    kubectl config get-contexts
    ```
 
-#### Switch cluster context
-
-```sh
-kubectl config get-contexts
-
-kubectl config use-context <context-name>
-```
-
 #### Kill cluster
 
 ```sh
 eksctl delete cluster -f cluster.yml
 ```
 
-#### Deploy Scripts via Kubernetes
-
-Before we trigger the deployment scripts, we need to ensure that our kubernetes config is pointing to the correct cluster. Execute the below command to conform the cluster in use is the correct one:
-
-```sh
-kubectl config get-contexts
-```
-
 ### Google Cloud
 
 Useful Links:
 
-- [Google Cloud Cluster Setup](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
+- [Google Cloud Cli Setup Guide](https://cloud.google.com/sdk/docs#deb)
+- [Google Cloud Cluster Quickstart](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
+
+### Azure
+
+Useful Links:
+
+- [Azure Cli Setup Guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+- [Quickstart](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest)
+
+#### Install Azure Cli
+
+```sh
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+az login
+```
+
+### Digital Ocean
+
+Useful Links:
+
+- [Digital Ocean Cli Setup Guide](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/)
+
+#### Install Digital Ocean Ctl
+
+```sh
+curl -OL https://github.com/digitalocean/doctl/releases/download/v<version>/doctl-<version>-linux-amd64.tar.gz
+
+sudo mv ./doctl /usr/local/bin
+```
+
+> [See here for latest version](https://github.com/digitalocean/doctl/releases)
+
+---
 
 ## Getting Started
+
+Useful Links:
+
+- [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
 
@@ -180,6 +210,8 @@ To completely remove all project components use the following option:
 ./main/k8s.sh destroy
 ```
 
+---
+
 ## Initial OpenHIM Config
 
 We have included a useful set of scripts to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
@@ -204,6 +236,8 @@ You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 ./test.sh <OPENHIM_CORE_HOSTNAME>
 ```
 
+---
+
 ## Development mode for exposed services
 
 To run in development mode, where the OpenHIM mongo database, HAPI fhir server and the MySQL database can be accessed directly through their urls, run the following command
@@ -211,3 +245,5 @@ To run in development mode, where the OpenHIM mongo database, HAPI fhir server a
 ```bash
 ./dev/k8s.dev.sh
 ```
+
+---
