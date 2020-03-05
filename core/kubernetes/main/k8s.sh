@@ -9,13 +9,17 @@ openhimCoreMediatorApiUrl=''
 openhimCoreTransactionApiUrl=''
 openhimCoreTransactionSSLApiUrl=''
 
-hapiFhirPort='8080'
-openhimConsolePort='80'
-openhimCoreMediatorSSLPort='8082'
-openhimCoreTransactionPort='5001'
-openhimCoreTransactionSSLPort='5000'
+hapiFhirPort=''
+openhimConsolePort=''
+openhimCoreMediatorSSLPort=''
+openhimCoreTransactionPort=''
+openhimCoreTransactionSSLPort=''
 
 cloud_setup () {
+    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[0].port})
+    openhimCoreTransactionPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[2].port})
+    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].port})
+
     while
         openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
         coreUrlLength=$(expr length "$openhimCoreHostname")
@@ -36,7 +40,7 @@ cloud_setup () {
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    fhirUrlLength=$(expr length "$hapiFhirServerHostname")
+    hapiFhirPort=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.spec.ports[0].port})
 
     while
         hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
@@ -49,7 +53,7 @@ cloud_setup () {
 
     hapiFhirServerUrl="http://$hapiFhirServerHostname:$hapiFhirPort"
 
-    consoleUrlLength=$(expr length "$openhimConsoleHostname")
+    openhimConsolePort=$(kubectl get service openhim-console-service -o=jsonpath={.spec.ports[0].port})
 
     while
         openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
