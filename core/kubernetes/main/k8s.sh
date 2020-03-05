@@ -9,21 +9,24 @@ openhimCoreMediatorApiUrl=''
 openhimCoreTransactionApiUrl=''
 openhimCoreTransactionSSLApiUrl=''
 
-hapiFhirPort='8080'
-openhimConsolePort='80'
-openhimCoreMediatorSSLPort='8082'
-openhimCoreTransactionPort='5001'
-openhimCoreTransactionSSLPort='5000'
+hapiFhirPort=''
+openhimConsolePort=''
+openhimCoreMediatorSSLPort=''
+openhimCoreTransactionPort=''
+openhimCoreTransactionSSLPort=''
 
 cloud_setup () {
-    coreUrlLength=$(expr length "$openhimCoreHostname")
+    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[0].port})
+    openhimCoreTransactionPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[2].port})
+    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].port})
 
-    while [ $coreUrlLength -le 0 ];
-    do
-        echo "OpenHIM Core not ready. Sleep 10"
-        sleep 10
-        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
+    while
+        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
         coreUrlLength=$(expr length "$openhimCoreHostname")
+        (( coreUrlLength <= 0 ))
+    do
+        echo "OpenHIM Core not ready. Sleep 5"
+        sleep 5
     done
 
     openhimCoreMediatorApiUrl="https://$openhimCoreHostname:$openhimCoreMediatorSSLPort"
@@ -37,26 +40,28 @@ cloud_setup () {
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    fhirUrlLength=$(expr length "$hapiFhirServerHostname")
+    hapiFhirPort=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.spec.ports[0].port})
 
-    while [ $fhirUrlLength -le 0 ];
+    while
+        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        fhirUrlLength=$(expr length "$hapiFhirServerHostname")
+        (( fhirUrlLength <= 0 ))
     do
         echo "HAPI-FHIR not ready. Sleep 5"
         sleep 5
-        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-        fhirUrlLength=$(expr length "$hapiFhirServerHostname")
     done
 
     hapiFhirServerUrl="http://$hapiFhirServerHostname:$hapiFhirPort"
 
-    consoleUrlLength=$(expr length "$openhimConsoleHostname")
+    openhimConsolePort=$(kubectl get service openhim-console-service -o=jsonpath={.spec.ports[0].port})
 
-    while [ $consoleUrlLength -le 0 ];
+    while
+        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        consoleUrlLength=$(expr length "$openhimConsoleHostname")
+        (( consoleUrlLength <= 0 ))
     do
         echo "OpenHIM Console not ready. Sleep 5"
         sleep 5
-        openhimConsoleHostname=$(kubectl get service openhim-console-service -o=jsonpath={.status.loadBalancer.ingress[0].hostname})
-        consoleUrlLength=$(expr length "$openhimConsoleHostname")
     done
 
     openhimConsoleUrl="http://$openhimConsoleHostname:$openhimConsolePort"
@@ -88,12 +93,9 @@ local_setup () {
 }
 
 if [ "$1" == "up" ]; then
-    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
-
-    printf "\n\n>>> Deploying to the '${envContextName}' context <<<\n\n\n"
-
     kubectl apply -k $kustomizationFilePath
 
+    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
     envContextMinikube=$(echo $envContextName | grep 'minikube')
 
     if [ $(expr length "$envContextMinikube") -le 0 ]; then
