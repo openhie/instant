@@ -76,7 +76,7 @@ docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
 </TabItem>
 <TabItem value="kubernetes">
 
-> If you are working with multiple cluster hosting clients you may need to switch cluster contexts for you deployments. See the below commands:
+> If you are working with multiple cluster hosting clients you may need to switch cluster context for your deployment. See the below commands:
 
 ```sh
 kubectl config get-contexts
@@ -281,7 +281,7 @@ To completely remove all project components use the following option:
 
 ## Initial OpenHIM Config
 
-We have included a useful set of scripts to initialise the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
+We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
 
 ```bash
 ./importer/k8s.sh up
@@ -289,7 +289,7 @@ We have included a useful set of scripts to initialise the OpenHIM and set it up
 
 > These scripts can be duplicated and modified to implement custom imports
 
-To clean up the remaining job and pods from a successful setup run the following:
+To clean up the remaining job and pods from a successful setup, run the following:
 
 ```bash
 ./importer/k8s.sh clean
@@ -307,7 +307,7 @@ You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ## Development mode for exposed services
 
-To run in development mode, where the OpenHIM mongo database, HAPI fhir server and the MySQL database can be accessed directly through their urls, run the following command
+To run in development mode, where the OpenHIM mongo database, HAPI FHIR server, and the MySQL database can be accessed directly through their urls, run the following command
 
 ```bash
 ./dev/k8s.dev.sh
