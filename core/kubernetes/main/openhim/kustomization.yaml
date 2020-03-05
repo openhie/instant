@@ -1,0 +1,12 @@
+# OpenHIM Console Component
+
+configMapGenerator:
+  - name: core-openhim-console-configmap
+    files:
+      - ./volume/openhim-console/default.json
+
+resources:
+  # deployment
+  - ./openhim-console-deployment.yaml
+  # service
+  - ./openhim-console-service.yaml
