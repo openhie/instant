@@ -93,12 +93,9 @@ local_setup () {
 }
 
 if [ "$1" == "up" ]; then
-    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
-
-    printf "\n\n>>> Deploying to the '${envContextName}' context <<<\n\n\n"
-
     kubectl apply -k $kustomizationFilePath
 
+    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
     envContextMinikube=$(echo $envContextName | grep 'minikube')
 
     if [ $(expr length "$envContextMinikube") -le 0 ]; then
