@@ -165,7 +165,7 @@ Execute the below commands to see the running Kubernetes resources and the state
 To display all resource: (Some new resources are not listed here)
 
 ```sh
-kubectl get all
+kubectl get all -n core-component
 ```
 
 To tear down this deployment use the opposing command:
