@@ -1,5 +1,6 @@
 configMapGenerator:
   - name: mapper-config-importer-configmap
+    namespace: healthworkforce-component
     files:
       - ./volume/openhim-import.json
       - ./volume/openhimConfig.js

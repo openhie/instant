@@ -1,11 +1,13 @@
 configMapGenerator:
   - name: healthworkforce-mapper-configmap-dhis1
+    namespace: healthworkforce-component
     files:
       - ./mapper/volume/dhis2part2/constants.json
       - ./mapper/volume/dhis2part1/input-mapping.json
       - ./mapper/volume/dhis2part1/input-validation.json
       - ./mapper/volume/dhis2part1/meta.json
   - name: healthworkforce-mapper-configmap-dhis2
+    namespace: healthworkforce-component
     files:
       - ./mapper/volume/dhis2part2/constants.json
       - ./mapper/volume/dhis2part2/input-mapping.json
