@@ -59,7 +59,7 @@ By running the above command to get started with the Core package we create all 
 Additional `docker-compose` files are available for extra environment configuration
 
 - **docker-compose.yml**: Main `docker-compose` script to create the services
-- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configuration to be used in a development environment (Open service ports for access etc)
+- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configurations to be used in a development environment (Open service ports for access etc)
 
 The below command specifies the three `docker-compose` files that need to be executed for the development configuration
 
@@ -87,7 +87,7 @@ kubectl config use-context <context-name>
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
-Once installed, we can start the minikube service be executing the below command:
+Once installed, we can start the minikube service by executing the below command:
 
 ```sh
 minikube start --cpus 4 --memory 8192
@@ -166,7 +166,7 @@ Once you are in the correct working directory (`core/kubernetes`) we can proceed
 ./main/k8s.sh up
 ```
 
-The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialised yet.
+The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
 
 This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR).
 
@@ -245,7 +245,7 @@ To run in development mode, where the OpenHIM mongo database, HAPI FHIR server, 
 
 ## Testing the Core package
 
-As part of the Core package setup we also do some initial imports of config for connecting the services together.
+As part of the Core package setup, we also do some initial imports of config for connecting the services.
 
 - OpenHIM: Import a public channel configuration that routes requests to the HAPI FHIR services
 - HAPI FHIR: _Not config import yet_
@@ -258,4 +258,4 @@ Execute the below `curl` request to successfully route a request through the Ope
 curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
 ```
 
-> The **openhim_core_transaction_api_url** is displayed in the output f the startup script
+> The **openhim_core_transaction_api_url** is displayed in the output of the startup script
