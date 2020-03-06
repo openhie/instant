@@ -41,7 +41,7 @@ To stop the running containers execute the following:
 ./instant.sh down docker
 ```
 
-Then to remove the containers run the command below. However, make sure you have stopped all the containers before trying to delete them. This action will also delete any volumes created by the containers.
+Then to remove the containers run the command below. However, make sure you have **stopped all the containers before trying to delete** them. This action will also delete any volumes created by the containers.
 
 ```sh
 ./instant.sh destroy docker
@@ -50,10 +50,22 @@ Then to remove the containers run the command below. However, make sure you have
 </TabItem>
 <TabItem value="kubernetes">
 
-Before proceeding, ensure you are in the main `/instant` directory containing `instant.sh` script. Then you can execute the following command:
+Before proceeding, ensure you are in the main `/instant` directory containing `instant.sh` script. Then you can execute the command below. This commands will output urls from which you can access your instantHIE instance.
 
 ```sh
 ./instant.sh up k8s
+```
+
+To delete all the deployment related pods, run the command below. This command will leave services, and volumes intact.
+
+```sh
+./instant.sh down k8s
+```
+
+To delete the entire instantHIE system run the command below.
+
+```sh
+./instant.sh destroy k8s
 ```
 
 </TabItem>
