@@ -102,13 +102,6 @@ Useful links:
 - [AWS Cli Setup guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [Amazon Elastic Kubernetes Service(EKS) Quickstart](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
 
-Some prerequisites are required before we can continue to deploy our Kubernetes infrastructure to an AWS cluster.
-
-- You have created all the various users and permissions as required.
-- You have given the users the relevant access to the AWS services
-- You have generated an access token for your AWS user
-- You have installed all the relevant CLI tools
-
 #### Install AWS Cli
 
 ```sh
@@ -117,82 +110,6 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 unzip awscliv2.zip
 
 sudo ./aws/install
-```
-
-#### Configure with your AWS token details
-
-```sh
-aws configure
-```
-
-#### Install EksCtl
-
-```sh
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-
-sudo mv /tmp/eksctl /usr/local/bin
-
-eksctl version
-```
-
-#### Install Kubectl
-
-```sh
-curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt` /bin/linux/amd64/kubectl
-
-chmod +x ./kubectl
-
-sudo mv ./kubectl /usr/local/bin/kubectl
-
-kubectl version --client
-```
-
-#### Create the cluster
-
-Before we can deploy our Kubernetes infrastructure we need to make sure we have created a cluster for us to deploy to. Execute the below command to create the cluster within AWS EKS
-
-```sh
-eksctl create cluster -f cluster.yml
-```
-
-#### Configure cluster users
-
-Once the cluster has been created successfully, we also need to give access to the various users accessing the cluster. Update the `cluster-auth.yml` file with the users that need access and replace the `data.mapRoles.rolearn` with the arn of the role created to manage this cluster. Execute the below command to find the ARN of the role linked to the cluster:
-
-```sh
-kubectl describe configmap -n kube-system aws-auth
-```
-
-Once the `cluster.auth.yml` file has been updated, execute the below command to give the users access to the cluster.
-
-```sh
-kubectl replace -f cluster-auth.yml
-```
-
-#### Access an existing cluster
-
-1. See the available clusters
-
-   ```sh
-   eksctl get clusters
-   ```
-
-1. Create config file locally to reference existing cluster
-
-   ```sh
-   eksctl utils write-kubeconfig --cluster <cluster-name>
-   ```
-
-1. Check current cluster context
-
-   ```sh
-   kubectl config get-contexts
-   ```
-
-#### Kill cluster
-
-```sh
-eksctl delete cluster -f cluster.yml
 ```
 
 ### Google Cloud
