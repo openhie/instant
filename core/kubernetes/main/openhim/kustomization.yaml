@@ -2,6 +2,7 @@
 
 configMapGenerator:
   - name: core-openhim-console-configmap
+    namespace: core-component
     files:
       - ./volume/openhim-console/default.json
 
