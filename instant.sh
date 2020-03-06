@@ -28,8 +28,8 @@ fi
 
 
 if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
-    minikubeIP=$(minikube ip)
-    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[1].nodePort})
+    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
+    printf "\n\n>>> Applying to the '${envContextName}' context <<<\n\n\n"
 
     if [ "$COMMAND" == "up" ]; then
         ./core/kubernetes/main/k8s.sh up
@@ -43,8 +43,17 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
         ./core/kubernetes/main/k8s.sh destroy
         ./healthworkforce/kubernetes/main/k8s.sh destroy
     elif [ "$COMMAND" == "test" ]; then
-        ./core/test.sh $minikubeIP:$openhimCoreTransactionSSLPort
-        ./healthworkforce/test.sh $minikubeIP:$openhimCoreTransactionSSLPort
+        openhimCoreHostname=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
+        openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[1].port})
+        hostnameLength=$(expr length "$openhimCoreHostname")
+
+        if [ "$hostnameLength" -le 0 ]; then
+            openhimCoreHostname=$(minikube ip)
+            openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[1].nodePort})
+        fi
+
+        ./core/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
+        ./healthworkforce/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
     else
         echo "Valid options are: up, down, test or destroy"
     fi

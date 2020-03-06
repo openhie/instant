@@ -1,3 +1,4 @@
+
 {
   "Users": [],
   "Clients": [],
@@ -35,7 +36,7 @@
           "forwardAuthHeader": false,
           "name": "Generic Mapping Mediator",
           "secured": false,
-          "host": "mapper-service",
+          "host": "mapper-service.healthworkforce-component",
           "port": 3003,
           "path": "",
           "pathTransform": "",
