@@ -17,6 +17,6 @@ Once these are installed you can download the latest Instant OpenHIE executable 
 
 - [Instant OpenHIE](https://github.com/openhie/instant/releases)
 
-Once the download is complete, move it somewhere memorable. From there you may execute it and you will be presented with a command line interface. Use the arrow keys to navigate it and choose 'Start Instant OpenHIE'. This will initiate some download that my take some time. Once completed it will then startup the Instant OpenHIE services/application. A web page will be opened with links to the started services/application as well as links to their documentation.
+Once the download is complete, move it somewhere memorable. From there you may execute it and you will be presented with a command-line interface. Use the arrow keys to navigate it and choose 'Start Instant OpenHIE'. This will initiate a download that may take some time. Once completed it will then startup the Instant OpenHIE services/application. A web page will be opened with links to the started services/application as well as links to their documentation.
 
 Congratulations, you have successfully started up Instant OpenHIE. Follow the instruction on the web page to stop the services when you are done.
