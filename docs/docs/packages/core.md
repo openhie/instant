@@ -158,7 +158,7 @@ Useful Links:
 
 - [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
 
-Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
+Before we proceed with creating our `Core Package` services, we need to ensure we are in the correct directory containing our bash setup scripts.
 
 Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
 
