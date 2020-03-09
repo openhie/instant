@@ -2,7 +2,7 @@
 id: health-workforce
 title: Health-Workforce
 sidebar_label: Health-Workforce
-keywords: 
+keywords:
   - InstantHIE
   - Health
   - Workforce

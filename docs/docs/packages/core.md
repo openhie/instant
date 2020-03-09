@@ -2,7 +2,7 @@
 id: core
 title: Core Package
 sidebar_label: Core
-keywords: 
+keywords:
   - InstantHIE
   - Core
   - Package
@@ -16,8 +16,8 @@ The InstantHIE Core Package is the base of the InstantHIE architecture.
 
 This package consists of two components:
 
-* Interoperability Layer - [OpenHIM](http://openhim.org/)
-* FHIR Server - [HAPI FHIR](https://hapifhir.io/)
+- Interoperability Layer - [OpenHIM](http://openhim.org/)
+- FHIR Server - [HAPI FHIR](https://hapifhir.io/)
 
 ## Getting Started
 
@@ -40,26 +40,26 @@ Once you are in the correct working directory (`core/docker/`) we can proceed to
 docker-compose up
 ```
 
-#### Useful compose flags
+### Useful compose flags
 
 Some additional flags can be passed to the `docker-compose` command making it a bit easier to work with.
 
-* `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
-* `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
-* `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new image has been released but not yet pulled onto the host machine.
+- `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
+- `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
+- `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new image has been released but not yet pulled onto the host machine.
 
 ```bash
 docker-compose up -d --force-recreate
 ```
 
-#### Environment configuration
+### Environment configuration
 
 By running the above command to get started with the Core package we create all the services that need to be defined, but this script might have some limitations depending on the type of environment you want to run the configuration
 
 Additional `docker-compose` files are available for extra environment configuration
 
-* **docker-compose.yml**: Main `docker-compose` script to create the services
-* **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configuration to be used in a development environment (Open service ports for access etc)
+- **docker-compose.yml**: Main `docker-compose` script to create the services
+- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configurations to be used in a development environment (Open service ports for access etc)
 
 The below command specifies the three `docker-compose` files that need to be executed for the development configuration
 
@@ -76,85 +76,186 @@ docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
 </TabItem>
 <TabItem value="kubernetes">
 
-**Local installation**
+> If you are working with multiple cluster hosting clients you may need to switch cluster context for your deployment. See the below commands:
 
-To be able to deploy a Kubernetes clusters, you either need a Cloud Services provider account that provides a Kubernetes service or you could deploy to a locally run Kubernetes instance called `Minikube`
+```sh
+kubectl config get-contexts
+kubectl config use-context <context-name>
+```
 
-Follow the steps outlined [here](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube on your machine.
+### Minikube (local)
 
-Once minikube has been installed, we need to start it so that we can deploy out Kubernetes scripts to it. Execute the below command to start minikube
+For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+
+Once installed, we can start the minikube service by executing the below command:
 
 ```sh
 minikube start --cpus 4 --memory 8192
 ```
 
-Once the cluster is created, you will be able to see the Kubernetes cluster you are deploying to be executing the below command
+This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
+
+### Amazon Web Services
+
+Useful links:
+
+- [AWS Cli Setup guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [Amazon Elastic Kubernetes Service(EKS) Quickstart](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
+
+#### Install AWS Cli
 
 ```sh
-kubectl config current-context
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+unzip awscliv2.zip
+
+sudo ./aws/install
 ```
 
-**Cloud Services installation**
+### Google Cloud
 
-You could create this Kubernetes cluster on a Cloud Services provider like, AWS, Google Cloud and Azure. This will however incur some costs for making use of these services.
+Useful Links:
 
-If you do have an account with once of these, you will need to ensure you setup a cluster using the relevant provider SDK.
+- [Google Cloud Cli Setup Guide](https://cloud.google.com/sdk/docs#deb)
+- [Google Cloud Cluster Quickstart](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
 
-AWS Example: Once the relevant SDK's have been downloaded for AWS, you can execute the below command to create the `instanthie` cluster. Creating cluster can take some time to complete.
+### Azure
+
+Useful Links:
+
+- [Azure Cli Setup Guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+- [Quickstart](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest)
+
+#### Install Azure Cli
 
 ```sh
-eksctl create cluster -f cluster.yml
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+az login
 ```
 
-Once the cluster is created, you will be able to see the Kubernetes cluster you are deploying to be executing the below command
+### Digital Ocean
+
+Useful Links:
+
+- [Digital Ocean Cli Setup Guide](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/)
+
+#### Install Digital Ocean Ctl
 
 ```sh
-kubectl config current-context
+curl -OL https://github.com/digitalocean/doctl/releases/download/v<version>/doctl-<version>-linux-amd64.tar.gz
+
+sudo mv ./doctl /usr/local/bin
 ```
 
-**Deploying Kubernetes scripts**
+> [See here for latest version](https://github.com/digitalocean/doctl/releases)
 
-Before we proceed with creating our Core package components, we need to ensure we are in the correct directory containing our `kubernetes` script.
+---
 
-Once you are in the correct working directory (`core/kubernetes/`) we can proceed to execute our `k8s` script by running the below command which will create all the services and output the results.
+## Getting Started
+
+Useful Links:
+
+- [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
+
+Before we proceed with creating our `Core Package` services, we need to ensure we are in the correct directory containing our bash setup scripts.
+
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
 
 ```bash
 ./main/k8s.sh up
 ```
 
-We can also execute the impoert script which will configure some OpenHIM settings for us to be able to communicate successfully with the FHIR server
+The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
+
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR).
+
+> On first run the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
+
+### View running Kubernetes resources
+
+Execute the below commands to see the running Kubernetes resources and the state that they are in.
+
+To display all resource: (Some new resources are not listed here)
 
 ```sh
+kubectl get all --all-namespaces
+```
+
+To tear down this deployment use the opposing command:
+
+```bash
+./main/k8s.sh down
+```
+
+To completely remove all project components use the following option:
+
+```bash
+./main/k8s.sh destroy
+```
+
+---
+
+## Initial OpenHIM Config
+
+We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
+
+```bash
 ./importer/k8s.sh up
 ```
 
-Once the Kubernetes scripts have finished executing we are able to connect to our Core package through the OpenHIM.
+> These scripts can be duplicated and modified to implement custom imports
 
-The link to the OpenHIM will be printed in the output of the `./main/k8s.sh` script
+To clean up the remaining job and pods from a successful setup, run the following:
 
+```bash
+./importer/k8s.sh clean
+```
+
+Once the config is done HAPI FHIR will be accessible on: <https://OPENHIM_CORE_HOSTNAME/hapi-fhir-jpaserver/fhir/>
+
+You may test that the OpenHIM is routing requests to HAPI FHIR by running:
+
+```bash
+./test.sh <OPENHIM_CORE_HOSTNAME>
+```
+
+---
+
+## Development mode for exposed services
+
+To run in development mode, where the OpenHIM mongo database, HAPI FHIR server, and the MySQL database can be accessed directly through their urls, run the following command
+
+```bash
+./dev/k8s.dev.sh
+```
+
+---
 </TabItem>
 </Tabs>
 
 ## Accessing the services
 
-* **OpenHIM**
-  * Console: <http://localhost:9000> - or displayed in the output of the startup script
-  * Username: **root@openhim.org**
-  * Password: **instant101**
-* **HAPI FHIR**
-  * This service should not be publicly accessible and only accessed via the Interoperability Layer
+- **OpenHIM**
+  - Console: Displayed in the output of the startup script
+  - Username: **root@openhim.org**
+  - Password: **instant101**
+- **HAPI FHIR**
+  - This service should not be publicly accessible and only accessed via the Interoperability Layer
 
 ## Testing the Core package
 
-As part of the Core package setup we also do some initial importation of config for connecting the services together.
+As part of the Core package setup, we also do some initial imports of config for connecting the services.
 
-* OpenHIM: Import a public channel configuration that routes requests to the HAPI FHIR services
-* HAPI FHIR: *Not config import yet*
+- OpenHIM: Import a public channel configuration that routes requests to the HAPI FHIR services
+- HAPI FHIR: _Not config import yet_
 
 For testing this Core package we will be making use of `curl` for sending our request, but any client could be used to achieve the same result.
 
 Execute the below `curl` request to successfully route a request through the OpenHIM to query the HAPI FHIR server.
 
 ```bash
-curl http://localhost:5001/hapi-fhir-jpaserver/fhir/Patient
+curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
 ```
+
+> The **openhim_core_transaction_api_url** is displayed in the output of the startup script
