@@ -19,9 +19,9 @@ module.exports = {
       'concepts/creating-packages',
     ],
     'Packages': [
+      'packages/overview',
       'packages/core',
-      'packages/health-workforce',
-      'packages/overview'
+      'packages/health-workforce'
     ]
   }
 };
