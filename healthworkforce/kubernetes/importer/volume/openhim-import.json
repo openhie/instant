@@ -36,7 +36,7 @@
           "forwardAuthHeader": false,
           "name": "Generic Mapping Mediator",
           "secured": false,
-          "host": "mapper-service.hfw-package",
+          "host": "mapper-service.hwf-package",
           "port": 3003,
           "path": "",
           "pathTransform": "",

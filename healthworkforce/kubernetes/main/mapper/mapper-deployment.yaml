@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mapper-deployment
-  namespace: hfw-package
+  namespace: hwf-package
 spec:
   replicas: 1
   selector:
