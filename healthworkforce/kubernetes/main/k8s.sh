@@ -1,13 +1,15 @@
 #!/bin/bash
 
-kustomizationFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+k8sMainRootFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "up" ]; then
-    kubectl apply -k $kustomizationFilePath
+    # Create the namespace
+    kubectl apply -f $k8sMainRootFilePath/healthworkforce-namespace.yaml
+    kubectl apply -k $k8sMainRootFilePath
 elif [ "$1" == "down" ]; then
     kubectl delete deployment mapper-deployment
 elif [ "$1" == "destroy" ]; then
-    kubectl delete -k $kustomizationFilePath
+    kubectl delete namespaces hwf-package
 else
     echo "Valid options are: up, down, or destroy"
 fi
