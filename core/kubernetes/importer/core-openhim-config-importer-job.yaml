@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: core-openhim-config-importer-job
+  name: openhim-config-importer-job
   namespace: core-component
   labels:
     app.kubernetes.io/name: openhim-config-importer
@@ -37,9 +37,9 @@ spec:
               value: root@openhim.org
           volumeMounts:
             - mountPath: /importer
-              name: core-openhim-config-importer-config
+              name: openhim-config-importer-config
       restartPolicy: OnFailure
       volumes:
-        - name: core-openhim-config-importer-config
+        - name: openhim-config-importer-config
           configMap:
-            name: core-openhim-config-importer-configmap
+            name: openhim-config-importer-configmap

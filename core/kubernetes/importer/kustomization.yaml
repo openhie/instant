@@ -1,5 +1,5 @@
 configMapGenerator:
-  - name: core-openhim-config-importer-configmap
+  - name: openhim-config-importer-configmap
     namespace: core-component
     files:
       - ./volume/openhim-import.json
