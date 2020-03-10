@@ -1,10 +1,10 @@
 configMapGenerator:
   - name: core-hapi-fhir-server-configmap
-    namespace: core-component
+    namespace: core-package
     files:
       - ./hapi-fhir/volume/hapi.properties
   - name: core-openhim-core-configmap
-    namespace: core-component
+    namespace: core-package
     files:
       - ./openhim/volume/openhim-core/development.json
 

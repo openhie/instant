@@ -16,12 +16,12 @@ openhimCoreTransactionPort=''
 openhimCoreTransactionSSLPort=''
 
 cloud_setup () {
-    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[0].port})
-    openhimCoreTransactionPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[2].port})
-    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[1].port})
+    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[0].port})
+    openhimCoreTransactionPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[2].port})
+    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].port})
 
     while
-        openhimCoreHostname=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
+        openhimCoreHostname=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
         coreUrlLength=$(expr length "$openhimCoreHostname")
         (( coreUrlLength <= 0 ))
     do
@@ -40,10 +40,10 @@ cloud_setup () {
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    hapiFhirPort=$(kubectl get service hapi-fhir-server-service --namespace=core-component -o=jsonpath={.spec.ports[0].port})
+    hapiFhirPort=$(kubectl get service hapi-fhir-server-service --namespace=core-package -o=jsonpath={.spec.ports[0].port})
 
     while
-        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service --namespace=core-component -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        hapiFhirServerHostname=$(kubectl get service hapi-fhir-server-service --namespace=core-package -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
         fhirUrlLength=$(expr length "$hapiFhirServerHostname")
         (( fhirUrlLength <= 0 ))
     do
@@ -53,10 +53,10 @@ cloud_setup () {
 
     hapiFhirServerUrl="http://$hapiFhirServerHostname:$hapiFhirPort"
 
-    openhimConsolePort=$(kubectl get service openhim-console-service --namespace=core-component -o=jsonpath={.spec.ports[0].port})
+    openhimConsolePort=$(kubectl get service openhim-console-service --namespace=core-package -o=jsonpath={.spec.ports[0].port})
 
     while
-        openhimConsoleHostname=$(kubectl get service openhim-console-service --namespace=core-component -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
+        openhimConsoleHostname=$(kubectl get service openhim-console-service --namespace=core-package -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname', 'ip']}")
         consoleUrlLength=$(expr length "$openhimConsoleHostname")
         (( consoleUrlLength <= 0 ))
     do
@@ -69,10 +69,10 @@ cloud_setup () {
 
 local_setup () {
     minikubeIP=$(minikube ip)
-    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[0].nodePort})
-    openhimCoreTransactionPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[2].nodePort})
-    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-component -o=jsonpath={.spec.ports[1].nodePort})
-    hapiFhirPort=$(kubectl get service hapi-fhir-server-service --namespace=core-component -o=jsonpath={.spec.ports[0].nodePort})
+    openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[0].nodePort})
+    openhimCoreTransactionPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[2].nodePort})
+    openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].nodePort})
+    hapiFhirPort=$(kubectl get service hapi-fhir-server-service --namespace=core-package -o=jsonpath={.spec.ports[0].nodePort})
 
     hapiFhirServerUrl="http://$minikubeIP:$hapiFhirPort"
     openhimCoreMediatorApiUrl="https://$minikubeIP:$openhimCoreMediatorSSLPort"
@@ -87,7 +87,7 @@ local_setup () {
 
     kubectl apply -k $kustomizationFilePath/openhim
 
-    openhimConsolePort=$(kubectl get service openhim-console-service --namespace=core-component -o=jsonpath={.spec.ports[0].nodePort})
+    openhimConsolePort=$(kubectl get service openhim-console-service --namespace=core-package -o=jsonpath={.spec.ports[0].nodePort})
 
     openhimConsoleUrl="http://$minikubeIP:$openhimConsolePort"
 }
@@ -120,7 +120,7 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-server-deployment
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
-    kubectl delete namespaces core-component
+    kubectl delete namespaces core-package
 else
     echo "Valid options are: up, down, or destroy"
 fi

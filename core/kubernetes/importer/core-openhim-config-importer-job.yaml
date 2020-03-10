@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: openhim-config-importer-job
-  namespace: core-component
+  namespace: core-package
   labels:
     app.kubernetes.io/name: openhim-config-importer
     app.kubernetes.io/instance: openhim-config-importer-1

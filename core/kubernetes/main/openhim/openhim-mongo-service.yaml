@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: openhim-mongo-service
-  namespace: core-component
+  namespace: core-package
 spec:
   selector:
     component: openhim-mongo
