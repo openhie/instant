@@ -1,7 +1,7 @@
 #!/bin/bash
 
-kustomizationFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-openhimConsoleVolumePath="${kustomizationFilePath}/openhim/volume/openhim-console/default.json"
+k8sMainRootFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+openhimConsoleVolumePath="${k8sMainRootFilePath}/openhim/volume/openhim-console/default.json"
 
 hapiFhirServerUrl=''
 openhimConsoleUrl=''
@@ -38,7 +38,7 @@ cloud_setup () {
     # Injecting OpenHIM Core port into Console config file
     sed -i -E "s/(\"port\": )\S*(,)/\1${openhimCoreMediatorSSLPort}\2/" $openhimConsoleVolumePath
 
-    kubectl apply -k $kustomizationFilePath/openhim
+    kubectl apply -k $k8sMainRootFilePath/openhim
 
     hapiFhirPort=$(kubectl get service hapi-fhir-server-service --namespace=core-package -o=jsonpath={.spec.ports[0].port})
 
@@ -85,7 +85,7 @@ local_setup () {
     # Injecting OpenHIM Core port into Console config file
     sed -i -E "s/(\"port\": )\S*(,)/\1${openhimCoreMediatorSSLPort}\2/" $openhimConsoleVolumePath
 
-    kubectl apply -k $kustomizationFilePath/openhim
+    kubectl apply -k $k8sMainRootFilePath/openhim
 
     openhimConsolePort=$(kubectl get service openhim-console-service --namespace=core-package -o=jsonpath={.spec.ports[0].nodePort})
 
@@ -94,9 +94,9 @@ local_setup () {
 
 if [ "$1" == "up" ]; then
     # Create the component's namespace
-    kubectl apply -f $kustomizationFilePath/core-namespace.yaml
+    kubectl apply -f $k8sMainRootFilePath/core-namespace.yaml
 
-    kubectl apply -k $kustomizationFilePath
+    kubectl apply -k $k8sMainRootFilePath
 
     envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
     envContextMinikube=$(echo $envContextName | grep 'minikube')
