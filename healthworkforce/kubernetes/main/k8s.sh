@@ -9,7 +9,7 @@ if [ "$1" == "up" ]; then
 elif [ "$1" == "down" ]; then
     kubectl delete deployment mapper-deployment
 elif [ "$1" == "destroy" ]; then
-    kubectl delete namespaces healthworkforce-component
+    kubectl delete namespaces hfw-package
 else
     echo "Valid options are: up, down, or destroy"
 fi

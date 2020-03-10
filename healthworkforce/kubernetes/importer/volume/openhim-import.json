@@ -36,7 +36,7 @@
           "forwardAuthHeader": false,
           "name": "Generic Mapping Mediator",
           "secured": false,
-          "host": "mapper-service.healthworkforce-component",
+          "host": "mapper-service.hfw-package",
           "port": 3003,
           "path": "",
           "pathTransform": "",

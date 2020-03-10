@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: mapper-config-importer-job
-  namespace: healthworkforce-component
+  namespace: hfw-package
   labels:
     app.kubernetes.io/name: mapper-config-importer
     app.kubernetes.io/instance: mapper-config-importer-1
