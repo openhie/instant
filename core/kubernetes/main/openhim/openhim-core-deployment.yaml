@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openhim-core-deployment
+  namespace: core-package
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: openhim-core
+  template:
+    metadata:
+      labels:
+        component: openhim-core
+    spec:
+      initContainers:
+        - name: check-mongo-status
+          image: busybox:1.28
+          command: ['sh', '-c', 'until telnet openhim-mongo-service 27017; do echo Mongo not running yet; sleep 10; done;']
+      containers:
+        - name: openhim-core
+          image: jembi/openhim-core:5
+          ports:
+            - containerPort: 8080
+            - containerPort: 5000
+            - containerPort: 5001
+          volumeMounts:
+            - name: core-openhim-core-volume
+              mountPath: /usr/src/app/config
+          env:
+            - name: NODE_ENV
+              value: development
+      volumes:
+        - name: core-openhim-core-volume
+          configMap:
+            name: core-openhim-core-configmap

@@ -1,0 +1,6 @@
+version: '3.3'
+
+services:
+  mapper:
+    ports:
+      - "3003:3003"
