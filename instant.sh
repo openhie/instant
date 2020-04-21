@@ -48,7 +48,7 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
         hostnameLength=$(expr length "$openhimCoreHostname")
 
         if [ "$hostnameLength" -le 0 ]; then
-            openhimCoreHostname=$(minikube ip)
+            openhimCoreHostname=192.168.39.104
             openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].nodePort})
         fi
 

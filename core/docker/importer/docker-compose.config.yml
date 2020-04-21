@@ -6,7 +6,7 @@ services:
     container_name: core-config-importer
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./importer/Dockerfile
     image: jembi/instantohie-config-importer
     restart: on-failure
     environment:
