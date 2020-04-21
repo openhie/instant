@@ -1,0 +1,8 @@
+configMapGenerator:
+  - name: mapper-config-importer-configmap
+    namespace: hwf-package
+    files:
+      - ./volume/openhim-import.json
+      - ./volume/openhimConfig.js
+resources:
+  - ./mapper-config-importer-job.yaml

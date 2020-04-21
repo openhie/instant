@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  mapper:
+    image: jembi/openhim-mediator-mapping:v0.1.0
+    environment:
+      - OPENHIM_URL=https://core:8080
+      - OPENHIM_USERNAME=root@openhim.org
+      - OPENHIM_PASSWORD=instant101
+    volumes:
+      - "./mapper-endpoints:/app/endpoints"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hapi-fhir-mysql-service
+  namespace: core-package
+spec:
+  selector:
+    component: hapi-fhir-mysql
+  ports:
+    - name: hapi-fhir-mysql-3306
+      port: 3306
+      targetPort: 3306

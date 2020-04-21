@@ -1,6 +1,6 @@
 # go-instant
 *-packr.go
-goinstant/bin/*
+goinstant/bin/goinstant*
 
 # Logs
 logs
@@ -66,3 +66,13 @@ typings/
 
 # mac
 .DS_Store
+
+# docker data volumes
+**/data
+
+# production
+/docs/build
+
+# generated files
+/docs/.docusaurus
+/docs/.cache-loader
