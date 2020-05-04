@@ -91,7 +91,8 @@ func composeUp(composeFile string) {
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		cmd := exec.Command("docker-compose", "-f", "-", "up", "-d")
+		// cmd := exec.Command("docker-compose", "-f", "-", "up", "-d")
+		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "instant", "up")
 		cmd.Stdin = strings.NewReader(composeFile)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -121,7 +122,8 @@ func composeDown(composeFile string) {
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		cmd := exec.Command("docker-compose", "-f", "-", "down")
+		// cmd := exec.Command("docker-compose", "-f", "-", "down")
+		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "instant", "down")
 		cmd.Stdin = strings.NewReader(composeFile)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -163,12 +165,13 @@ func main() {
 	}
 	fmt.Printf("You chose %q\n", result)
 
-	stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
+	// stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
 
 	switch result {
 	case "Start Instant OpenHIE":
 		debug()
-		stuff := composeGet(stack)
+		// stuff := composeGet(stack) - now not needed as it's now bundled in the docker container
+		stuff := ""
 		composeUp(stuff)
 
 		box := packr.New("someBoxName", "./templates")
@@ -177,7 +180,8 @@ func main() {
 		http.ListenAndServe(":27517", nil)
 
 	case "Stop Instant OpenHIE":
-		stuff := composeGet(stack)
+		// stuff := composeGet(stack)
+		stuff := ""
 		composeDown(stuff)
 	case "Debug":
 		debug()
