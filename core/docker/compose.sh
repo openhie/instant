@@ -1,5 +1,4 @@
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-echo $composeFilePath
 
 if [ "$1" == "up" ]; then
     docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
