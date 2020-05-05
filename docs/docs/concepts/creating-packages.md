@@ -3,7 +3,7 @@ id: creating-packages
 title: How to create an Instant OpenHIE package
 sidebar_label: Creating packages
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - How to
   - Creating packages
 description: How to create an Instant OpenHIE package

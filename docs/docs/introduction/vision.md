@@ -3,7 +3,7 @@ id: vision
 title: Vision
 sidebar_label: Vision
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Vision
 description: The vision of Instant OpenHIE
 ---

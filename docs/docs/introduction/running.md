@@ -3,7 +3,7 @@ id: running
 title: Running Instant OpenHIE
 sidebar_label: Running
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Running Instant OpenHIE
 description: How to run Instant OpenHIE
 ---

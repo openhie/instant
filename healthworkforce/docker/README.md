@@ -1,5 +1,5 @@
 
-# InstantHIE Healthworkforce Component - docker-compose
+# Instant OpenHIE Healthworkforce Component - docker-compose
 
 This component consists of one service:
 
