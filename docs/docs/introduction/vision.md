@@ -8,9 +8,11 @@ keywords:
 description: The vision of Instant OpenHIE
 ---
 
+The Instant OpenHIE project aims to reduce the costs and skills required for software developers to deploy applications conforming to an OpenHIE architecture for quicker initial solution testing and as a starting point for faster production implementation and customization. Instant OpenHIE will be a simple way for technical persons to install and see a complex system working against a real-world use case. It will allow technical persons to illustrate how interoperability can work to solve health challenges and show how a national interoperability architecture could be created with open-source software and standards.
+
 At maturity, Instant OpenHIE activities will provide portable, launchable versions of multiple OpenHIE components to facilitate:
 
-- Demonstrable reference products -- those that align with the OpenHIE Community's vision for low resource contexts
+- Demonstrable reference products - those that align with the OpenHIE Community's vision for low resource contexts
 - Rapid software development of mediators and point-of-service systems by making it possible to launch several applications easily so the developer can focus on their task
 - Reproducible, version-controlled infrastructure for user-contributed tests of the OpenHIE Architecture profiles, workflows, and use cases.
 - Production-ready containers and orchestratable components that are deployable in any context.

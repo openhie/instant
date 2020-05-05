@@ -12,14 +12,50 @@ description: The core package of the InstantHIE
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The InstantHIE Core Package is the base of the InstantHIE architecture.
+The InstantHIE Core Package is the common base of the InstantHIE architecture.
 
-This package consists of two components:
+This package consists of two components that support all other packages, these are:
 
 - Interoperability Layer - [OpenHIM](http://openhim.org/)
 - FHIR Server - [HAPI FHIR](https://hapifhir.io/)
 
-## Getting Started
+## Package functionality
+
+This package sets up a number of containers that standup the OpenHIM as well as the HAPI FHIR server. It also configures the OpenHIM with a channel so that the HAPI FHIR server may be accessed through the OpenHIM.
+
+To use the HAPI FHIR server from an external point of care application you may access it through the OpenHIM at a URL like the following:
+
+```bash
+curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
+```
+
+> The **openhim_core_transaction_api_url** is displayed in the output of the startup script
+
+Accessing the services created by this package:
+- **OpenHIM**
+  - Console: Displayed in the output of the startup script
+  - Username: **root@openhim.org**
+  - Password: **instant101**
+- **HAPI FHIR**
+  - This service should not be publicly accessible and only accessed via the Interoperability Layer
+
+## Deployment strategy
+
+The OpenHIM was already dockerised so we were able to re-use those images for our work in the core package. HAPI FHIR didn't have official dockerfiles available, however, several community contributed optiosn existed. We chose to use what seemed like the most robust option.
+
+We supplied docker compose files for the setup and configuration of these application. We chose to split the docker-compose file into three file:
+
+1. a main docker-compose.yml file that setup the base applications
+2. a config docker-compose.config.yml file that when executed configures the OpenHIM with a channel route to HAPI FHIR
+3. a dev docker-compose.dev.yml file that exposes all open port to the host for easy debuging, this would be insecure in a production environment
+
+For Kubernetes we created deployment and service resource files for each of the components of each application and hooked these up with a kustomization.yml file for easy deployment. To import configuration into the OpenHIM we use job resources that only execute when the OpenHIM core is up. This is done by using init container to wait for the OpenHIM core port to become available.
+
+For importing config we use a custom image which is just a node.js container that can run node.js scripts that we define. It also has a `wait-on` module installed to allow it to wait on certain prot being available before executing.
+
+## Core Package Dev guide
+
+For testing purposes this package can be run independently. The below are some notes of how to do this. The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started).
 
 Select a deployment platform below to follow the getting started steps in setting up this package.
 
@@ -40,7 +76,7 @@ Once you are in the correct working directory (`core/docker/`) we can proceed to
 docker-compose up
 ```
 
-### Useful compose flags
+## Useful compose flags
 
 Some additional flags can be passed to the `docker-compose` command making it a bit easier to work with.
 
@@ -52,7 +88,7 @@ Some additional flags can be passed to the `docker-compose` command making it a 
 docker-compose up -d --force-recreate
 ```
 
-### Environment configuration
+## Environment configuration
 
 By running the above command to get started with the Core package we create all the services that need to be defined, but this script might have some limitations depending on the type of environment you want to run the configuration
 
@@ -83,7 +119,7 @@ kubectl config get-contexts
 kubectl config use-context <context-name>
 ```
 
-### Minikube (local)
+## Minikube (local)
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
@@ -94,63 +130,6 @@ minikube start --cpus 4 --memory 8192
 ```
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
-
-### Amazon Web Services
-
-Useful links:
-
-- [AWS Cli Setup guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-- [Amazon Elastic Kubernetes Service(EKS) Quickstart](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html)
-
-#### Install AWS Cli
-
-```sh
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-
-unzip awscliv2.zip
-
-sudo ./aws/install
-```
-
-### Google Cloud
-
-Useful Links:
-
-- [Google Cloud Cli Setup Guide](https://cloud.google.com/sdk/docs#deb)
-- [Google Cloud Cluster Quickstart](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
-
-### Azure
-
-Useful Links:
-
-- [Azure Cli Setup Guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
-- [Quickstart](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest)
-
-#### Install Azure Cli
-
-```sh
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-az login
-```
-
-### Digital Ocean
-
-Useful Links:
-
-- [Digital Ocean Cli Setup Guide](https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/)
-
-#### Install Digital Ocean Ctl
-
-```sh
-curl -OL https://github.com/digitalocean/doctl/releases/download/v<version>/doctl-<version>-linux-amd64.tar.gz
-
-sudo mv ./doctl /usr/local/bin
-```
-
-> [See here for latest version](https://github.com/digitalocean/doctl/releases)
-
----
 
 ## Getting Started
 
@@ -172,7 +151,7 @@ This bash script will apply the kubernetes `kustomization.yaml` file which contr
 
 > On first run the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
-### View running Kubernetes resources
+## View running Kubernetes resources
 
 Execute the below commands to see the running Kubernetes resources and the state that they are in.
 
@@ -233,29 +212,3 @@ To run in development mode, where the OpenHIM mongo database, HAPI FHIR server, 
 ---
 </TabItem>
 </Tabs>
-
-## Accessing the services
-
-- **OpenHIM**
-  - Console: Displayed in the output of the startup script
-  - Username: **root@openhim.org**
-  - Password: **instant101**
-- **HAPI FHIR**
-  - This service should not be publicly accessible and only accessed via the Interoperability Layer
-
-## Testing the Core package
-
-As part of the Core package setup, we also do some initial imports of config for connecting the services.
-
-- OpenHIM: Import a public channel configuration that routes requests to the HAPI FHIR services
-- HAPI FHIR: _Not config import yet_
-
-For testing this Core package we will be making use of `curl` for sending our request, but any client could be used to achieve the same result.
-
-Execute the below `curl` request to successfully route a request through the OpenHIM to query the HAPI FHIR server.
-
-```bash
-curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
-```
-
-> The **openhim_core_transaction_api_url** is displayed in the output of the startup script

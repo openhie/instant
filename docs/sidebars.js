@@ -8,18 +8,19 @@
 module.exports = {
   'docs': {
     'Introduction': [
-      'introduction/overview',
       'introduction/vision',
-      'introduction/running',
+      'introduction/getting-started',
       'introduction/community'
     ],
     'Concepts': [
       'concepts/overview',
       'concepts/package-arch',
-      'concepts/creating-packages',
     ],
-    'Packages': [
-      'packages/overview',
+    'How-to': [
+      'how-to/creating-packages',
+      'how-to/setup-kubernetes-in-cloud'
+    ],
+    'Existing Packages': [
       'packages/core',
       'packages/health-workforce'
     ]

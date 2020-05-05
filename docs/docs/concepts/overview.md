@@ -9,6 +9,8 @@ keywords:
 description: An overview of the InstantHIE architecture
 ---
 
-Instant OpenHIE provides multiple sets of scripts to configure and setup HIE components for particular OpenHIE use cases and workflows. These scripts and configuration are organised into self-contained packages. Each of these packages may depend on other packages which allows highly complex infrastructure to be setup instantly once a number of packages have been created.
+Instant OpenHIE provides multiple sets of scripts to configure and setup HIE components for particular OpenHIE use cases and workflows. These scripts and configuration are organised into self-contained packages. Each of these packages may depend on other packages which allows highly complex infrastructure to be setup instantly by deploying a number of packages.
 
-Each of these packages will contain scripts which will setup containerised applications, configure them and ensure necessary data is loaded into them. Docker will be used to containerise each of the necessary applications and to enable them to be easily deployed.
+Each of these packages contain scripts which setup containerised applications, configure them and ensure necessary data is loaded into them. Docker will be used to containerise each of the necessary applications and to enable them to be easily deployed.
+
+Instant OpenHIE currently support two targets for deployment of these containerised applications. The first is using Docker Compose which allow a number of container to be created and orchestrated easily **locally on your computer** (or on a server if need be) with minimal dependencies. The other target is Kubernetes which is an orchestration platform for contianerised applications that is extremely powerful, but very complex to setup. It is **best used for cloud-based setup** where you already have a managed Kubernetes control plane or are capable of setting this up yourself.

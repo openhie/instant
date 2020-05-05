@@ -1,0 +1,100 @@
+---
+id: creating-packages
+title: How to create an Instant OpenHIE package
+sidebar_label: Create packages
+keywords:
+  - InstantHIE
+  - How to
+  - Creating packages
+description: How to create an Instant OpenHIE package
+---
+
+**Note:** This is not final and is subject to change. The packaging process is in active discussion and development.
+
+Package are a way of allowing a set of applications to be setup and configured to enable a particular set of functionality. Each package MUST include a the following:
+
+1. `docker-compose.yml` files to setup and configure the necessary applications in Docker Compose
+2. Deployment and service resource file (and any other necessary resources) to setup and configure the necessary applications in Kubernetes
+3. A `meta.json` file that hold metadata about the package
+4. Bash scripts that accept a particular set of commands (up, down or destroy) and execute these Docker Compose and Kubernetes infrastructure files and any other necessary processing and configuration to perform the required command.
+
+## Docker Compose files
+
+All docker compose files should by conversion be contained in a `./docker` directory in the root of the package directory. It is often useful to split up docker compose files into separate files with different purposes. For example:
+
+* `docker-compose.yml` for the main application setup and orchestration
+* `docker-compose.config.yml` for starting short lived containers that configure the applications or add any test data that is necessary
+* `dcoker-compose.dev.yml` for overridding option in the main compose file to allow for easier development, for example to expose all port to the host even those that should be protected
+
+## Kubernetes resources
+
+All Kubernetes files should by convension be cotnainer in a `./kubernetes` directory in the root of the package directory. It is recommended to use the [declarative form](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/) of Kubernetes resources. The key resources to define are deployments and services for each component.
+
+Config contianer can be executed as job resources with an init container configured so that they only execute when the service they are to configure is up.
+
+## meta.json
+
+This file should be in the root directory of the package and gives metadata about the package itself along with any dependencies that it may have:
+
+```json
+{
+  "id": "abc",
+  "name": "XYZ",
+  "description": "...",
+  "version": "v0.0.1",
+  "dependencies": ["core", "healthworkforce"] // list of package ids
+}
+```
+
+## Bash scripts
+
+Two bash scripts are required in each package:
+
+* `./docker/compose.sh` - to configure, start and stop the applications using Docker Compose
+* `.kubernetes/k8s.sh` -  to configure, start and stop the applications using Kubernetes
+
+Each of these scripts should accept one of the following commands (i.e. `./compose.sh <command>`):
+
+* `up` - start all the applications in this package and performs any necessary pre-processing of the infrastrucutre files
+* `down` - stops all the applications in this package
+* `destroy` - deleted all the application containers in this package and all their stored data
+
+For example a `compose.sh` script could look like this:
+
+```sh
+composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+if [ "$1" == "up" ]; then
+    docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
+elif [ "$1" == "down" ]; then
+    docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
+elif [ "$1" == "destroy" ]; then
+    docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml down -v
+else
+    echo "Valid options are: up, down, or destroy"
+fi
+```
+
+A `k8s.sh` script could look like this:
+
+```sh
+#!/bin/bash
+
+k8sMainRootFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+if [ "$1" == "up" ]; then
+    # Create the namespace
+    kubectl apply -f $k8sMainRootFilePath/healthworkforce-namespace.yaml
+    kubectl apply -k $k8sMainRootFilePath
+elif [ "$1" == "down" ]; then
+    kubectl delete deployment mapper-deployment
+elif [ "$1" == "destroy" ]; then
+    kubectl delete namespaces hwf-package
+else
+    echo "Valid options are: up, down, or destroy"
+fi
+```
+
+## How to execute your new package
+
+TBD, this part is still in development and will be updated once we it is implemented.

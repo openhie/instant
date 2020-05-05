@@ -19,7 +19,7 @@ module.exports = {
         src: 'img/logo.png'
       },
       links: [
-        { to: 'docs/introduction/overview', label: 'Docs', position: 'left' },
+        { to: 'docs/introduction/vision', label: 'Docs', position: 'left' },
         {
           href: 'https://github.com/openhie/instant',
           label: 'GitHub',

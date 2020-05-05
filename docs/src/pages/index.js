@@ -12,12 +12,12 @@ const features = [
     imageUrl: 'img/feature.introduction.svg',
     description: (
       <>
-        The Instant OpenHIE project aims to reduce the costs and skills required 
-        for software developers to deploy an OpenHIE architecture for quicker 
-        initial solution testing and as a starting point for faster production 
+        The Instant OpenHIE project aims to reduce the costs and skills required
+        for software developers to deploy an OpenHIE architecture for quicker
+        initial solution testing and as a starting point for faster production
         implementation and customization.
         <br /><br />
-        View the <a href="docs/introduction/overview">Introduction section</a> to learn more.
+        View the <a href="docs/introduction/vision">Introduction section</a> to learn more.
       </>
     )
   },
@@ -41,8 +41,8 @@ const features = [
     imageUrl: 'img/feature.packages.svg',
     description: (
       <>
-        The fundamental concept of Instant OpenHIE is that it can be extended 
-        to support additional use cases and workflows. This is achieved through 
+        The fundamental concept of Instant OpenHIE is that it can be extended
+        to support additional use cases and workflows. This is achieved through
         packages
         <br /><br />
         View the <a href="docs/concepts/package-arch">Packages section</a> to learn more.
@@ -89,7 +89,7 @@ function Home() {
                 'button button--outline button--secondary button--lg',
                 styles.getStarted
               )}
-              to={useBaseUrl('docs/introduction/overview')}
+              to={useBaseUrl('docs/introduction/vision')}
             >
               Get Started
             </Link>

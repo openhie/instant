@@ -26,4 +26,4 @@ The below diagram shows how packages will extend off each other to add use cases
   <img alt="Package architecture" src={useBaseUrl('img/package-arch.png')} />
 </div>
 
-See [creating packages](creating-packages.md) for more information on how to create your own packages to extend instant OpenHIE.
+A number of essential packages are bundled with Instant OpenHIE, however, it is designed to be extended for implementation specific need. See [creating packages](../how-to/creating-packages) for more information on how to create your own packages to extend instant OpenHIE.
