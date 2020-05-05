@@ -15,8 +15,8 @@ module.exports = {
     navbar: {
       title: 'InstantHIE',
       logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.png'
+        alt: 'Instant OpenHIE Logo',
+        src: 'img/IOHIE-icon-medium.png'
       },
       links: [
         { to: 'docs/introduction/overview', label: 'Docs', position: 'left' },
