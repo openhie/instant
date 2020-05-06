@@ -8,6 +8,10 @@ keywords:
 description: The vision of Instant OpenHIE
 ---
 
+:::caution
+The Instant OpenHIE architecture and development is still very much in progress. This documentation and the design concepts of Instant OpenHIE are subject to change and the project is not yet ready for public use.
+:::
+
 The Instant OpenHIE project aims to reduce the costs and skills required for software developers to deploy applications conforming to an OpenHIE architecture for quicker initial solution testing and as a starting point for faster production implementation and customization. Instant OpenHIE will be a simple way for technical persons to install and see a complex system working against a real-world use case. It will allow technical persons to illustrate how interoperability can work to solve health challenges and show how a national interoperability architecture could be created with open-source software and standards.
 
 At maturity, Instant OpenHIE activities will provide portable, launchable versions of multiple OpenHIE components to facilitate:

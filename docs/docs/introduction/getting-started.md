@@ -11,6 +11,10 @@ description: How to run Instant OpenHIE
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::caution
+The Instant OpenHIE architecture and development is still very much in progress. This documentation and the design concepts of Instant OpenHIE are subject to change and the project is not yet ready for public use.
+:::
+
 Instant OpenHIE is designed to be easily downloaded and run by anyone on any platform. To get started you will need to first install docker and docker-compose which Instant OpenHIE uses to run all of the necessary services and applications. The following links guide you on how to do this for your platform:
 
 - [Docker engine](https://docs.docker.com/install/)
@@ -26,7 +30,7 @@ Once the download is complete, move it somewhere memorable. From there you may e
 
 Congratulations, you have successfully started up Instant OpenHIE. Follow the instruction on the web page to stop the services when you are done.
 
-## Running using the bash scripts directly (useful for automation)
+## Running using the bash scripts directly (useful for automation and development)
 
 To start all the default the Instant OpenHIE packages, select a deployment platform below. Have a look at the existing packages on the sidebar to see what packages are available.
 

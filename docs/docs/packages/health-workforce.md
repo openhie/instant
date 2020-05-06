@@ -10,6 +10,10 @@ keywords:
 description: The health-workforce package of the Instant OpenHIE
 ---
 
+:::caution
+This package is still undner development
+:::
+
 ## Package functionality
 
 This package sets up iHRIS and GOFR applications which are able to be queried for facility and practitioner information. It also sets up a mediator that synchronises (using mCSD) practitioner and facility data with the central FHIR store that is provided by the core package. This allows the user of the HIE to query this data to answer questions such as the following scenario:

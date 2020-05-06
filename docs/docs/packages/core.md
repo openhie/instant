@@ -12,6 +12,10 @@ description: The core package of the Instant OpenHIE
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::info
+This package is freshly developed and is subject to change based on how the Instant OpenHIE project evolves
+:::
+
 The Instant OpenHIE Core Package is the common base of the Instant OpenHIE architecture.
 
 This package consists of two components that support all other packages, these are:

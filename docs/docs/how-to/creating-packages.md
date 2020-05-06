@@ -9,7 +9,9 @@ keywords:
 description: How to create an Instant OpenHIE package
 ---
 
-**Note:** This is not final and is subject to change. The packaging process is in active discussion and development.
+:::caution
+This is not final and is subject to change. The packaging process is in active discussion and development.
+:::
 
 Package are a way of allowing a set of applications to be setup and configured to enable a particular set of functionality. Each package MUST include a the following:
 
