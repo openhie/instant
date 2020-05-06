@@ -49,7 +49,7 @@ const features = [
       <>
         The fundamental concept of Instant OpenHIE is that it can be extended to
         support additional use cases and workflows. This is achieved through
-        packages
+        packages. A number of essential package are bundled with Instant OpenHIE.
         <br />
         <br />
         View the <a href="docs/concepts/package-arch">Packages section</a> to

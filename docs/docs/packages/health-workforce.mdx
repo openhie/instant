@@ -16,10 +16,11 @@ This package is still undner development
 
 ## Package functionality
 
-This package sets up iHRIS and GOFR applications which are able to be queried for facility and practitioner information. It also sets up a mediator that synchronises (using mCSD) practitioner and facility data with the central FHIR store that is provided by the core package. This allows the user of the HIE to query this data to answer questions such as the following scenario:
+This package sets up the iHRIS and GOFR applications which act as a Provider and Facilty registry respectively. They are able to be queried for facility and practitioner information using the mCSD IHE profile. It also sets up a mediator that synchronises (using mCSD) practitioner and facility data with the central FHIR store that is provided by the core package. This allows the user of the HIE to query this interlinked data from a single location to answer questions such as the following scenario:
 
 * A doctor, Joseph,  at a rural clinic wants to refer a patient, Mousa, to an Oncologist because of a lump that they suspect may be cancerous. They are able to look up a list of specialists that offer that service in their EMR system. They choose a particular specialist and find out the facilities in which they work. A referral can now be produced by the EMR for the patient and they can be sent to that facility for their visit. (PractitionerRole -> Practitioner -> Facility)
 
+This package aim to enact [this OpenHIE workflow](https://wiki.ohie.org/pages/viewpage.action?pageId=22053221) using the newer mCSD IHE profile.
 
 ## Deployment strategy
 
