@@ -1,6 +1,6 @@
-# InstantHIE Core Package - Kubernetes
+# Instant OpenHIE Core Package - Kubernetes
 
-The InstantHIE Core Package is the base of the InstantHIE architecture.
+The Instant OpenHIE Core Package is the base of the Instant OpenHIE architecture.
 
 This package consists of two services:
 

@@ -3,22 +3,22 @@ id: overview
 title: Overview of Packages
 sidebar_label: Overview
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Packages
-description: An overview of all existing InstantHIE packages
+description: An overview of all existing Instant OpenHIE packages
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-So far InstantHIE consists of two packages:
+So far Instant OpenHIE consists of two packages:
 
 - Core
 - Health Worker Force
 
 ## Getting Started
 
-To start all the InstantHIE packages, select a deployment platform below.
+To start all the Instant OpenHIE packages, select a deployment platform below.
 
 <Tabs
   defaultValue="dockerCompose"
@@ -50,7 +50,7 @@ Then to remove the containers run the command below. However, make sure you have
 </TabItem>
 <TabItem value="kubernetes">
 
-Before proceeding, ensure you are in the main `/instant` directory containing `instant.sh` script. Then you can execute the command below. This commands will output urls from which you can access your instantHIE instance.
+Before proceeding, ensure you are in the main `/instant` directory containing `instant.sh` script. Then you can execute the command below. This commands will output urls from which you can access your Instant OpenHIE instance.
 
 ```sh
 ./instant.sh up k8s
@@ -62,7 +62,7 @@ To delete all the deployment related pods, run the command below. This command w
 ./instant.sh down k8s
 ```
 
-To delete the entire instantHIE system run the command below.
+To delete the entire Instant OpenHIE system run the command below.
 
 ```sh
 ./instant.sh destroy k8s
