@@ -3,16 +3,16 @@ id: core
 title: Core Package
 sidebar_label: Core
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Core
   - Package
-description: The core package of the InstantHIE
+description: The core package of the Instant OpenHIE
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The InstantHIE Core Package is the common base of the InstantHIE architecture.
+The Instant OpenHIE Core Package is the common base of the Instant OpenHIE architecture.
 
 This package consists of two components that support all other packages, these are:
 

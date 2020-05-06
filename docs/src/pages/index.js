@@ -16,10 +16,14 @@ const features = [
         for software developers to deploy an OpenHIE architecture for quicker
         initial solution testing and as a starting point for faster production
         implementation and customization.
-        <br /><br />
-        View the <a href="docs/introduction/vision">Introduction section</a> to learn more.
+        <br />
+        <br />
+        View the <a href="docs/introduction/vision">
+          Introduction section
+        </a>{' '}
+        to learn more.
       </>
-    )
+    ),
   },
   {
     title: <>Concepts</>,
@@ -31,24 +35,28 @@ const features = [
         multiple different use cases and workflows specified by OpenHIE. Each
         package contains scripts to stand up and configure applications that
         support these various workflows.
-        <br /><br />
-        View the <a href="docs/concepts/overview">Concepts section</a> to learn more.
+        <br />
+        <br />
+        View the <a href="docs/concepts/overview">Concepts section</a> to learn
+        more.
       </>
-    )
+    ),
   },
   {
     title: <>Packages</>,
     imageUrl: 'img/feature.packages.svg',
     description: (
       <>
-        The fundamental concept of Instant OpenHIE is that it can be extended
-        to support additional use cases and workflows. This is achieved through
+        The fundamental concept of Instant OpenHIE is that it can be extended to
+        support additional use cases and workflows. This is achieved through
         packages
-        <br /><br />
-        View the <a href="docs/concepts/package-arch">Packages section</a> to learn more.
+        <br />
+        <br />
+        View the <a href="docs/concepts/package-arch">Packages section</a> to
+        learn more.
       </>
-    )
-  }
+    ),
+  },
 ]
 
 function Feature({ imageUrl, title, description }) {
@@ -76,17 +84,18 @@ function Home() {
     >
       <header className={classnames('hero hero--primary', styles.heroBanner)}>
         <div className="container">
-          <img
-            className="logo_header"
-            src={useBaseUrl("/img/logo.png")}
-            alt="Project Logo"
-          />
-          <h1 className="hero__title">{siteConfig.title}</h1>
+          <h1>
+            <img
+              className="logo_header logo_size"
+              src={useBaseUrl('/img/iohie-logo-darkbg-transparent.svg')}
+              alt="Instant OpenHIE Logo"
+            />
+          </h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
               className={classnames(
-                'button button--outline button--secondary button--lg',
+                'button button--outline button--primary button--lg',
                 styles.getStarted
               )}
               to={useBaseUrl('docs/introduction/vision')}

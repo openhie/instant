@@ -1,7 +1,7 @@
 
-# InstantHIE Core Component - docker-compose
+# Instant OpenHIE Core Component - docker-compose
 
-The InstantHIE Core Component is the base of the InstantHIE architecture.
+The Instant OpenHIE Core Component is the base of the Instant OpenHIE architecture.
 
 This component consists of two services:
 

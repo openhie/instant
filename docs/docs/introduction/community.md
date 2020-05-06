@@ -3,9 +3,9 @@ id: community
 title: Community
 sidebar_label: Community
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Community
-description: The InstantHIE community
+description: The Instant OpenHIE community
 ---
 
 Instant OpenHIE is an open source project and we encourage contributions and suggestions. If you would like to get involved please visit us on Github. Feel free to submit issue or to create PRs if there is somethin you would like to see included in the project.

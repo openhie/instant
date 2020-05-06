@@ -3,7 +3,7 @@ id: package-arch
 title: Packages
 sidebar_label: Packages
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Packages
   - Architecture
 description: A description of the instant OpenHIE package architecture

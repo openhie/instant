@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'InstantHIE',
+  title: 'Instant OpenHIE',
   tagline: 'Simplifying OpenHIE Setup',
   url: 'https://openhie.github.io',
   baseUrl: '/instant/',
@@ -13,10 +13,10 @@ module.exports = {
       algoliaOptions: {} // Optional, if provided by Algolia
     },
     navbar: {
-      title: 'InstantHIE',
+      title: 'Instant OpenHIE',
       logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.png'
+        alt: 'Instant OpenHIE Logo',
+        src: 'img/IOHIE-icon-medium.png'
       },
       links: [
         { to: 'docs/introduction/vision', label: 'Docs', position: 'left' },

@@ -3,11 +3,11 @@ id: health-workforce
 title: Health-Workforce
 sidebar_label: Health-Workforce
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Health
   - Workforce
   - Package
-description: The health-workforce package of the InstantHIE
+description: The health-workforce package of the Instant OpenHIE
 ---
 
 ## Package functionality

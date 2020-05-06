@@ -3,7 +3,7 @@ id: getting-started
 title: Getting started
 sidebar_label: Getting started
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - Running Instant OpenHIE
 description: How to run Instant OpenHIE
 ---
@@ -28,7 +28,7 @@ Congratulations, you have successfully started up Instant OpenHIE. Follow the in
 
 ## Running using the bash scripts directly (useful for automation)
 
-To start all the default the InstantHIE packages, select a deployment platform below. Have a look at the existing packages on the sidebar to see what packages are available.
+To start all the default the Instant OpenHIE packages, select a deployment platform below. Have a look at the existing packages on the sidebar to see what packages are available.
 
 <Tabs
   defaultValue="dockerCompose"

@@ -3,7 +3,7 @@ id: setup-kubernetes-in-cloud
 title: How to setup managed Kubernetes in the cloud
 sidebar_label: Setup managed Kubernetes
 keywords:
-  - InstantHIE
+  - Instant OpenHIE
   - How to
   - Kubernetes
   - AWS
