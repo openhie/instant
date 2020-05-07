@@ -1,0 +1,31 @@
+---
+id: package-arch
+title: Packages
+sidebar_label: Packages
+keywords:
+  - Instant OpenHIE
+  - Packages
+  - Architecture
+description: A description of the instant OpenHIE package architecture
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+The fundamental concept of Instant OpenHIE is that it can be extended to support additional use cases and workflows. This is achieved through packages. A [core package](../packages/core) has been produced from which all other packages will be derived. A package will either extend directly from the core package or from another existing package.
+
+A package is intended to encompass a set of functionality rather than just setup generic applications. Packages are expected to configure the applications so that they may enact a particular functional role with the HIE. This may include setting up test data and pre-configuring applications.
+
+Each package will contain the following types of technical artefacts:
+
+- Docker Compose scripts for setting up the applications required for this package’s use cases and workflows
+- Kubernetes scripts for setting up the applications required for this package’s use cases and workflows
+- Configuration scripts to setup required configuration metadata
+- Extensions to the test harness to test the added use cases with test data
+
+The below diagram shows how packages will extend off of each other to add use cases of increasing complexity.
+
+<div class="text--center">
+  <img alt="Package architecture" src={useBaseUrl('img/package-arch.png')} />
+</div>
+
+Several essential packages are bundled with Instant OpenHIE. However, it is designed to be extended for implementation-specific needs. See [creating packages](../how-to/creating-packages) for more information on how to create your own packages to extend Instant OpenHIE.

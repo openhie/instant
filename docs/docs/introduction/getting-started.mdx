@@ -1,0 +1,117 @@
+---
+id: getting-started
+title: Getting started
+sidebar_label: Getting started
+keywords:
+  - Instant OpenHIE
+  - Running Instant OpenHIE
+description: How to run Instant OpenHIE
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::caution
+The Instant OpenHIE architecture and development is still very much in progress. This documentation and the design concepts of Instant OpenHIE are subject to change and the project is not yet ready for public use.
+:::
+
+**Prerequisites**
+- [Docker engine](https://docs.docker.com/install/)
+- [Docker compose](https://docs.docker.com/compose/install/)
+
+Instant OpenHIE is, by design, easily downloaded and run by anyone on any platform.
+
+To get started, install Docker and Docker Compose. Instant OpenHIE uses Docker Compose to manage all the necessary services and applications. The links above will help guide the set up on your platform.
+
+## Use the Interactive App (recommended)
+
+1. Download the latest Instant OpenHIE executable from our [GitHub releases page](https://github.com/openhie/instant/releases). Find the executable in the assets section of the latest release for your platform.
+
+1. Move the Instant OpenHIE download somewhere memorable. Run the executable while in its containing directory to get the command-line interface:
+
+    ```sh
+    ./goinstant-linux
+
+    Use the arrow keys to navigate: ↓ ↑ → ←
+    ? Choose Start Instant OpenHIE if this is your first time:
+      ▸ Start Instant OpenHIE
+        Stop Instant OpenHIE
+        Debug
+        Help
+        Quit
+    ```
+
+1. Use the arrow keys to navigate the interface and choose '**Start Instant OpenHIE**'.
+
+    This will start a download that may take some time. After the download, the script will start up the default packages. The script will then open a web page with links to the started services/application as well as their corresponding documentation.
+
+    > All available packages are listed here in the sidebar under **Existing Packages**. Each package includes several services/applications.
+
+1. Congratulations, you have successfully started up Instant OpenHIE. Follow the instructions on the web page to stop the services when you are done.
+
+## Run the Bash Scripts Directly (for automation and development)
+
+To start all the default Instant OpenHIE packages, select a deployment platform below.
+
+> Have a look at the existing packages on the sidebar to see what is currently available.
+
+<Tabs
+  defaultValue="dockerCompose"
+  values={[
+    { label: 'Docker Compose', value: 'dockerCompose' },
+    { label: 'Kubernetes', value: 'kubernetes' }
+  ]}
+>
+<TabItem value="dockerCompose">
+
+**Before proceeding**, make sure you are in the main `/instant` directory. This directory contains the `instant.sh` script.
+
+1. To start up the system, execute the following command:
+
+    ```sh
+    ./instant.sh up docker
+    ```
+
+1. To stop the running containers, execute the following:
+
+    ```sh
+    ./instant.sh down docker
+    ```
+
+1. Remove the containers with the command below. However, make sure you **stop all the containers before trying to delete** them.
+
+    > **This action will also delete all volumes** created by the containers.
+
+    ```sh
+    ./instant.sh destroy docker
+    ```
+
+</TabItem>
+<TabItem value="kubernetes">
+
+**Before proceeding**, make sure you are in the main `/instant` directory. This directory contains the `instant.sh` script.
+
+1. To start up the system, execute the following command:
+
+    > This command will output urls from which you can access your Instant OpenHIE instance.
+
+    ```sh
+    ./instant.sh up k8s
+    ```
+
+1. To delete all the deployment related pods, run the command below.
+
+    > This command will leave services, and volumes intact.
+
+    ```sh
+    ./instant.sh down k8s
+    ```
+
+1. To purge the entire Instant OpenHIE system, run the command below.
+
+    ```sh
+    ./instant.sh destroy k8s
+    ```
+
+</TabItem>
+</Tabs>

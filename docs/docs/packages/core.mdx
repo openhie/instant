@@ -1,0 +1,236 @@
+---
+id: core
+title: Core Package
+sidebar_label: Core
+keywords:
+  - Instant OpenHIE
+  - Core
+  - Package
+description: The core package of the Instant OpenHIE
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::info
+This package is freshly developed and is subject to change based on how the Instant OpenHIE project evolves
+:::
+
+The Instant OpenHIE Core Package is the common base of the Instant OpenHIE system and it provides fundamental components that other package may build off of.
+
+This package consists of two components that support all other packages, these are:
+
+- An Interoperability Layer - [OpenHIM](http://openhim.org/)
+- A FHIR Server - [HAPI FHIR](https://hapifhir.io/)
+
+## Package functionality
+
+This package sets up containers that support the OpenHIM as well as the HAPI FHIR server.
+It also configures the OpenHIM with a *HAPI FHIR channel*. This allows authorised data transfer to the HAPI FHIR server through the OpenHIM.
+
+To use the HAPI FHIR server from an external point of care application, you can access it through the OpenHIM at a URL like the following:
+
+```bash
+curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
+```
+
+> The **openhim_core_transaction_api_url** is displayed in the output when starting up Instant OpenHIE
+
+Accessing the services created by this package:
+- **OpenHIM**
+  - Console: Displayed in the output during startup
+  - Username: **root@openhim.org**
+  - Password: **instant101**
+- **HAPI FHIR**
+  - This service should not be publicly accessible and **only accessed via the Interoperability Layer**
+
+## Deployment strategy
+
+The OpenHIM was already dockerised so we were able to re-use those images for our work in the core package.
+HAPI FHIR didn't have official dockerfiles available, however, several community contributed options existed. We chose to use what seemed like the most robust option.
+
+We supplied Docker Compose files for the setup and configuration of these application. We chose to split the `docker-compose.*.yml` files into three concerns:
+
+1. **Main** `docker-compose.yml` file - sets up the base applications
+1. **Config** `docker-compose.config.yml` file - configures the OpenHIM with a channel route to HAPI FHIR
+1. **Dev** `docker-compose.dev.yml` file - exposes all open port to the host for easy debugging. This should not be used a production environment
+
+For Kubernetes, we created deployment and service resource files for each component of each application.
+The setup is orchestrated by a `kustomization.yml` file for easy deployment.
+To import configuration into the OpenHIM, we use job resources that only execute when the OpenHIM core is up.
+This is done with an `init container` which waits for the OpenHIM core port to become available.
+
+For importing config, we use a custom image which is just a node.js container that can run node.js scripts that we define.
+It also has a `wait-on` module installed to allow it to wait on certain ports being available before executing.
+
+## Core Package Dev guide
+
+For testing purposes, this package can be run independently. The below are some notes of how to do this.
+The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started).
+
+Select a deployment target below to follow the getting started steps in setting up this package.
+
+<Tabs
+  defaultValue="dockerCompose"
+  values={[
+    { label: 'Docker Compose', value: 'dockerCompose' },
+    { label: 'Kubernetes', value: 'kubernetes' }
+  ]
+}>
+<TabItem value="dockerCompose">
+
+Before proceeding, ensure that you are in the directory (`core/docker/`) containing the `docker-compose` script.
+
+From the working directory, execute our `docker-compose` script.
+This will create all the services and print out their logs in the terminal.
+
+```bash
+docker-compose up
+```
+
+## Useful compose flags
+
+Some additional flags can be passed to the `docker-compose` command making it easier to work with.
+
+- `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
+- `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
+- `--force-recreate`: This will force the container/image to be re-created if a newer version is found. This is useful when a new image has been released but not yet pulled onto the host machine.
+
+```bash
+docker-compose up -d --force-recreate
+```
+
+## Environment configuration
+
+The default script might not suit the type of environment you want to run.
+Therefore there are additional `docker-compose` files available for fine-tuning environment configuration.
+
+- **docker-compose.yml**: Main `docker-compose` script to create the services
+- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configurations.
+
+    > **Development environment only** as this exposes service ports.
+
+### Development configuration
+
+Can specify three `docker-compose` files.
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
+```
+
+### Production-like configuration
+
+Should use only two `docker-compose` files.
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
+```
+
+</TabItem>
+<TabItem value="kubernetes">
+
+> If you are working with multiple cluster hosting clients you may need to switch cluster context for your deployment. See the below commands:
+
+```sh
+kubectl config get-contexts
+kubectl config use-context <context-name>
+```
+
+## Minikube (local)
+
+For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
+Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+
+Once installed, we can start the minikube service by executing the below command:
+
+```sh
+minikube start --cpus 4 --memory 8192
+```
+
+This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
+
+## Getting Started
+
+Useful Links:
+
+- [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
+
+Before we proceed with creating our `Core Package` services, we need to ensure we are in the correct directory containing our bash setup scripts.
+
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core Instant OpenHIE deployment with the following command:
+
+```bash
+./main/k8s.sh up
+```
+
+The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
+
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (i.e. OpenHIM and HAPI-FHIR).
+
+> On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
+
+## View running Kubernetes resources
+
+Execute the below commands to see the running Kubernetes resources and the state that they are in.
+
+To display all resource: (Some new resources are not listed here)
+
+```sh
+kubectl get all --all-namespaces
+```
+
+To tear down this deployment, use the opposing command:
+
+```bash
+./main/k8s.sh down
+```
+
+To completely remove all project components, use the following option:
+
+```bash
+./main/k8s.sh destroy
+```
+
+---
+
+## Initial OpenHIM Config
+
+We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server.
+This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance.
+From the `kubernetes` directory, use the following command to implement:
+
+```bash
+./importer/k8s.sh up
+```
+
+> These scripts can be duplicated and modified to implement custom imports
+
+To clean up the remaining job and pods from a successful setup, run the following:
+
+```bash
+./importer/k8s.sh clean
+```
+
+Once the config is done HAPI FHIR will be accessible on: <https://OPENHIM_CORE_HOSTNAME/hapi-fhir-jpaserver/fhir/>
+
+You can test that the OpenHIM is routing requests to HAPI FHIR by running:
+
+```bash
+./test.sh <OPENHIM_CORE_HOSTNAME>
+```
+
+---
+
+## Development mode for exposed services
+
+To run in development mode, run the following command:
+
+```bash
+./dev/k8s.dev.sh
+```
+
+> In this mode the OpenHIM mongo database, HAPI FHIR server, and the MySQL database can be accessed directly from their urls.
+
+---
+</TabItem>
+</Tabs>

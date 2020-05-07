@@ -18,7 +18,7 @@ const features = [
         implementation and customization.
         <br />
         <br />
-        View the <a href="docs/introduction/overview">
+        View the <a href="docs/introduction/vision">
           Introduction section
         </a>{' '}
         to learn more.
@@ -49,7 +49,7 @@ const features = [
       <>
         The fundamental concept of Instant OpenHIE is that it can be extended to
         support additional use cases and workflows. This is achieved through
-        packages
+        packages. A number of essential package are bundled with Instant OpenHIE.
         <br />
         <br />
         View the <a href="docs/concepts/package-arch">Packages section</a> to
@@ -98,7 +98,7 @@ function Home() {
                 'button button--outline button--primary button--lg',
                 styles.getStarted
               )}
-              to={useBaseUrl('docs/introduction/overview')}
+              to={useBaseUrl('docs/introduction/vision')}
             >
               Get Started
             </Link>
