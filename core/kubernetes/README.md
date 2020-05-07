@@ -176,7 +176,7 @@ Useful Links:
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
 
-Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core Instant OpenHIE deployment with the following command:
 
 ```bash
 ./main/k8s.sh up
