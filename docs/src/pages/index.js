@@ -95,7 +95,7 @@ function Home() {
           <div className={styles.buttons}>
             <Link
               className={classnames(
-                'button button--outline button--primary button--lg',
+                'button button--outline button--primary button--lg button--green',
                 styles.getStarted
               )}
               to={useBaseUrl('docs/introduction/vision')}
