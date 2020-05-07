@@ -25,9 +25,10 @@ This package consists of two components that support all other packages, these a
 
 ## Package functionality
 
-This package sets up a number of containers that standup the OpenHIM as well as the HAPI FHIR server. It also configures the OpenHIM with a channel so that the HAPI FHIR server may be accessed through the OpenHIM.
+This package sets up containers that support the OpenHIM as well as the HAPI FHIR server.
+It also configures the OpenHIM with a *HAPI FHIR channel*. This allows authorised data transfer to the HAPI FHIR server through the OpenHIM.
 
-To use the HAPI FHIR server from an external point of care application you may access it through the OpenHIM at a URL like the following:
+To use the HAPI FHIR server from an external point of care application, you can access it through the OpenHIM at a URL like the following:
 
 ```bash
 curl <openhim_core_transaction_api_url>/hapi-fhir-jpaserver/fhir/Patient
@@ -41,25 +42,31 @@ Accessing the services created by this package:
   - Username: **root@openhim.org**
   - Password: **instant101**
 - **HAPI FHIR**
-  - This service should not be publicly accessible and only accessed via the Interoperability Layer
+  - This service should not be publicly accessible and **only accessed via the Interoperability Layer**
 
 ## Deployment strategy
 
-The OpenHIM was already dockerised so we were able to re-use those images for our work in the core package. HAPI FHIR didn't have official dockerfiles available, however, several community contributed options existed. We chose to use what seemed like the most robust option.
+The OpenHIM was already dockerised so we were able to re-use those images for our work in the core package.
+HAPI FHIR didn't have official dockerfiles available, however, several community contributed options existed. We chose to use what seemed like the most robust option.
 
-We supplied Docker Compose files for the setup and configuration of these application. We chose to split the `docker-compose.*.yml` files into three:
+We supplied Docker Compose files for the setup and configuration of these application. We chose to split the `docker-compose.*.yml` files into three concerns:
 
-1. a main `docker-compose.yml` file that setup the base applications
-2. a config `docker-compose.config.yml` file that when executed configures the OpenHIM with a channel route to HAPI FHIR
-3. a dev `docker-compose.dev.yml` file that exposes all open port to the host for easy debuging, this would be insecure in a production environment
+1. **Main** `docker-compose.yml` file - sets up the base applications
+1. **Config** `docker-compose.config.yml` file - configures the OpenHIM with a channel route to HAPI FHIR
+1. **Dev** `docker-compose.dev.yml` file - exposes all open port to the host for easy debugging. This should not be used a production environment
 
-For Kubernetes we created deployment and service resource files for each of the components of each application and hooked these up with a kustomization.yml file for easy deployment. To import configuration into the OpenHIM we use job resources that only execute when the OpenHIM core is up. This is done by using init container to wait for the OpenHIM core port to become available.
+For Kubernetes, we created deployment and service resource files for each component of each application.
+The setup is orchestrated by a `kustomization.yml` file for easy deployment.
+To import configuration into the OpenHIM, we use job resources that only execute when the OpenHIM core is up.
+This is done with an `init container` which waits for the OpenHIM core port to become available.
 
-For importing config we use a custom image which is just a node.js container that can run node.js scripts that we define. It also has a `wait-on` module installed to allow it to wait on certain prot being available before executing.
+For importing config, we use a custom image which is just a node.js container that can run node.js scripts that we define.
+It also has a `wait-on` module installed to allow it to wait on certain ports being available before executing.
 
 ## Core Package Dev guide
 
-For testing purposes this package can be run independently. The below are some notes of how to do this. The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started).
+For testing purposes, this package can be run independently. The below are some notes of how to do this.
+The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started).
 
 Select a deployment target below to follow the getting started steps in setting up this package.
 
@@ -72,9 +79,10 @@ Select a deployment target below to follow the getting started steps in setting 
 }>
 <TabItem value="dockerCompose">
 
-Before we proceed with creating our Core package components, we need to ensure we are in the correct directory containing our `docker-compose` script.
+Before proceeding, ensure that you are in the directory (`core/docker/`) containing the `docker-compose` script.
 
-Once you are in the correct working directory (`core/docker/`) we can proceed to execute our `docker-compose` script by running the below command which will create all the services and print out their logs in the terminal.
+From the working directory, execute our `docker-compose` script.
+This will create all the services and print out their logs in the terminal.
 
 ```bash
 docker-compose up
@@ -82,7 +90,7 @@ docker-compose up
 
 ## Useful compose flags
 
-Some additional flags can be passed to the `docker-compose` command making it a bit easier to work with.
+Some additional flags can be passed to the `docker-compose` command making it easier to work with.
 
 - `-d`: Run the services in a detached mode. This means that when you close or exit your terminal, the services will still be running in the background.
 - `-f`: Specify the location of the `docker-compose` file to be executed. Omitting this flag will look for the default `docker-compose.yml` file.
@@ -94,20 +102,25 @@ docker-compose up -d --force-recreate
 
 ## Environment configuration
 
-By running the above command to get started with the Core package we create all the services that need to be defined, but this script might have some limitations depending on the type of environment you want to run the configuration
-
-Additional `docker-compose` files are available for extra environment configuration
+The default script might not suit the type of environment you want to run.
+Therefore there are additional `docker-compose` files available for fine-tuning environment configuration.
 
 - **docker-compose.yml**: Main `docker-compose` script to create the services
-- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configurations to be used in a development environment (Open service ports for access etc)
+- **docker-compose.dev.yml**: Development `docker-compose` script to override some of the default configurations.
 
-The below command specifies the three `docker-compose` files that need to be executed for the development configuration
+    > **Development environment only** as this exposes service ports.
+
+### Development configuration
+
+Can specify three `docker-compose` files.
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
 ```
 
-The below command specifies the two `docker-compose` files that need to be executed for a production-like configuration
+### Production-like configuration
+
+Should use only two `docker-compose` files.
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
@@ -125,7 +138,8 @@ kubectl config use-context <context-name>
 
 ## Minikube (local)
 
-For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment. Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
+Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
 Once installed, we can start the minikube service by executing the below command:
 
@@ -143,7 +157,7 @@ Useful Links:
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are in the correct directory containing our bash setup scripts.
 
-Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core Instant OpenHIE deployment with the following command:
 
 ```bash
 ./main/k8s.sh up
@@ -151,9 +165,9 @@ Once you are in the correct working directory (`core/kubernetes`) we can proceed
 
 The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
 
-This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (ie: OpenHIM and HAPI-FHIR).
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Core Package` components (i.e. OpenHIM and HAPI-FHIR).
 
-> On first run the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
+> On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
 ## View running Kubernetes resources
 
@@ -165,13 +179,13 @@ To display all resource: (Some new resources are not listed here)
 kubectl get all --all-namespaces
 ```
 
-To tear down this deployment use the opposing command:
+To tear down this deployment, use the opposing command:
 
 ```bash
 ./main/k8s.sh down
 ```
 
-To completely remove all project components use the following option:
+To completely remove all project components, use the following option:
 
 ```bash
 ./main/k8s.sh destroy
@@ -181,7 +195,9 @@ To completely remove all project components use the following option:
 
 ## Initial OpenHIM Config
 
-We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server. This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance. From the `kubernetes` directory, use the following command to implement:
+We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server.
+This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance.
+From the `kubernetes` directory, use the following command to implement:
 
 ```bash
 ./importer/k8s.sh up
@@ -197,7 +213,7 @@ To clean up the remaining job and pods from a successful setup, run the followin
 
 Once the config is done HAPI FHIR will be accessible on: <https://OPENHIM_CORE_HOSTNAME/hapi-fhir-jpaserver/fhir/>
 
-You may test that the OpenHIM is routing requests to HAPI FHIR by running:
+You can test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ```bash
 ./test.sh <OPENHIM_CORE_HOSTNAME>
@@ -207,11 +223,13 @@ You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ## Development mode for exposed services
 
-To run in development mode, where the OpenHIM mongo database, HAPI FHIR server, and the MySQL database can be accessed directly through their urls, run the following command
+To run in development mode, run the following command:
 
 ```bash
 ./dev/k8s.dev.sh
 ```
+
+> In this mode the OpenHIM mongo database, HAPI FHIR server, and the MySQL database can be accessed directly from their urls.
 
 ---
 </TabItem>

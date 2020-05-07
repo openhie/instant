@@ -13,30 +13,30 @@ description: How to create an Instant OpenHIE package
 This is not final and is subject to change. The packaging process is in active discussion and development.
 :::
 
-Package are a way of allowing a set of applications to be setup and configured to enable a particular set of functionality. Each package MUST include a the following:
+Packages are a way of allowing a group of applications to be setup and configured to enable a particular set of functionality. Each package **MUST** include a the following:
 
 1. `docker-compose.*.yml` files to setup and configure the necessary applications in Docker Compose
 2. Deployment and service resource files (and any other necessary resource files) to setup and configure the necessary applications in Kubernetes
-3. A `meta.json` file that hold metadata about the package
+3. A `meta.json` file that holds metadata about the package
 4. Bash scripts that accept a particular set of commands (up, down or destroy) and execute these Docker Compose and Kubernetes infrastructure files and any other necessary processing and configuration to perform the required command.
 
 ## Docker Compose files
 
-All docker compose files should by convension be contained in a `./docker` directory in the root of the package directory. It is often useful to split up docker compose files into separate files with different purposes. For example:
+All Docker Compose files should by convention be contained in a `./docker` directory in the root of the package directory. It is often useful to split up Docker Compose files into separate files with different purposes. For example:
 
 * `docker-compose.yml` for the main application setup and orchestration
 * `docker-compose.config.yml` for starting short lived containers that configure the applications or add any test data that is necessary
-* `dcoker-compose.dev.yml` for overridding options in the main compose file to allow for easier development, for example to expose all port to the host even those that should be protected
+* `docker-compose.dev.yml` for over-ridding options in the main compose file to allow for easier development. For example, to expose all ports to the host even those that should be protected
 
 ## Kubernetes resources
 
-All Kubernetes files should by convension be contained in a `./kubernetes` directory in the root of the package directory. It is recommended to use the [declarative form](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/) of Kubernetes resources. The key resources to define are deployments and services for each component.
+All Kubernetes files should by convention be contained in a `./kubernetes` directory in the root of the package directory. It is recommended to use the [declarative form](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/) of Kubernetes resources. The key resources to define are deployments and services for each component.
 
-Config containers can be executed as job resources with an init container configured so that they only execute when the service they are to configure is up.
+Config containers can be executed as job resources with an [init container](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/). These temporary containers only configure the main application once the service has started up.
 
 ## meta.json
 
-This file should be in the root directory of the package and provides metadata about the package itself along with any dependencies that it may have:
+This file should be in the root directory of the package and provide metadata about the package itself along with any dependencies:
 
 ```json
 {
@@ -53,15 +53,15 @@ This file should be in the root directory of the package and provides metadata a
 Two bash scripts are required in each package:
 
 * `./docker/compose.sh` - to configure, start and stop the applications using Docker Compose
-* `./kubernetes/k8s.sh` -  to configure, start and stop the applications using Kubernetes
+* `./kubernetes/k8s.sh` - to configure, start and stop the applications using Kubernetes
 
 Each of these scripts should accept one of the following commands (i.e. `./compose.sh <command>`):
 
-* `up` - start all the applications in this package and performs any necessary pre-processing of the infrastrucutre files
-* `down` - stops all the applications in this package
-* `destroy` - deleted all the application containers in this package and all their stored data
+* `up` - start all the applications in this package and performs any necessary pre-processing of the infrastructure files
+* `down` - stop all the applications in this package
+* `destroy` - delete all the application containers in this package and all their stored data
 
-For example a `compose.sh` script could look like this:
+For example, a `compose.sh` script could look like this:
 
 ```sh
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
@@ -97,8 +97,8 @@ else
 fi
 ```
 
-The Instant OpenHIE executable will look for these scripts and ensure they are executed to startup a package. Packages will be stood up in their depenency order starting with the `core` package.
+The Instant OpenHIE executable will look for these scripts and ensure that they are executed to start-up a package. Packages will be started in their dependency order beginning with the `core` package.
 
 ## How to execute your new package
 
-TBD, this part is still in development and will be updated once we it is implemented.
+TBD, this part is still in development and will be updated once it is implemented.
