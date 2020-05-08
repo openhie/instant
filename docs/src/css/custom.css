@@ -36,7 +36,7 @@
   padding: 0 var(--ifm-pre-padding);
 }
 
-.button.button--green {
+.button.button--light {
   --ifm-button-border-color: var(--ifm-color-primary-light);
   --ifm-button-color: var(--ifm-color-primary-light);
 }
