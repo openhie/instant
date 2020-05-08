@@ -4,9 +4,6 @@ services:
   # container for executing config import scripts for setting up initial config
   mapper-config-importer:
     container_name: mapper-config-importer
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: jembi/instantohie-config-importer
     restart: on-failure
     environment:
