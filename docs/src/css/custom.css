@@ -6,13 +6,13 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #00d097;
+  --ifm-color-primary: #0e67d8;
   --ifm-color-primary-dark: #0e67d8;
   --ifm-color-primary-darker: #083ea7;
   --ifm-color-primary-darkest: #302f3d;
-  --ifm-color-primary-light: #83828a;
+  --ifm-color-primary-light: #00d097;
   --ifm-color-primary-lighter: #31e3b3;
-  --ifm-color-primary-lightest: #6ffad7;
+  --ifm-color-primary-lightest: #83828a;
   --ifm-code-font-size: 95%;
 }
 
@@ -34,4 +34,9 @@
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
+}
+
+.button.button--light {
+  --ifm-button-border-color: var(--ifm-color-primary-light);
+  --ifm-button-color: var(--ifm-color-primary-light);
 }
