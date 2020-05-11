@@ -88,7 +88,7 @@ This will create all the services and print out their logs in the terminal.
 docker-compose up
 ```
 
-## Useful compose flags
+#### Useful compose flags
 
 Some additional flags can be passed to the `docker-compose` command making it easier to work with.
 
@@ -100,7 +100,7 @@ Some additional flags can be passed to the `docker-compose` command making it ea
 docker-compose up -d --force-recreate
 ```
 
-## Environment configuration
+#### Environment configuration
 
 The default script might not suit the type of environment you want to run.
 Therefore there are additional `docker-compose` files available for fine-tuning environment configuration.
@@ -110,7 +110,7 @@ Therefore there are additional `docker-compose` files available for fine-tuning 
 
     > **Development environment only** as this exposes service ports.
 
-### Development configuration
+##### Development configuration
 
 Can specify three `docker-compose` files.
 
@@ -118,7 +118,7 @@ Can specify three `docker-compose` files.
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
 ```
 
-### Production-like configuration
+##### Production-like configuration
 
 Should use only two `docker-compose` files.
 
@@ -136,7 +136,7 @@ kubectl config get-contexts
 kubectl config use-context <context-name>
 ```
 
-## Minikube (local)
+#### Minikube (local)
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
 Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
@@ -149,7 +149,7 @@ minikube start --cpus 4 --memory 8192
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
 
-## Getting Started
+#### Getting Started
 
 Useful Links:
 
@@ -169,7 +169,7 @@ This bash script will apply the kubernetes `kustomization.yaml` file which contr
 
 > On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
-## View running Kubernetes resources
+#### View running Kubernetes resources
 
 Execute the below commands to see the running Kubernetes resources and the state that they are in.
 
@@ -193,7 +193,7 @@ To completely remove all project components, use the following option:
 
 ---
 
-## Initial OpenHIM Config
+#### Initial OpenHIM Config
 
 We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server.
 This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance.
@@ -221,7 +221,7 @@ You can test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ---
 
-## Development mode for exposed services
+#### Development mode for exposed services
 
 To run in development mode, run the following command:
 
