@@ -11,6 +11,10 @@ description: A description of the instant OpenHIE package architecture
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
 The fundamental concept of Instant OpenHIE is that it can be extended to support additional use cases and workflows. This is achieved through packages. A [core package](../packages/core) has been produced from which all other packages will be derived. A package will either extend directly from the core package or from another existing package.
 
 A package is intended to encompass a set of functionality rather than just setup generic applications. Packages are expected to configure the applications so that they may enact a particular functional role with the HIE. This may include setting up test data and pre-configuring applications.
