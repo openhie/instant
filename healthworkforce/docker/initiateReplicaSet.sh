@@ -9,10 +9,9 @@ configPart2='{"_id":1,"priority":0.5,"host":"mapper-mongo-2:27017"},{"_id":2,"pr
 
 config="$configPart1$configPart2"
 
+# Sleep to ensure all the mongo instances for the replica set are up and running
+sleep 20
+
 docker exec -i mapper-mongo-1 mongo --eval "rs.initiate($config)"
 
 echo 'Replica set successfully set up'
-
-docker restart mcsdMediator
-
-echo 'Mediator successfully restarted'
