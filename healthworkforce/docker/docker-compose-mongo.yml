@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  mapper-mongo-1:
+    image: mongo:4.2
+    container_name: mapper-mongo-1
+    command:
+        - --replSet
+        - mapper-mongo-set
+
+  mapper-mongo-2:
+    image: mongo:4.2
+    container_name: mapper-mongo-2
+    command:
+        - --replSet
+        - mapper-mongo-set
+
+  mapper-mongo-3:
+    image: mongo:4.2
+    container_name: mapper-mongo-3
+    command:
+        - --replSet
+        - mapper-mongo-set
