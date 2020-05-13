@@ -8,7 +8,7 @@ services:
       - OPENHIM_URL=https://core:8080
       - OPENHIM_USERNAME=root@openhim.org
       - OPENHIM_PASSWORD=instant101
-      - MONGO_URL=mongodb://mapper-mongo-1:27017,mapper-mongo-2:27017,mapper-mongo-3:27017/mapping-mediator?replicaSet=mapper-mongo-set
+      - MONGO_URL=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/mapping-mediator?replicaSet=mongo-set
 
   # Mock services for testing
   mock-services:
