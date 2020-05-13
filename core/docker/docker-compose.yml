@@ -1,18 +1,12 @@
 version: '3.3'
 
 services:
-  mongo:
-    container_name: openhim-mongo
-    image: mongo:4.2
-    volumes:
-      - './data/mongo:/data/db'
-
   core:
     container_name: openhim-core
     image: jembi/openhim-core:5
     environment:
-      - mongo_url=mongodb://mongo/openhim
-      - mongo_atnaUrl=mongodb://mongo/openhim
+      - mongo_url=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
+      - mongo_atnaUrl=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
       - api_authenticationTypes=["token", "basic"]
     ports:
       - "8080:8080"
@@ -21,8 +15,6 @@ services:
       - "5050:5050"
       - "5051:5051"
       - "5052:5052"
-    depends_on:
-      - mongo
 
   console:
     container_name: openhim-console
