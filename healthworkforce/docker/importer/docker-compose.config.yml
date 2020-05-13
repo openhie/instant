@@ -11,6 +11,8 @@ services:
       OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
       OPENHIM_API_PASSWORD: 'instant101'
+      MEDIATOR_HOSTNAME: 'mcsdMediator'
+      MEDIATOR_API_PORT: 3003
       # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
@@ -18,4 +20,4 @@ services:
         source: ./importer/volume
         target: /importer
     # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
-    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js"
+    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js; wait-on -t 60000 http-get://mcsdMediator:3003/endpoints && node endpoint.js"

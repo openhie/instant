@@ -1,0 +1,103 @@
+{
+  "name": "mCSD Orchestration",
+  "endpoint": {
+    "pattern": "/mcsd"
+  },
+  "transformation": {
+    "input": "JSON",
+    "output": "JSON"
+  },
+  "requests": {
+    "lookup": [
+      {
+        "id": "gofr-location",
+        "config": {
+          "method": "get",
+          "url": "http://mock-services:4000/gofr-location-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.gofr-location.requestStart",
+              "prefix": null,
+              "postfix": null  
+            }
+          }
+        }
+      },
+      {
+        "id": "gofr-organization",
+        "config": {
+          "method": "get",
+          "url": "http://mock-services:4000/gofr-organization-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.gofr-organization.requestStart",
+              "prefix": null,
+              "postfix": null  
+            }
+          }
+        }
+      },
+      {
+        "id": "ihris-practitioner",
+        "config": {
+          "method": "get",
+          "url": "http://mock-services:4000/ihris-practitioner-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.ihris-practitioner.requestStart",
+              "prefix": null,
+              "postfix": null  
+            }
+          }
+        }
+      },
+      {
+        "id": "ihris-practitionerRole",
+        "config": {
+          "method": "get",
+          "url": "http://mock-services:4000/ihris-practitionerRole-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.ihris-practitionerRole.requestStart",
+              "prefix": null,
+              "postfix": null  
+            }
+          }
+        }
+      }
+    ],
+    "response": [
+      {
+        "id": "fhir",
+        "config": {
+          "method": "post",
+          "url": "http://mock-services:4000/fhir-mock",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+    ]
+  },
+  "inputValidation": {},
+  "inputMapping": {},
+  "state": {
+    "extract": {
+      "system": {
+        "timestamps": true
+      }
+    }
+  }
+}
