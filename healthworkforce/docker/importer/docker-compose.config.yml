@@ -2,8 +2,8 @@ version: '3.3'
 
 services:
   # container for executing config import scripts for setting up initial config
-  mapper-config-importer:
-    container_name: mapper-config-importer
+  openhim-config-importer:
+    container_name: openhim-config-importer
     image: jembi/instantohie-config-importer
     restart: on-failure
     environment:
@@ -11,8 +11,6 @@ services:
       OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
       OPENHIM_API_PASSWORD: 'instant101'
-      MEDIATOR_HOSTNAME: 'mcsdMediator'
-      MEDIATOR_API_PORT: 3003
       # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
@@ -20,4 +18,19 @@ services:
         source: ./importer/volume
         target: /importer
     # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
-    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js; wait-on -t 60000 http-get://mcsdMediator:3003/endpoints && node endpoint.js"
+    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js"
+
+  # container for executing config import scripts for setting up initial config
+  mcsd-config-importer:
+    container_name: mcsd-config-importer
+    image: jembi/instantohie-config-importer
+    restart: on-failure
+    environment:
+      MEDIATOR_HOSTNAME: 'mcsdMediator'
+      MEDIATOR_API_PORT: 3003
+    volumes:
+      - type: bind
+        source: ./importer/volume
+        target: /importer
+    # This command will only attempt to import the mcsd mediator config when the uptime endpoint responds with 200
+    command: sh -c "wait-on -t 60000 http-get://mcsdMediator:3003/uptime && node endpoint.js"
