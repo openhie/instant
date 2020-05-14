@@ -4,7 +4,7 @@ packrd
 goinstant/bin/goinstant*
 goinstant/data
 goinstant/hapi.properties
-goinstant/pkged.go
+pkged.go
 
 # Logs
 logs
