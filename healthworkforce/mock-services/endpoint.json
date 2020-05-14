@@ -91,13 +91,145 @@
       }
     ]
   },
-  "inputValidation": {},
-  "inputMapping": {},
+  "inputValidation": {
+    "type": "object",
+    "properties": {
+      "lookupRequests": {
+        "type": "object",
+        "properties": {
+          "gofr-location": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"type": "string"},
+              "type": {"type": "string"},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"type": "string"},
+                        "id": {"type": "string"},
+                        "required": ["resourceType", "id"]
+                      }
+                    },
+                    "required": ["fullUrl", "resource"]
+                  }
+                }
+              },
+              "required": ["entry", "type", "resourceType"]
+            }
+          },
+          "gofr-organization": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"type": "string"},
+              "type": {"type": "string"},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"type": "string"},
+                        "id": {"type": "string"},
+                        "required": ["resourceType", "id"]
+                      }
+                    },
+                    "required": ["fullUrl", "resource"]
+                  }
+                }
+              },
+              "required": ["entry", "type", "resourceType"]
+            }
+          },
+          "ihris-practitioner": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"type": "string"},
+              "type": {"type": "string"},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"type": "string"},
+                        "id": {"type": "string"},
+                        "required": ["resourceType", "id"]
+                      }
+                    },
+                    "required": ["resource"]
+                  }
+                }
+              },
+              "required": ["entry", "type", "resourceType"]
+            }
+          },
+          "ihris-practitionerRole": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"type": "string"},
+              "type": {"type": "string"},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"type": "string"},
+                        "id": {"type": "string"},
+                        "code": {
+                          "type": "object",
+                          "properties":{
+                            "coding": {
+                              "type": "array",
+                              "properties": {
+                                "system": {"type": "string"},
+                                "code": {"type": "string"}
+                              }
+                            }
+                          }
+                        },
+                        "required": ["resourceType", "id", "code"]
+                      }
+                    },
+                    "required": ["resource"]
+                  }
+                }
+              },
+              "required": ["entry", "type", "resourceType"]
+            }
+          },
+          "required": ["gofr-location", "gofr-organization", "ihrs-practitioner", "ihrs-practitionerRole"]
+        }
+      }
+    }
+  },
+  "inputMapping": {
+    
+  },
   "state": {
     "extract": {
       "system": {
         "timestamps": true
       }
     }
+  },
+  "constants": {
+    "resourceType": "Bundle",
+    "type": "transaction"
   }
 }
