@@ -1,0 +1,16 @@
+Project: https://wiki.ohie.org/display/resources/Instant+OpenHIE
+Documentation: https://openhie.github.io/instant/
+Source code: https://github.com/openhie/instant
+
+This is an experiemental project to help with testing, demos, and training. It is not an official project of OpenHIE or its membership. 
+
+This application does the following:
+
+* Create files in the home directory to store things, including a copy of the source code from github.com/openhie/instant These are located in .instant/
+
+* Query, start, stop, and clean containers in Docker and Kubernetes for only the workflows in github.com/openhie/instant and not others.
+
+This app will contain bugs. Please report issues on github.com/openhie/instant
+
+Thanks!
+

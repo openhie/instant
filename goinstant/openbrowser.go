@@ -1,4 +1,4 @@
-package pkg
+package main
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 // OpenBrowser for all platforms,
 // also see: https://stackoverflow.com/questions/39320371/how-start-web-server-to-open-page-in-browser-in-golang
-func OpenBrowser(url string) {
+func openBrowser(url string) {
 	var err error
 	switch runtime.GOOS {
 	case "linux":
