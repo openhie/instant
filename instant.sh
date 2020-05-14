@@ -9,7 +9,10 @@ if ! [[ "$TARGET" =~ ^(docker|kubernetes|k8s)$ ]]; then
 fi
 
 if [ "$TARGET" == "docker" ]; then
-    if [ "$COMMAND" == "up" ]; then
+    if [ "$COMMAND" == "init" ]; then
+        ./core/docker/compose.sh init
+        ./healthworkforce/docker/compose.sh init
+    elif [ "$COMMAND" == "up" ]; then
         ./core/docker/compose.sh up
         ./healthworkforce/docker/compose.sh up
     elif [ "$COMMAND" == "down" ]; then
