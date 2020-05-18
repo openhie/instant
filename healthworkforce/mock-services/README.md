@@ -4,6 +4,8 @@ This guide will assist in getting the mCSD endpoint setup and tested with the mo
 
 ## Create Endpoint record
 
+To create the endpoint, navigate to the folder containing the endpoint schema ```"/docker/importer/volume"``` and run the command below
+
 ```sh
 curl -X POST -d "@endpoint.json" -H "Content-Type: application/json" http://localhost:3003/endpoints
 ```
