@@ -25,7 +25,7 @@ if [ "$TARGET" == "docker" ]; then
         ./core/test.sh localhost:5000
         ./healthworkforce/test.sh localhost:5000
     else
-        echo "Valid options are: up, down, test or destroy"
+        echo "Valid options are: init, up, down, test or destroy"
     fi
 fi
 
