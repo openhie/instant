@@ -72,7 +72,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.ihris-practitionerRole.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
