@@ -112,16 +112,14 @@
                       "type": "object",
                       "properties": {
                         "resourceType": {"type": "string"},
-                        "id": {"type": "string"},
-                        "required": ["resourceType", "id"]
+                        "id": {"type": "string"}
                       }
-                    },
-                    "required": ["fullUrl", "resource"]
+                    }
                   }
                 }
-              },
-              "required": ["entry", "type", "resourceType"]
-            }
+              }
+            },
+            "required": ["entry", "type", "resourceType"]
           },
           "gofr-organization": {
             "type": "object",
@@ -138,16 +136,15 @@
                       "type": "object",
                       "properties": {
                         "resourceType": {"type": "string"},
-                        "id": {"type": "string"},
-                        "required": ["resourceType", "id"]
-                      }
-                    },
-                    "required": ["fullUrl", "resource"]
+                        "id": {"type": "string"}
+                      },
+                      "required": ["resourceType"]
+                    }
                   }
                 }
-              },
-              "required": ["entry", "type", "resourceType"]
-            }
+              }
+            },
+            "required": ["entry", "type", "resourceType"]
           },
           "ihris-practitioner": {
             "type": "object",
@@ -164,16 +161,15 @@
                       "type": "object",
                       "properties": {
                         "resourceType": {"type": "string"},
-                        "id": {"type": "string"},
-                        "required": ["resourceType", "id"]
-                      }
-                    },
-                    "required": ["resource"]
+                        "id": {"type": "string"}
+                      },
+                      "required": ["resourceType"]
+                    }
                   }
                 }
-              },
-              "required": ["entry", "type", "resourceType"]
-            }
+              }
+            },
+            "required": ["entry", "type", "resourceType"]
           },
           "ihris-practitionerRole": {
             "type": "object",
@@ -192,34 +188,49 @@
                         "resourceType": {"type": "string"},
                         "id": {"type": "string"},
                         "code": {
-                          "type": "object",
-                          "properties":{
+                          "type": "array",
+                          "items":{
                             "coding": {
                               "type": "array",
-                              "properties": {
+                              "items": {
                                 "system": {"type": "string"},
                                 "code": {"type": "string"}
                               }
                             }
                           }
-                        },
-                        "required": ["resourceType", "id", "code"]
-                      }
-                    },
-                    "required": ["resource"]
-                  }
+                        }
+                      },
+                      "required": ["resourceType"]
+                    }
+                  },
+                  "required": ["resource"]
                 }
-              },
-              "required": ["entry", "type", "resourceType"]
-            }
-          },
-          "required": ["gofr-location", "gofr-organization", "ihrs-practitioner", "ihrs-practitionerRole"]
-        }
+              }
+            },
+            "required": ["entry", "type", "resourceType"]
+          }
+        },
+        "required": ["gofr-location", "gofr-organization", "ihris-practitioner", "ihris-practitionerRole"]
       }
     }
   },
   "inputMapping": {
-    
+    "lookupRequests.gofr-location.entry[]": {
+      "key": "entry[]+",
+      "transform": "appendArray"
+    },
+    "lookupRequests.gofr-organization.entry[]": {
+      "key": "entry[]+",
+      "transform": "appendArray"
+    },
+    "lookupRequests.ihris-practitioner.entry[]": {
+      "key": "entry[]+",
+      "transform": "appendArray"
+    },
+    "lookupRequests.ihris-practitionerRole.entry[]": {
+      "key": "entry[]+",
+      "transform": "appendArray"
+    }
   },
   "state": {
     "extract": {
