@@ -21,7 +21,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.gofr-location.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
