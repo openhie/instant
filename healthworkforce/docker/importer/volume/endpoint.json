@@ -161,7 +161,194 @@
                       "type": "object",
                       "properties": {
                         "resourceType": {"type": "string"},
-                        "id": {"type": "string"}
+                        "id": {"type": "string"},
+                        "active": {"type": "boolean"},
+                        "name": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["usual", "official", "temp", "nickname", "anonymous", "old", "maiden"]},
+                              "text": {"type": "string"},
+                              "family": {"type": "string"},
+                              "given": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "prefix": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "suffix": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date-time"},
+                                  "end": {"type": "string", "format": "date-time"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "telecom": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "system": {"enum": ["phone", "fax", "email", "pajer", "url", "sms", "other"]},
+                              "value": {"type": "string"},
+                              "use": {"enum": ["home", "work", "temp", "old", "mobile"],
+                              "rank": {"type": "integer", "minimum": 0},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date-time"},
+                                  "end": {"type": "string", "format": "date-time"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "address": {
+                          "type": "array",
+                          "items": {
+                            "use": {"enum": ["home", "work", "temp", "old", "billing"],
+                            "type": {"enum": ["postal", "physical", "both"],
+                            "text": {"type": "string"},
+                            "line": {"type": "array", "items": {"type": "string"}},
+                            "city": {"type": "string"},
+                            "district": {"type": "string"},
+                            "state": {"type": "string"},
+                            "postalCode": {"type": "string"},
+                            "country": {"type": "string"},
+                            "period": {
+                              "type": "object",
+                              "properties": {
+                                "start": {"type": "string", "format": "date-time"},
+                                "end": {"type": "string", "format": "date-time"}
+                              }
+                            }
+                          }
+                        },
+                        "qualification": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "identifier": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "use": {"enum": ["usual", "official", "temp", "secondary", "old"]},
+                                    "type": {
+                                      "type": "object",
+                                      "properties": {
+                                        "coding": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "system": {"type": "string", "format": "uri"},
+                                              "version": {"type": "string"},
+                                              "code": {"type": "string"},
+                                              "display": {"type": "string"},
+                                              "userSelected": {"type": "boolean"}
+                                            }
+                                          }
+                                        },
+                                        "text": {"type": "string"}
+                                      }
+                                    },
+                                    "system": {"type": "string", "format": "uri"},
+                                    "value": {"type": "string"},
+                                    "period": {
+                                      "type": "object",
+                                      "properties": {
+                                        "start": {"type": "string", "format": "date-time"},
+                                        "end": {"type": "string", "format": "date-time"}
+                                      }
+                                    },
+                                    "assigner": {
+                                      "type": "object",
+                                      "properties": {
+                                        "reference": {"type": "string"},
+                                        "type": {"type": "string", "format": "uri"},
+                                        "identifier": {"type": "object"},
+                                        "display": {"type": "string"}
+                                      }
+                                    }
+                                  }
+                                },
+                                "code": {
+                                  "type": "object",
+                                  "properties": {
+                                    "coding": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "system": {"type": "string", "format": "uri"},
+                                          "version": {"type": "string"},
+                                          "code": {"type": "string"},
+                                          "display": {"type": "string"},
+                                          "userSelected": {"type": "boolean"}
+                                        }
+                                      }
+                                    },
+                                    "text": {"type": "string"}
+                                  }
+                                },
+                                "period": {
+                                  "type": "object",
+                                  "properties": {
+                                    "start": {"type": "string", "format": "date-time"},
+                                    "end": {"type": "string", "format": "date-time"}
+                                  }
+                                }
+                              },
+                              "issuer":  {
+                                "type": "object",
+                                "properties": {
+                                  "reference": {"type": "string"},
+                                  "type": {"type": "string", "format": "uri"},
+                                  "identifier": {"type": "object"},
+                                  "display": {"type": "string"}
+                                }
+                              },
+                              "communication": {
+                                "type": "object",
+                                "properties": {
+                                  "coding": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "system": {"type": "string", "format": "uri"},
+                                        "version": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "display": {"type": "string"},
+                                        "userSelected": {"type": "boolean"}
+                                      }
+                                    }
+                                  },
+                                  "text": {"type": "string"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "gender": {"enum": ["male", "female", "other", "unknown"]},
+                        "birthdate": {"type": "string", "format": "date"},
                       },
                       "required": ["resourceType"]
                     }
