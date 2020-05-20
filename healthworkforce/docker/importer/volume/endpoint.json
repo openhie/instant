@@ -163,6 +163,16 @@
                         "resourceType": {"type": "string"},
                         "id": {"type": "string"},
                         "active": {"type": "boolean"},
+                        "extension": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "uri": {"type": "string", "format": "uri"}
+                            },
+                            "required": ["uri"]
+                          }
+                        },
                         "name": {
                           "type": "array",
                           "items": {
@@ -374,6 +384,114 @@
                       "properties": {
                         "resourceType": {"type": "string"},
                         "id": {"type": "string"},
+                        "identifier": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["usual", "official", "temp", "secondary", "old"]},
+                              "type": {
+                                "type": "object",
+                                "properties": {
+                                  "coding": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "system": {"type": "string", "format": "uri"},
+                                        "version": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "display": {"type": "string"},
+                                        "userSelected": {"type": "boolean"}
+                                      }
+                                    }
+                                  },
+                                  "text": {"type": "string"}
+                                }
+                              },
+                              "system": {"type": "string", "format": "uri"},
+                              "value": {"type": "string"},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date-time"},
+                                  "end": {"type": "string", "format": "date-time"}
+                                }
+                              },
+                              "assigner": {
+                                "type": "object",
+                                "properties": {
+                                  "reference": {"type": "string"},
+                                  "type": {"type": "string", "format": "uri"},
+                                  "identifier": {"type": "object"},
+                                  "display": {"type": "string"}
+                                }
+                              }
+                            }
+                          },
+                          "code": {
+                            "type": "object",
+                            "properties": {
+                              "coding": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "system": {"type": "string", "format": "uri"},
+                                    "version": {"type": "string"},
+                                    "code": {"type": "string"},
+                                    "display": {"type": "string"},
+                                    "userSelected": {"type": "boolean"}
+                                  }
+                                }
+                              },
+                              "text": {"type": "string"}
+                            }
+                          },
+                          "period": {
+                            "type": "object",
+                            "properties": {
+                              "start": {"type": "string", "format": "date-time"},
+                              "end": {"type": "string", "format": "date-time"}
+                            }
+                          }
+                        },
+                        "active": {"type": "boolean"},
+                        "practitioner": {
+                          "type": "object",
+                          "properties": {
+                            "reference": {"type": "string"},
+                            "type": {"type": "string", "format": "uri"},
+                            "identifier": {"type": "object"},
+                            "display": {"type": "string"}
+                          }
+                        },
+                        "location": {
+                          "type": "object",
+                          "properties": {
+                            "reference": {"type": "string"},
+                            "type": {"type": "string", "format": "uri"},
+                            "identifier": {"type": "object"},
+                            "display": {"type": "string"}
+                          }
+                        },
+                        "period":  {
+                          "type": "object",
+                          "properties": {
+                            "start": {"type": "string", "format": "date-time"},
+                            "end": {"type": "string", "format": "date-time"}
+                          }
+                        },
+                        "extension": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "uri": {"type": "string", "format": "uri"}
+                            },
+                            "required": ["uri"]
+                          }
+                        },
                         "code": {
                           "type": "array",
                           "items":{
