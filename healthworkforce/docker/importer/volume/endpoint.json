@@ -100,8 +100,8 @@
           "gofr-location": {
             "type": "object",
             "properties": {
-              "resourceType": {"type": "string"},
-              "type": {"type": "string"},
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
               "entry": {
                 "type": "array",
                 "items": {
@@ -111,31 +111,7 @@
                     "resource": {
                       "type": "object",
                       "properties": {
-                        "resourceType": {"type": "string"},
-                        "id": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "required": ["entry", "type", "resourceType"]
-          },
-          "gofr-organization": {
-            "type": "object",
-            "properties": {
-              "resourceType": {"type": "string"},
-              "type": {"type": "string"},
-              "entry": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "fullUrl": {"type": "string"},
-                    "resource": {
-                      "type": "object",
-                      "properties": {
-                        "resourceType": {"type": "string"},
+                        "resourceType": {"enum": ["Location"]},
                         "id": {"type": "string"}
                       },
                       "required": ["resourceType"]
@@ -144,13 +120,13 @@
                 }
               }
             },
-            "required": ["entry", "type", "resourceType"]
+            "required": ["type", "resourceType"]
           },
-          "ihris-practitioner": {
+          "gofr-organization": {
             "type": "object",
             "properties": {
-              "resourceType": {"type": "string"},
-              "type": {"type": "string"},
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
               "entry": {
                 "type": "array",
                 "items": {
@@ -160,7 +136,32 @@
                     "resource": {
                       "type": "object",
                       "properties": {
-                        "resourceType": {"type": "string"},
+                        "resourceType": {"enum": ["Organization"]},
+                        "id": {"type": "string"}
+                      },
+                      "required": ["resourceType"]
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["type", "resourceType"]
+          },
+          "ihris-practitioner": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"enum": ["Practitioner"]},
                         "id": {"type": "string"},
                         "active": {"type": "boolean"},
                         "extension": {
@@ -169,8 +170,7 @@
                             "type": "object",
                             "properties": {
                               "uri": {"type": "string", "format": "uri"}
-                            },
-                            "required": ["uri"]
+                            }
                           }
                         },
                         "name": {
@@ -202,8 +202,8 @@
                               "period": {
                                 "type": "object",
                                 "properties": {
-                                  "start": {"type": "string", "format": "date-time"},
-                                  "end": {"type": "string", "format": "date-time"}
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
                                 }
                               }
                             }
@@ -216,13 +216,13 @@
                             "properties": {
                               "system": {"enum": ["phone", "fax", "email", "pajer", "url", "sms", "other"]},
                               "value": {"type": "string"},
-                              "use": {"enum": ["home", "work", "temp", "old", "mobile"],
+                              "use": {"enum": ["home", "work", "temp", "old", "mobile"]},
                               "rank": {"type": "integer", "minimum": 0},
                               "period": {
                                 "type": "object",
                                 "properties": {
-                                  "start": {"type": "string", "format": "date-time"},
-                                  "end": {"type": "string", "format": "date-time"}
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
                                 }
                               }
                             }
@@ -231,20 +231,23 @@
                         "address": {
                           "type": "array",
                           "items": {
-                            "use": {"enum": ["home", "work", "temp", "old", "billing"],
-                            "type": {"enum": ["postal", "physical", "both"],
-                            "text": {"type": "string"},
-                            "line": {"type": "array", "items": {"type": "string"}},
-                            "city": {"type": "string"},
-                            "district": {"type": "string"},
-                            "state": {"type": "string"},
-                            "postalCode": {"type": "string"},
-                            "country": {"type": "string"},
-                            "period": {
-                              "type": "object",
-                              "properties": {
-                                "start": {"type": "string", "format": "date-time"},
-                                "end": {"type": "string", "format": "date-time"}
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["home", "work", "temp", "old", "billing"]},
+                              "type": {"enum": ["postal", "physical", "both"]},
+                              "text": {"type": "string"},
+                              "line": {"type": "array", "items": {"type": "string"}},
+                              "city": {"type": "string"},
+                              "district": {"type": "string"},
+                              "state": {"type": "string"},
+                              "postalCode": {"type": "string"},
+                              "country": {"type": "string"},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
+                                }
                               }
                             }
                           }
@@ -284,8 +287,8 @@
                                     "period": {
                                       "type": "object",
                                       "properties": {
-                                        "start": {"type": "string", "format": "date-time"},
-                                        "end": {"type": "string", "format": "date-time"}
+                                        "start": {"type": "string", "format": "date"},
+                                        "end": {"type": "string", "format": "date"}
                                       }
                                     },
                                     "assigner": {
@@ -321,8 +324,8 @@
                                 "period": {
                                   "type": "object",
                                   "properties": {
-                                    "start": {"type": "string", "format": "date-time"},
-                                    "end": {"type": "string", "format": "date-time"}
+                                    "start": {"type": "string", "format": "date"},
+                                    "end": {"type": "string", "format": "date"}
                                   }
                                 }
                               },
@@ -358,7 +361,7 @@
                           }
                         },
                         "gender": {"enum": ["male", "female", "other", "unknown"]},
-                        "birthdate": {"type": "string", "format": "date"},
+                        "birthdate": {"type": "string", "format": "date"}
                       },
                       "required": ["resourceType"]
                     }
@@ -366,13 +369,13 @@
                 }
               }
             },
-            "required": ["entry", "type", "resourceType"]
+            "required": ["type", "resourceType"]
           },
           "ihris-practitionerRole": {
             "type": "object",
             "properties": {
-              "resourceType": {"type": "string"},
-              "type": {"type": "string"},
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
               "entry": {
                 "type": "array",
                 "items": {
@@ -382,7 +385,7 @@
                     "resource": {
                       "type": "object",
                       "properties": {
-                        "resourceType": {"type": "string"},
+                        "resourceType": {"enum": ["PractitionerRole"]},
                         "id": {"type": "string"},
                         "identifier": {
                           "type": "array",
@@ -414,8 +417,8 @@
                               "period": {
                                 "type": "object",
                                 "properties": {
-                                  "start": {"type": "string", "format": "date-time"},
-                                  "end": {"type": "string", "format": "date-time"}
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
                                 }
                               },
                               "assigner": {
@@ -451,8 +454,8 @@
                           "period": {
                             "type": "object",
                             "properties": {
-                              "start": {"type": "string", "format": "date-time"},
-                              "end": {"type": "string", "format": "date-time"}
+                              "start": {"type": "string", "format": "date"},
+                              "end": {"type": "string", "format": "date"}
                             }
                           }
                         },
@@ -467,19 +470,22 @@
                           }
                         },
                         "location": {
-                          "type": "object",
-                          "properties": {
-                            "reference": {"type": "string"},
-                            "type": {"type": "string", "format": "uri"},
-                            "identifier": {"type": "object"},
-                            "display": {"type": "string"}
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "reference": {"type": "string"},
+                              "type": {"type": "string", "format": "uri"},
+                              "identifier": {"type": "object"},
+                              "display": {"type": "string"}
+                            }
                           }
                         },
                         "period":  {
                           "type": "object",
                           "properties": {
-                            "start": {"type": "string", "format": "date-time"},
-                            "end": {"type": "string", "format": "date-time"}
+                            "start": {"type": "string", "format": "date"},
+                            "end": {"type": "string", "format": "date"}
                           }
                         },
                         "extension": {
@@ -488,8 +494,7 @@
                             "type": "object",
                             "properties": {
                               "uri": {"type": "string", "format": "uri"}
-                            },
-                            "required": ["uri"]
+                            }
                           }
                         },
                         "code": {
@@ -507,12 +512,11 @@
                       },
                       "required": ["resourceType"]
                     }
-                  },
-                  "required": ["resource"]
+                  }
                 }
               }
             },
-            "required": ["entry", "type", "resourceType"]
+            "required": ["type", "resourceType"]
           }
         },
         "required": ["gofr-location", "gofr-organization", "ihris-practitioner", "ihris-practitionerRole"]
