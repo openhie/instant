@@ -2,10 +2,14 @@ version: '3.3'
 
 services:
   mapper:
-    image: jembi/openhim-mediator-mapping:v0.1.0
+    image: jembi/openhim-mediator-mapping:v1.0.0
+    container_name: mcsdMediator
     environment:
       - OPENHIM_URL=https://core:8080
       - OPENHIM_USERNAME=root@openhim.org
       - OPENHIM_PASSWORD=instant101
-    volumes:
-      - "./mapper-endpoints:/app/endpoints"
+      - MONGO_URL=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/mapping-mediator?replicaSet=mongo-set
+
+  # Mock services for testing
+  mock-services:
+    build: ../mock-services/mcsdMockServices
