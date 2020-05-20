@@ -38,7 +38,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.gofr-organization.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
@@ -55,7 +55,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.ihris-practitioner.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
@@ -72,7 +72,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.ihris-practitionerRole.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
@@ -114,7 +114,7 @@
                         "resourceType": {"enum": ["Location"]},
                         "id": {"type": "string"}
                       },
-                      "required": ["resourceType"]
+                      "required": ["id", "resourceType"]
                     }
                   }
                 }
@@ -139,7 +139,7 @@
                         "resourceType": {"enum": ["Organization"]},
                         "id": {"type": "string"}
                       },
-                      "required": ["resourceType"]
+                      "required": ["id", "resourceType"]
                     }
                   }
                 }
@@ -363,7 +363,7 @@
                         "gender": {"enum": ["male", "female", "other", "unknown"]},
                         "birthdate": {"type": "string", "format": "date"}
                       },
-                      "required": ["resourceType"]
+                      "required": ["id", "resourceType"]
                     }
                   }
                 }
@@ -510,7 +510,7 @@
                           }
                         }
                       },
-                      "required": ["resourceType"]
+                      "required": ["resourceType", "id"]
                     }
                   }
                 }
