@@ -9,7 +9,10 @@ if ! [[ "$TARGET" =~ ^(docker|kubernetes|k8s)$ ]]; then
 fi
 
 if [ "$TARGET" == "docker" ]; then
-    if [ "$COMMAND" == "up" ]; then
+    if [ "$COMMAND" == "init" ]; then
+        ./core/docker/compose.sh init
+        ./healthworkforce/docker/compose.sh init
+    elif [ "$COMMAND" == "up" ]; then
         ./core/docker/compose.sh up
         ./healthworkforce/docker/compose.sh up
     elif [ "$COMMAND" == "down" ]; then
@@ -22,7 +25,7 @@ if [ "$TARGET" == "docker" ]; then
         ./core/test.sh localhost:5000
         ./healthworkforce/test.sh localhost:5000
     else
-        echo "Valid options are: up, down, test or destroy"
+        echo "Valid options are: init, up, down, test or destroy"
     fi
 fi
 

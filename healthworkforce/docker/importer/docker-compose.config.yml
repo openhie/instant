@@ -2,11 +2,8 @@ version: '3.3'
 
 services:
   # container for executing config import scripts for setting up initial config
-  mapper-config-importer:
-    container_name: mapper-config-importer
-    build:
-      context: .
-      dockerfile: Dockerfile
+  openhim-config-importer:
+    container_name: openhim-config-importer
     image: jembi/instantohie-config-importer
     restart: on-failure
     environment:
@@ -22,3 +19,18 @@ services:
         target: /importer
     # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
     command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js"
+
+  # container for executing config import scripts for setting up initial config
+  mcsd-config-importer:
+    container_name: mcsd-config-importer
+    image: jembi/instantohie-config-importer
+    restart: on-failure
+    environment:
+      MEDIATOR_HOSTNAME: 'mcsdMediator'
+      MEDIATOR_API_PORT: 3003
+    volumes:
+      - type: bind
+        source: ./importer/volume
+        target: /importer
+    # This command will only attempt to import the mcsd mediator config when the uptime endpoint responds with 200
+    command: sh -c "wait-on -t 60000 http-get://mcsdMediator:3003/uptime && node endpoint.js"

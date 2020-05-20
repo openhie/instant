@@ -80,3 +80,6 @@ typings/
 # generated files
 /docs/.docusaurus
 /docs/.cache-loader
+
+# vscode config
+.vscode

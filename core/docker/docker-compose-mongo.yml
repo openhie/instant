@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  mongo-1:
+    image: mongo:4.2
+    container_name: mongo-1
+    volumes:
+      - './data/mongo1:/data/db'
+    command:
+        - --replSet
+        - mongo-set
+
+  mongo-2:
+    image: mongo:4.2
+    container_name: mongo-2
+    volumes:
+      - './data/mongo2:/data/db'
+    command:
+        - --replSet
+        - mongo-set
+
+  mongo-3:
+    image: mongo:4.2
+    container_name: mongo-3
+    volumes:
+      - './data/mongo3:/data/db'
+    command:
+        - --replSet
+        - mongo-set

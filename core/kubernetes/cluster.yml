@@ -2,12 +2,12 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: instanthie
+  name: instant-openhie
   region: eu-west-2
   version: '1.14'
 
 nodeGroups:
-  - name: instanthie-workers
+  - name: instant-openhie-workers
     instanceType: t3.medium
     desiredCapacity: 1
     minSize: 1
