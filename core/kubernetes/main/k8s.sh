@@ -92,6 +92,14 @@ local_setup () {
     openhimConsoleUrl="http://$minikubeIP:$openhimConsolePort"
 }
 
+print_services_url () {
+    printf "\n\nHAPI FHIR Server Url\n--------------------\n"$hapiFhirServerUrl"\n\n"
+    printf "OpenHIM Mediator API Url\n------------------------\n"$openhimCoreMediatorApiUrl"\n\n"
+    printf "OpenHIM Transaction API Url\n---------------------------\n"$openhimCoreTransactionApiUrl"\n\n"
+    printf "OpenHIM Transaction SSL API Url\n-------------------------------\n"$openhimCoreTransactionSSLApiUrl"\n\n"
+    printf "OpenHIM Console Url\n===================\n"$openhimConsoleUrl"\n\n"
+}
+
 if [ "$1" == "init" ]; then
     # Create the component's namespace
     kubectl apply -f $k8sMainRootFilePath/core-namespace.yaml
@@ -116,11 +124,7 @@ if [ "$1" == "init" ]; then
         local_setup
     fi
 
-    printf "\n\nHAPI FHIR Server Url\n--------------------\n"$hapiFhirServerUrl"\n\n"
-    printf "OpenHIM Mediator API Url\n------------------------\n"$openhimCoreMediatorApiUrl"\n\n"
-    printf "OpenHIM Transaction API Url\n---------------------------\n"$openhimCoreTransactionApiUrl"\n\n"
-    printf "OpenHIM Transaction SSL API Url\n-------------------------------\n"$openhimCoreTransactionSSLApiUrl"\n\n"
-    printf "OpenHIM Console Url\n===================\n"$openhimConsoleUrl"\n\n"
+    print_services_url
     printf ">>> The OpenHIM Console Url will take a few minutes to become active <<<\n\n"
 elif ["$1" == "up"]; then
     # Create the component's namespace
@@ -137,12 +141,7 @@ elif ["$1" == "up"]; then
         local_setup
     fi
 
-    printf "\n\nHAPI FHIR Server Url\n--------------------\n"$hapiFhirServerUrl"\n\n"
-    printf "OpenHIM Mediator API Url\n------------------------\n"$openhimCoreMediatorApiUrl"\n\n"
-    printf "OpenHIM Transaction API Url\n---------------------------\n"$openhimCoreTransactionApiUrl"\n\n"
-    printf "OpenHIM Transaction SSL API Url\n-------------------------------\n"$openhimCoreTransactionSSLApiUrl"\n\n"
-    printf "OpenHIM Console Url\n===================\n"$openhimConsoleUrl"\n\n"
-    printf ">>> The OpenHIM Console Url will take a few minutes to become active <<<\n\n"
+    print_services_url
 elif [ "$1" == "down" ]; then
     kubectl delete deployment openhim-console-deployment
     kubectl delete deployment openhim-core-deployment
