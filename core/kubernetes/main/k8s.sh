@@ -92,7 +92,37 @@ local_setup () {
     openhimConsoleUrl="http://$minikubeIP:$openhimConsolePort"
 }
 
-if [ "$1" == "up" ]; then
+if [ "$1" == "init" ]; then
+    # Create the component's namespace
+    kubectl apply -f $k8sMainRootFilePath/core-namespace.yaml
+
+    # Create persistence volume for the mongo replica set members
+    kubectl apply -f $k8sMainRootFilePath/mongo/mongo-volume.yaml
+
+    # Create the replica set
+    kubectl apply -f $k8sMainRootFilePath/mongo/mongo-service.yaml -f $k8sMainRootFilePath/mongo/mongo-replica.yaml
+
+    # Set up the replica set
+    "$k8sMainRootFilePath"/mongo/initiateReplicaSet.sh
+
+    kubectl apply -k $k8sMainRootFilePath
+
+    envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
+    envContextMinikube=$(echo $envContextName | grep 'minikube')
+
+    if [ $(expr length "$envContextMinikube") -le 0 ]; then
+        cloud_setup
+    else
+        local_setup
+    fi
+
+    printf "\n\nHAPI FHIR Server Url\n--------------------\n"$hapiFhirServerUrl"\n\n"
+    printf "OpenHIM Mediator API Url\n------------------------\n"$openhimCoreMediatorApiUrl"\n\n"
+    printf "OpenHIM Transaction API Url\n---------------------------\n"$openhimCoreTransactionApiUrl"\n\n"
+    printf "OpenHIM Transaction SSL API Url\n-------------------------------\n"$openhimCoreTransactionSSLApiUrl"\n\n"
+    printf "OpenHIM Console Url\n===================\n"$openhimConsoleUrl"\n\n"
+    printf ">>> The OpenHIM Console Url will take a few minutes to become active <<<\n\n"
+elif ["$1" == "up"]; then
     # Create the component's namespace
     kubectl apply -f $k8sMainRootFilePath/core-namespace.yaml
 
@@ -122,5 +152,5 @@ elif [ "$1" == "down" ]; then
 elif [ "$1" == "destroy" ]; then
     kubectl delete namespaces core-package
 else
-    echo "Valid options are: up, down, or destroy"
+    echo "Valid options are: init, up, down, or destroy"
 fi
