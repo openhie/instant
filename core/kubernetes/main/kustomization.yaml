@@ -12,14 +12,11 @@ resources:
   # volumes
   - ./hapi-fhir/hapi-fhir-mysql-volume-claim.yaml
   - ./hapi-fhir/hapi-fhir-server-volume-claim.yaml
-  - ./openhim/openhim-mongo-volume-claim.yaml
   # deployments
   - ./hapi-fhir/hapi-fhir-mysql-deployment.yaml
   - ./hapi-fhir/hapi-fhir-server-deployment.yaml
   - ./openhim/openhim-core-deployment.yaml
-  - ./openhim/openhim-mongo-deployment.yaml
   # services
   - ./hapi-fhir/hapi-fhir-mysql-service.yaml
   - ./hapi-fhir/hapi-fhir-server-service.yaml
   - ./openhim/openhim-core-service.yaml
-  - ./openhim/openhim-mongo-service.yaml
