@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mcsd-endpoint-importer-job
+  labels:
+    app.kubernetes.io/name: mcsd-endpoint-importer
+    app.kubernetes.io/instance: mapper-endpoint-importer-1
+    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/component: endpoint-importer
+    app.kubernetes.io/package: hwf
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      initContainers:
+        - name: check-mapper-status
+          image: busybox:1.28
+          command: ['sh', '-c', 'until telnet mapper-service 3003; do echo Mapping mediator not running yet; sleep 10; done;']
+      containers:
+        - name: mcsd-endpoint-importer
+          image: jembi/instantohie-config-importer
+          args:
+            - sh
+            - -c
+            - wait-on -t 60000 http-get://mapper-service:3003/uptime && node endpoint.js
+          env:
+            - name: MEDIATOR_HOST_NAME
+              value: 'mapper-service'
+            - name: MEDIATOR_API_PORT
+              value: '3003'
+          volumeMounts:
+            - mountPath: /importer
+              name: mcsd-endpoint-importer
+      restartPolicy: OnFailure
+      volumes:
+        - name: mcsd-endpoint-importer
+          configMap:
+            name: mcsd-endpoint-importer-configmap
