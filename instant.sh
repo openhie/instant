@@ -34,11 +34,14 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
     envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
     printf "\n\n>>> Applying to the '${envContextName}' context <<<\n\n\n"
 
-    if [ "$COMMAND" == "up" ]; then
-        ./core/kubernetes/main/k8s.sh up
+    if [ "$COMMAND" == "init" ]; then
+        ./core/kubernetes/main/k8s.sh init
         ./core/kubernetes/importer/k8s.sh up
         ./healthworkforce/kubernetes/main/k8s.sh up
         ./healthworkforce/kubernetes/importer/k8s.sh up
+    elif [ "$COMMAND" == "up" ]; then
+        ./core/kubernetes/main/k8s.sh up
+        ./healthworkforce/kubernetes/main/k8s.sh up
     elif [ "$COMMAND" == "down" ]; then
         ./core/kubernetes/main/k8s.sh down
         ./healthworkforce/kubernetes/main/k8s.sh down
@@ -58,6 +61,6 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
         ./core/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
         ./healthworkforce/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
     else
-        echo "Valid options are: up, down, test or destroy"
+        echo "Valid options are: init, up, down, test or destroy"
     fi
 fi
