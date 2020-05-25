@@ -2,13 +2,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: openhim-config-importer-job
-  namespace: core-package
   labels:
     app.kubernetes.io/name: openhim-config-importer
     app.kubernetes.io/instance: openhim-config-importer-1
     app.kubernetes.io/version: '0.1'
     app.kubernetes.io/component: config-importer
-    app.kubernetes.io/part-of: core-package
+    app.kubernetes.io/package: core
 spec:
   backoffLimit: 3
   template:
