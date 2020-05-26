@@ -13,7 +13,7 @@
         "id": "gofr-location",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/gofr-location-mock/_history",
+          "url": "http://mock-service:4000/gofr-location-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -30,7 +30,7 @@
         "id": "gofr-organization",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/gofr-organization-mock/_history",
+          "url": "http://mock-service:4000/gofr-organization-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -47,7 +47,7 @@
         "id": "ihris-practitioner",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/ihris-practitioner-mock/_history",
+          "url": "http://mock-service:4000/ihris-practitioner-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -64,7 +64,7 @@
         "id": "ihris-practitionerRole",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/ihris-practitionerRole-mock/_history",
+          "url": "http://mock-service:4000/ihris-practitionerRole-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -83,7 +83,7 @@
         "id": "fhir",
         "config": {
           "method": "post",
-          "url": "http://mock-services:4000/fhir-mock",
+          "url": "http://mock-service:4000/fhir-mock",
           "headers": {
             "Content-Type": "application/json"
           }
