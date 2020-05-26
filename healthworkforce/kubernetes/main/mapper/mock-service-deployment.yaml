@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-service-deployment
+  labels:
+    package: hwf
+spec:
+  selector:
+    matchLabels:
+      component: mock-service
+  template:
+    metadata:
+      labels:
+        component: mock-service
+    spec:
+      containers:
+        - name: mock-service
+          image: jembi/instantohie-config-importer
+          args:
+            - sh
+            - -c
+            - "cd mock-service; npm install express pino pino-pretty -g; npm start"
+          ports:
+            - containerPort: 4000
+          volumeMounts:
+            - mountPath: /importer/mock-service/resources
+              name: mock-services-mcsdmockservices-resources
+            - mountPath: /importer/mock-service/src
+              name: mock-services-mcsdmockservices-src
+            - mountPath: /importer/mock-service/
+              name: mock-services-mcsdmockservices
+      volumes:
+        - name: mock-services-mcsdmockservices-resources
+          configMap:
+            name: mock-services-mcsdmockservices-resources
+        - name: mock-services-mcsdmockservices-src
+          configMap:
+            name: mock-services-mcsdmockservices-src
+        - name: mock-services-mcsdmockservices
+          configMap:
+            name: mock-services-mcsdmockservices

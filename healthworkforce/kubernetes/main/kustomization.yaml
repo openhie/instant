@@ -1,3 +1,24 @@
+configMapGenerator:
+  - name: mock-services-mcsdmockservices-resources
+    files:
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-PractitionerRole.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Practitioner.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Organization.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Location.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-transaction-response.json
+  - name: mock-services-mcsdmockservices-src
+    files:
+      - ./mapper/volume/mock-services/mcsdMockServices/src/config.js
+      - ./mapper/volume/mock-services/mcsdMockServices/src/index.js
+      - ./mapper/volume/mock-services/mcsdMockServices/src/logger.js
+      - ./mapper/volume/mock-services/mcsdMockServices/src/util.js
+  - name: mock-services-mcsdmockservices
+    files:
+      - ./mapper/volume/mock-services/mcsdMockServices/package.json
+      - ./mapper/volume/mock-services/mcsdMockServices/yarn.lock
 resources:
   - ./mapper/mapper-deployment.yaml
   - ./mapper/mapper-service.yaml
+  # Mock services
+  - ./mapper/mock-service-deployment.yaml
+  - ./mapper/mock-service.yaml
