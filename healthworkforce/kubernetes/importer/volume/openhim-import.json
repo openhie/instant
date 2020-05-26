@@ -1,21 +1,26 @@
-
 {
-  "Users": [],
+  "Users": [
+    {
+      "groups": [
+        "admin"
+      ],
+      "firstname": "Super",
+      "surname": "User",
+      "email": "root@openhim.org",
+      "passwordAlgorithm": "sha512",
+      "passwordHash": "ea3824f17cf1379eb118a36bc7c8cf0f45712e2af7748567fca5313dec6fa66d61064e82a5e5cb88e998486ee3c7d0dac235bbeda8c341d6edc1c77406be2ab6",
+      "passwordSalt": "d4f622c0404f09bd959bfb263efa3452",
+      "expiry": null,
+      "locked": false,
+      "token": null,
+      "tokenType": null
+    }
+  ],
   "Clients": [],
   "Channels": [
     {
-      "methods": [
-        "GET",
-        "POST",
-        "DELETE",
-        "PUT",
-        "OPTIONS",
-        "HEAD",
-        "TRACE",
-        "CONNECT",
-        "PATCH"
-      ],
-      "type": "http",
+      "methods": [],
+      "type": "polling",
       "allow": [],
       "whitelist": [],
       "authType": "public",
@@ -34,11 +39,11 @@
           "type": "http",
           "status": "enabled",
           "forwardAuthHeader": false,
-          "name": "Generic Mapping Mediator",
+          "name": "mcsd route",
           "secured": false,
-          "host": "mapper-service.hwf-package",
+          "host": "mapper",
           "port": 3003,
-          "path": "",
+          "path": "/mcsd",
           "pathTransform": "",
           "primary": true,
           "username": "",
@@ -48,18 +53,18 @@
       "requestBody": true,
       "responseBody": true,
       "rewriteUrlsConfig": [],
-      "name": "Mapping mediator",
+      "name": "mCSD mediator",
+      "description": "Triggers the retrieving of data and the mapping of that data into a FHIR bundle, which will then be sent to a FHIR metadata store ",
+      "pollingSchedule": "0 * * * *",
       "urlPattern": "^.*$",
-      "priority": 2,
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
       "matchContentJson": null,
-      "pollingSchedule": null,
       "tcpHost": null,
       "tcpPort": null,
       "updatedBy": {
-        "id": "5e57ae984b9db90012eae19c",
+        "id": "5eb3e7a5a0b7120012e6082f",
         "name": "Super User"
       },
       "alerts": []
