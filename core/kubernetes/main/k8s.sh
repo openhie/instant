@@ -145,7 +145,8 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-server-deployment
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
-    kubectl delete deployment,service,statefulset,pvc,pv -l package=core
+    kubectl delete deployment,service,statefulset,pvc,pv,job -l package=core
+    kubectl delete configmap --all
 else
     echo "Valid options are: init, up, down, or destroy"
 fi

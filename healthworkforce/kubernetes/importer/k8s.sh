@@ -7,6 +7,7 @@ if [ "$1" == "up" ]; then
     kubectl get jobs all
 elif [ "$1" == "clean" ]; then
     kubectl delete -k $k8sImporterRootFilePath
+    kubectl delete jobs --all
 else
     echo "Valid options are: up, or clean"
 fi
