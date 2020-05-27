@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: mapper-endpoint-importer-1
     app.kubernetes.io/version: '0.1'
     app.kubernetes.io/component: endpoint-importer
-    app.kubernetes.io/package: hwf
+    package: hwf
 spec:
   backoffLimit: 3
   template:
