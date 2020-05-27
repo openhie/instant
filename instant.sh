@@ -34,11 +34,14 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
     envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
     printf "\n\n>>> Applying to the '${envContextName}' context <<<\n\n\n"
 
-    if [ "$COMMAND" == "up" ]; then
-        ./core/kubernetes/main/k8s.sh up
+    if [ "$COMMAND" == "init" ]; then
+        ./core/kubernetes/main/k8s.sh init
         ./core/kubernetes/importer/k8s.sh up
         ./healthworkforce/kubernetes/main/k8s.sh up
         ./healthworkforce/kubernetes/importer/k8s.sh up
+    elif [ "$COMMAND" == "up" ]; then
+        ./core/kubernetes/main/k8s.sh up
+        ./healthworkforce/kubernetes/main/k8s.sh up
     elif [ "$COMMAND" == "down" ]; then
         ./core/kubernetes/main/k8s.sh down
         ./healthworkforce/kubernetes/main/k8s.sh down
@@ -46,18 +49,18 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
         ./core/kubernetes/main/k8s.sh destroy
         ./healthworkforce/kubernetes/main/k8s.sh destroy
     elif [ "$COMMAND" == "test" ]; then
-        openhimCoreHostname=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
-        openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].port})
+        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
+        openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].port})
         hostnameLength=$(expr length "$openhimCoreHostname")
 
         if [ "$hostnameLength" -le 0 ]; then
             openhimCoreHostname=$(minikube ip)
-            openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].nodePort})
+            openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].nodePort})
         fi
 
         ./core/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
         ./healthworkforce/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort
     else
-        echo "Valid options are: up, down, test or destroy"
+        echo "Valid options are: init, up, down, test or destroy"
     fi
 fi

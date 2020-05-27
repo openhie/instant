@@ -2,13 +2,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: mapper-config-importer-job
-  namespace: hwf-package
   labels:
     app.kubernetes.io/name: mapper-config-importer
     app.kubernetes.io/instance: mapper-config-importer-1
     app.kubernetes.io/version: '0.1'
     app.kubernetes.io/component: config-importer
-    app.kubernetes.io/part-of: core-package
+    package: hwf
 spec:
   backoffLimit: 3
   template:
@@ -16,19 +15,19 @@ spec:
       initContainers:
         - name: check-openhim-core-status
           image: busybox:1.28
-          command: ['sh', '-c', 'until telnet openhim-core-service.core-package 8082; do echo OpenHIM Core API not running yet; sleep 10; done;']
+          command: ['sh', '-c', 'until telnet openhim-core-service 8082; do echo OpenHIM Core API not running yet; sleep 10; done;']
       containers:
         - name: mapper-config-importer
           image: jembi/instantohie-config-importer
           args:
             - sh
             - -c
-            - wait-on -t 60000 https-get://openhim-core-service.core-package:8082/heartbeat && node openhimConfig.js
+            - wait-on -t 60000 https-get://openhim-core-service:8082/heartbeat && node openhimConfig.js
           env:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: '0'
             - name: OPENHIM_API_HOSTNAME
-              value: openhim-core-service.core-package
+              value: openhim-core-service
             - name: OPENHIM_API_PASSWORD
               value: instant101
             - name: OPENHIM_API_PORT

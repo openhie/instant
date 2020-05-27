@@ -1,8 +1,12 @@
 configMapGenerator:
   - name: mapper-config-importer-configmap
-    namespace: hwf-package
     files:
       - ./volume/openhim-import.json
       - ./volume/openhimConfig.js
+  - name: mcsd-endpoint-importer-configmap
+    files:
+      - ./volume/endpoint.json
+      - ./volume/endpoint.js
 resources:
   - ./mapper-config-importer-job.yaml
+  - ./mcsd-endpoint-importer-job.yaml

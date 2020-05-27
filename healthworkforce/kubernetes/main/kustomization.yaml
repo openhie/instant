@@ -1,19 +1,23 @@
 configMapGenerator:
-  - name: healthworkforce-mapper-configmap-dhis1
-    namespace: hwf-package
+  - name: mock-services-mcsdmockservices-resources
     files:
-      - ./mapper/volume/dhis2part2/constants.json
-      - ./mapper/volume/dhis2part1/input-mapping.json
-      - ./mapper/volume/dhis2part1/input-validation.json
-      - ./mapper/volume/dhis2part1/meta.json
-  - name: healthworkforce-mapper-configmap-dhis2
-    namespace: hwf-package
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-PractitionerRole.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Practitioner.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Organization.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-Location.json
+      - ./mapper/volume/mock-services/mcsdMockServices/resources/bundle-transaction-response.json
+  - name: mock-services-mcsdmockservices-src
     files:
-      - ./mapper/volume/dhis2part2/constants.json
-      - ./mapper/volume/dhis2part2/input-mapping.json
-      - ./mapper/volume/dhis2part2/input-validation.json
-      - ./mapper/volume/dhis2part2/meta.json
-
+      - ./mapper/volume/mock-services/mcsdMockServices/src/config.js
+      - ./mapper/volume/mock-services/mcsdMockServices/src/index.js
+      - ./mapper/volume/mock-services/mcsdMockServices/src/util.js
+  - name: mock-services-mcsdmockservices
+    files:
+      - ./mapper/volume/mock-services/mcsdMockServices/package.json
+      - ./mapper/volume/mock-services/mcsdMockServices/yarn.lock
 resources:
   - ./mapper/mapper-deployment.yaml
   - ./mapper/mapper-service.yaml
+  # Mock services
+  - ./mapper/mock-service-deployment.yaml
+  - ./mapper/mock-service.yaml
