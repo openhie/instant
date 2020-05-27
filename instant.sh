@@ -49,13 +49,13 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
         ./core/kubernetes/main/k8s.sh destroy
         ./healthworkforce/kubernetes/main/k8s.sh destroy
     elif [ "$COMMAND" == "test" ]; then
-        openhimCoreHostname=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
-        openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].port})
+        openhimCoreHostname=$(kubectl get service openhim-core-service -o=jsonpath="{.status.loadBalancer.ingress[*]['hostname', 'ip']}")
+        openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].port})
         hostnameLength=$(expr length "$openhimCoreHostname")
 
         if [ "$hostnameLength" -le 0 ]; then
             openhimCoreHostname=$(minikube ip)
-            openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service --namespace=core-package -o=jsonpath={.spec.ports[1].nodePort})
+            openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].nodePort})
         fi
 
         ./core/test.sh $openhimCoreHostname:$openhimCoreTransactionSSLPort

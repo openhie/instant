@@ -124,9 +124,6 @@ if [ "$1" == "init" ]; then
     print_services_url
     printf ">>> The OpenHIM Console Url will take a few minutes to become active <<<\n\n"
 elif [ "$1" == "up" ]; then
-    # Create the component's namespace
-    kubectl apply -f $k8sMainRootFilePath/core-namespace.yaml
-
     kubectl apply -k $k8sMainRootFilePath
 
     envContextName=$(kubectl config get-contexts | grep '*' | awk '{print $2}')
