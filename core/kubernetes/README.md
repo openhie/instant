@@ -179,7 +179,7 @@ Before we proceed with creating our `Core Package` services, we need to ensure w
 Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core Instant OpenHIE deployment with the following command:
 
 ```bash
-./main/k8s.sh up
+./main/k8s.sh init
 ```
 
 The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
@@ -199,6 +199,12 @@ kubectl get all
 ```
 
 To tear down this deployment use the opposing command:
+
+```bash
+./main/k8s.sh down
+```
+
+To start up the services after a tear down, use the following command:
 
 ```bash
 ./main/k8s.sh down
