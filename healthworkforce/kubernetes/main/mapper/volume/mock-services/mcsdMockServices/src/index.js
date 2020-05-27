@@ -1,10 +1,9 @@
 'use strict'
 
-const express = require('express')
 const fs = require('fs')
+const http = require('http')
 
 const config = require('./config').getConfig()
-const logger = require('./logger')
 
 const practitionerResource = JSON.parse(
   fs.readFileSync('./resources/bundle-Practitioner.json')
@@ -22,38 +21,25 @@ const fhirTransactionBundleResultResource = JSON.parse(
   fs.readFileSync('./resources/bundle-transaction-response.json')
 )
 
-const app = express()
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {'Content-Type': 'application/json'})
 
-app.use((req, res, next) => {
-  logger.info(`Request url": ${req.url}`)
-  next()
+  if (req.method === 'GET' && req.url === '/gofr-location-mock/_history' ) {
+    res.write(JSON.stringify(locationResource))
+  } else if (req.method === 'GET' && req.url === '/ihris-practitioner-mock/_history') {
+    res.write(JSON.stringify(practitionerResource))
+  } else if (req.method === 'GET' && req.url === '/gofr-organization-mock/_history') {
+    res.write(JSON.stringify(organizationResource))
+  } else if (req.method === 'GET' && req.url === '/ihris-practitionerRole-mock/_history') {
+    res.write(JSON.stringify(practitionerRoleResource))
+  } else if (req.method === 'POST' && req.url === '/fhir-mock') {
+    res.write(JSON.stringify(fhirTransactionBundleResultResource))
+  } else {
+    res.writeHead(404, {'Content-Type': 'application/json'})
+    res.write(JSON.stringify({error: 'Not Found'}))
+  }
+  res.end()
 })
 
-app.get('/gofr-location-mock/_history', function(_req, res) {
-  logger.info(`Fetching GOFR Location data with query paramter`)
-  res.json(locationResource)
-})
-
-app.get('/gofr-organization-mock/_history', function(_req, res) {
-  logger.info(`Fetching GOFR Organization data with query paramter`)
-  res.json(organizationResource)
-})
-
-app.get('/ihris-practitioner-mock/_history', function(_req, res) {
-  logger.info(`Fetching iHRIS practitioner data with query paramter`)
-  res.json(practitionerResource)
-})
-
-app.get('/ihris-practitionerRole-mock/_history', function(_req, res) {
-  logger.info(`Fetching iHRIS practitionerRole data with query paramter`)
-  res.json(practitionerRoleResource)
-})
-
-app.post('/fhir-mock', function(_req, res) {
-  logger.info(`Processing FHIR transaction bundle...`)
-  res.json(fhirTransactionBundleResultResource)
-})
-
-app.listen(config.port, () => {
-  logger.info(`Server listening on port ${config.port}...`)
-})
+server.listen(config.port)
+console.log('Server started on port: ', config.port)

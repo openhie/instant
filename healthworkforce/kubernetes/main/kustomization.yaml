@@ -10,7 +10,6 @@ configMapGenerator:
     files:
       - ./mapper/volume/mock-services/mcsdMockServices/src/config.js
       - ./mapper/volume/mock-services/mcsdMockServices/src/index.js
-      - ./mapper/volume/mock-services/mcsdMockServices/src/logger.js
       - ./mapper/volume/mock-services/mcsdMockServices/src/util.js
   - name: mock-services-mcsdmockservices
     files:
