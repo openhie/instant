@@ -41,7 +41,7 @@
           "forwardAuthHeader": false,
           "name": "mcsd route",
           "secured": false,
-          "host": "mapper",
+          "host": "mapper-service",
           "port": 3003,
           "path": "/mcsd",
           "pathTransform": "",
