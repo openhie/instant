@@ -38,7 +38,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.gofr-organization.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
@@ -55,7 +55,7 @@
             "_since": {
               "path": "state.system.timestamps.lookupRequests.ihris-practitioner.requestStart",
               "prefix": null,
-              "postfix": null  
+              "postfix": null
             }
           }
         }
@@ -80,10 +80,10 @@
     ],
     "response": [
       {
-        "id": "fhir",
+        "id": "mcsd-fhir-bundle",
         "config": {
           "method": "post",
-          "url": "http://mock-service:4000/fhir-mock",
+          "url": "http://localhost:3003/mcsd-fhir-bundle",
           "headers": {
             "Content-Type": "application/json"
           }
@@ -92,11 +92,84 @@
     ]
   },
   "inputValidation": {},
-  "inputMapping": {},
-  "state": {
-    "extract": {
-      "system": {
-        "timestamps": true
+  "inputMapping": {
+    "lookupRequests.gofr-location.entry[]": "Locations",
+    "constants.location.request.method": {
+      "key": "Locations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.location.request.url": {
+      "key": "Locations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.gofr-organization.entry[]": "Organizations",
+    "constants.organization.request.method": {
+      "key": "Organizations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.organization.request.url": {
+      "key": "Organizations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.ihris-practitionerRole.entry[]": "PractitionerRoles",
+    "constants.practitionerRole.request.method": {
+      "key": "PractitionerRoles[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.practitionerRole.request.url": {
+      "key": "PractitionerRoles[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.ihris-practitioner.entry[]": "Practitioners",
+    "constants.practitioner.request.method": {
+      "key": "Practitioners[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.practitioner.request.url": {
+      "key": "Practitioners[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    }
+  },
+  "state": {},
+  "constants": {
+    "location": {
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    "organization": {
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    "practitionerRole": {
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    "practitioner": {
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
       }
     }
   }
