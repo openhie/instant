@@ -12,4 +12,7 @@ services:
 
   # Mock services for testing
   mock-services:
-    build: ../mock-services/mcsdMockServices
+    image: jembi/instantohie-mcsd-mock-services
+    container_name: mock-services
+    ports:
+      - "4000:4000"
