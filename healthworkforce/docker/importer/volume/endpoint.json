@@ -1,6 +1,7 @@
 {
   "name": "mCSD Orchestration",
   "endpoint": {
+    "method": "GET",
     "pattern": "/mcsd"
   },
   "transformation": {
@@ -13,7 +14,7 @@
         "id": "gofr-location",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/gofr-location-mock/_history",
+          "url": "http://mock-service:4000/gofr-location-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -30,7 +31,7 @@
         "id": "gofr-organization",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/gofr-organization-mock/_history",
+          "url": "http://mock-service:4000/gofr-organization-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -47,7 +48,7 @@
         "id": "ihris-practitioner",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/ihris-practitioner-mock/_history",
+          "url": "http://mock-service:4000/ihris-practitioner-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -64,7 +65,7 @@
         "id": "ihris-practitionerRole",
         "config": {
           "method": "get",
-          "url": "http://mock-services:4000/ihris-practitionerRole-mock/_history",
+          "url": "http://mock-service:4000/ihris-practitionerRole-mock/_history",
           "headers": {
             "Content-Type": "application/json"
           },
@@ -80,10 +81,10 @@
     ],
     "response": [
       {
-        "id": "fhir",
+        "id": "mcsd-fhir-bundle",
         "config": {
           "method": "post",
-          "url": "http://mock-services:4000/fhir-mock",
+          "url": "http://localhost:3003/mcsd-fhir-bundle",
           "headers": {
             "Content-Type": "application/json"
           }
@@ -524,32 +525,60 @@
     }
   },
   "inputMapping": {
-    "lookupRequests.gofr-location.entry[]": {
-      "key": "entry[]+",
-      "transform": "appendArray"
+    "lookupRequests.gofr-location.entry[]": "Locations",
+    "constants.location.request.method": {
+      "key": "Locations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
     },
-    "lookupRequests.gofr-organization.entry[]": {
-      "key": "entry[]+",
-      "transform": "appendArray"
+    "constants.location.request.url": {
+      "key": "Locations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
     },
-    "lookupRequests.ihris-practitioner.entry[]": {
-      "key": "entry[]+",
-      "transform": "appendArray"
+    "lookupRequests.gofr-organization.entry[]": "Organizations",
+    "constants.organization.request.method": {
+      "key": "Organizations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
     },
-    "lookupRequests.ihris-practitionerRole.entry[]": {
-      "key": "entry[]+",
-      "transform": "appendArray"
-    }
+    "constants.organization.request.url": {
+      "key": "Organizations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.ihris-practitionerRole.entry[]": "PractitionerRoles",
+    "lookupRequests.ihris-practitioner.entry[]": "Practitioners"
   },
-  "state": {
-    "extract": {
-      "system": {
-        "timestamps": true
+  "state": {},
+  "constants": {
+    "location": {
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    "organization": {
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    "practitionerRole": {
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    "practitioner": {
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
       }
     }
-  },
-  "constants": {
-    "resourceType": "Bundle",
-    "type": "transaction"
   }
 }

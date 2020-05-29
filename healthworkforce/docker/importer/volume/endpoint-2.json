@@ -15,7 +15,7 @@
         "id": "mcsd-fhir-bundle",
         "config": {
           "method": "post",
-          "url": "http://hapi-fhir-server-service:8080/hapi-fhir-jpaserver/fhir",
+          "url": "http://hapi-fhir:8080/hapi-fhir-jpaserver/fhir",
           "headers": {
             "Content-Type": "application/json"
           }

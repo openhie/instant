@@ -11,6 +11,7 @@ fi
 if [ "$TARGET" == "docker" ]; then
     if [ "$COMMAND" == "init" ]; then
         ./core/docker/compose.sh init
+        sleep 15 # give some time for the core services to start up
         ./healthworkforce/docker/compose.sh init
     elif [ "$COMMAND" == "up" ]; then
         ./core/docker/compose.sh up

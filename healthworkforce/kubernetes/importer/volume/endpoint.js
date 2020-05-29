@@ -7,7 +7,6 @@ const path = require('path')
 const MEDIATOR_HOSTNAME = process.env.MEDIATOR_HOST_NAME || 'mcsdMediator'
 const MEDIATOR_API_PORT = process.env.MEDIATOR_API_PORT || 3003
 
-
 const jsonData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'endpoint.json'))
 )
