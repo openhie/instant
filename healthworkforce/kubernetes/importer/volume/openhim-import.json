@@ -56,7 +56,7 @@
       "name": "mCSD mediator",
       "description": "Triggers the retrieving of data and the mapping of that data into a FHIR bundle, which will then be sent to a FHIR metadata store ",
       "pollingSchedule": "0 * * * *",
-      "urlPattern": "^.*$",
+      "urlPattern": "^/mcsd-trigger$",
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
