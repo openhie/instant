@@ -48,7 +48,7 @@ To set the Instant OpenHIE services run the following command:
 ./instant.sh init k8s
 ```
 
-To tear down the deployments use the opposing command:
+To tear down the deployments use the following command:
 
 ```bash
 ./instant.sh down k8s
