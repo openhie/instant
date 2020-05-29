@@ -29,13 +29,6 @@ func main() {
 	s := string(b)
 	color.Green.Println(s)
 
-	// banner - doesn't bundle into executable
-	// d, err := ioutil.ReadFile("banner.txt")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// color.Green.Println(string(d))
-
 	checkDisclaimer()
 }
 
@@ -56,13 +49,7 @@ func checkDisclaimer() {
 		}
 		s := string(b)
 		color.Yellow.Println(s)
-		// disclaimer - doesnt bundle into executable
-		// c, err := ioutil.ReadFile("disclaimer.txt")
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// color.Yellow.Println(string(c))
-		// consent
+
 		prompt := promptui.Select{
 			Label: "Do you agree to use this application?",
 			Items: []string{"Yes", "No", "Quit"},
@@ -121,7 +108,6 @@ func setup() {
 
 	color.Green.Println("getting ready")
 
-	// path to dotfolder in homedir
 	home, _ := os.UserHomeDir()
 	dotfiles := filepath.Join(home, ".instant")
 	fmt.Println("...checking for config folder at:", dotfiles)
