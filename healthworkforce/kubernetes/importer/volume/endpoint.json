@@ -120,31 +120,7 @@
       }
     },
     "lookupRequests.ihris-practitionerRole.entry[]": "PractitionerRoles",
-    "constants.practitionerRole.request.method": {
-      "key": "PractitionerRoles[].request.method",
-      "transform": {
-        "function": "oneToAllElements"
-      }
-    },
-    "constants.practitionerRole.request.url": {
-      "key": "PractitionerRoles[].request.url",
-      "transform": {
-        "function": "oneToAllElements"
-      }
-    },
-    "lookupRequests.ihris-practitioner.entry[]": "Practitioners",
-    "constants.practitioner.request.method": {
-      "key": "Practitioners[].request.method",
-      "transform": {
-        "function": "oneToAllElements"
-      }
-    },
-    "constants.practitioner.request.url": {
-      "key": "Practitioners[].request.url",
-      "transform": {
-        "function": "oneToAllElements"
-      }
-    }
+    "lookupRequests.ihris-practitioner.entry[]": "Practitioners"
   },
   "state": {},
   "constants": {
