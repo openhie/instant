@@ -32,3 +32,5 @@ spec:
               value: instant101
             - name: MONGO_URL
               value: mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo/mapping-mediator?replicaSet=mongo-set
+            - name: PARSER_LIMIT
+              value: 10mb

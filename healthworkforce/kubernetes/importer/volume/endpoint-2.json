@@ -1,0 +1,59 @@
+{
+  "name": "mCSD Orchestration - FHIR Bundle",
+  "endpoint": {
+    "pattern": "/mcsd-fhir-bundle"
+  },
+  "transformation": {
+    "input": "JSON",
+    "output": "JSON"
+  },
+  "requests": {
+    "lookup": [],
+    "response": [
+      {
+        "id": "mcsd-fhir-bundle",
+        "config": {
+          "method": "post",
+          "url": "http://hapi-fhir-server-service:8080/hapi-fhir-jpaserver/fhir",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+    ]
+  },
+  "inputValidation": {},
+  "inputMapping": {
+    "constants.resourceType": "resourceType",
+    "constants.type": "type",
+    "requestBody.Locations": {
+      "key": "entry[]",
+      "transform": {
+        "function": "appendArray"
+      }
+    },
+    "requestBody.Organizations": {
+      "key": "entry[]",
+      "transform": {
+        "function": "appendArray"
+      }
+    },
+    "requestBody.PractitionerRoles": {
+      "key": "entry[]",
+      "transform": {
+        "function": "appendArray"
+      }
+    },
+    "requestBody.Practitioners": {
+      "key": "entry[]",
+      "transform": {
+        "function": "appendArray"
+      }
+    }
+  },
+  "state": {},
+  "constants": {
+    "resourceType": "Bundle",
+    "type": "transaction"
+  }
+}

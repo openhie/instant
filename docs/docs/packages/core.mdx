@@ -11,9 +11,10 @@ description: The core package of the Instant OpenHIE
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 :::info
-This package is freshly developed and is subject to change based on how the Instant OpenHIE project evolves
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
 :::
 
 The Instant OpenHIE Core Package is the common base of the Instant OpenHIE system and it provides fundamental components that other package may build off of.
@@ -27,6 +28,12 @@ This package consists of two components that support all other packages, these a
 
 This package sets up containers that support the OpenHIM as well as the HAPI FHIR server.
 It also configures the OpenHIM with a *HAPI FHIR channel*. This allows authorised data transfer to the HAPI FHIR server through the OpenHIM.
+
+An example of what the core package includes, as well as how a sample package (in this case the Health-Workforce package) may use the services the core package provides, is shown below.
+
+<div class="text--center">
+  <img alt="Package architecture" src={useBaseUrl('img/instant-ohie-generic-arch.png')} />
+</div>
 
 To use the HAPI FHIR server from an external point of care application, you can access it through the OpenHIM at a URL like the following:
 
@@ -66,9 +73,9 @@ It also has a `wait-on` module installed to allow it to wait on certain ports be
 ## Core Package Dev guide
 
 For testing purposes, this package can be run independently. The below are some notes of how to do this.
-The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started).
+The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started.mdx).
 
-Select a deployment target below to follow the getting started steps in setting up this package.
+Select a deployment target below and follow the getting started steps in setting up this package.
 
 <Tabs
   defaultValue="dockerCompose"
@@ -88,7 +95,7 @@ This will create all the services and print out their logs in the terminal.
 docker-compose up
 ```
 
-## Useful compose flags
+#### Useful compose flags
 
 Some additional flags can be passed to the `docker-compose` command making it easier to work with.
 
@@ -100,7 +107,7 @@ Some additional flags can be passed to the `docker-compose` command making it ea
 docker-compose up -d --force-recreate
 ```
 
-## Environment configuration
+#### Environment configuration
 
 The default script might not suit the type of environment you want to run.
 Therefore there are additional `docker-compose` files available for fine-tuning environment configuration.
@@ -110,7 +117,7 @@ Therefore there are additional `docker-compose` files available for fine-tuning 
 
     > **Development environment only** as this exposes service ports.
 
-### Development configuration
+##### Development configuration
 
 Can specify three `docker-compose` files.
 
@@ -118,7 +125,7 @@ Can specify three `docker-compose` files.
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
 ```
 
-### Production-like configuration
+##### Production-like configuration
 
 Should use only two `docker-compose` files.
 
@@ -136,7 +143,7 @@ kubectl config get-contexts
 kubectl config use-context <context-name>
 ```
 
-## Minikube (local)
+#### Minikube (local)
 
 For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
 Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
@@ -149,7 +156,7 @@ minikube start --cpus 4 --memory 8192
 
 This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
 
-## Getting Started
+#### Getting Started
 
 Useful Links:
 
@@ -169,7 +176,7 @@ This bash script will apply the kubernetes `kustomization.yaml` file which contr
 
 > On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
 
-## View running Kubernetes resources
+#### View running Kubernetes resources
 
 Execute the below commands to see the running Kubernetes resources and the state that they are in.
 
@@ -193,7 +200,7 @@ To completely remove all project components, use the following option:
 
 ---
 
-## Initial OpenHIM Config
+#### Initial OpenHIM Config
 
 We have included a useful set of scripts to initialize the OpenHIM and set it up to communicate with the HAPI-FHIR server.
 This will change the default user's password of the OpenHIM to `instant101`, and create a channel configured to route traffic to the HAPI-FHIR instance.
@@ -221,7 +228,7 @@ You can test that the OpenHIM is routing requests to HAPI FHIR by running:
 
 ---
 
-## Development mode for exposed services
+#### Development mode for exposed services
 
 To run in development mode, run the following command:
 

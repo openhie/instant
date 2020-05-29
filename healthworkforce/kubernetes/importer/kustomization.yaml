@@ -6,6 +6,7 @@ configMapGenerator:
   - name: mcsd-endpoint-importer-configmap
     files:
       - ./volume/endpoint.json
+      - ./volume/endpoint-2.json
       - ./volume/endpoint.js
 resources:
   - ./mapper-config-importer-job.yaml
