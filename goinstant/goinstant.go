@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,7 +19,49 @@ import (
 
 func main() {
 
-	f, err := pkger.Open("/banner.txt")
+	// defaults are not used for package or state
+	headlessPtr := flag.Bool("headless", false, "headless mode, no prompts or ui. this is for automated testing.")
+	packagePtr := flag.String("package", "", "package(s) to install: core, core+hwf, core+facility, all")
+	statePtr := flag.String("state", "", "up or down")
+
+	flag.Parse()
+	// packageflag := isFlagPassed(*packagePtr)
+	// stateflag := isFlagPassed(*statePtr)
+
+	fmt.Println("headless:", *headlessPtr)
+	fmt.Println("package:", *packagePtr)
+	fmt.Println("state:", *statePtr)
+
+	switch {
+	case *headlessPtr == true:
+		color.Green.Println("headless flag is true")
+		if *statePtr == "" {
+			color.Red.Println("state is empty but required. type goinstant -h for help.")
+		}
+		if *packagePtr == "" {
+			color.Red.Println("package flag is empty but required. type goinstant -h for help.")
+		}
+	case *headlessPtr == false:
+		pkgerPrint("/banner.txt", "green")
+		checkDisclaimer()
+	}
+
+}
+
+// // https://stackoverflow.com/questions/35809252/check-if-flag-was-provided-in-go
+// func isFlagPassed(name string) bool {
+// 	found := false
+// 	flag.Visit(func(f *flag.Flag) {
+// 		if f.Name == name {
+// 			found = true
+// 		}
+// 	})
+// 	return found
+// }
+
+func pkgerPrint(text string, scolor string) {
+
+	f, err := pkger.Open(text)
 	if err != nil {
 		panic(err)
 	}
@@ -27,9 +70,14 @@ func main() {
 		panic(err)
 	}
 	s := string(b)
-	color.Green.Println(s)
 
-	checkDisclaimer()
+	if scolor == "green" {
+		color.Green.Println(s)
+	}
+
+	if scolor == "yellow" {
+		color.Yellow.Println(s)
+	}
 }
 
 func checkDisclaimer() {
@@ -39,17 +87,7 @@ func checkDisclaimer() {
 	fileName := filepath.Join(dotfiles, "accept_disclaimer")
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
-		f, err := pkger.Open("/disclaimer.txt")
-		if err != nil {
-			panic(err)
-		}
-		b, err := ioutil.ReadAll(f)
-		if err != nil {
-			panic(err)
-		}
-		s := string(b)
-		color.Yellow.Println(s)
-
+		pkgerPrint("/disclaimer.txt", "yellow")
 		prompt := promptui.Select{
 			Label: "Do you agree to use this application?",
 			Items: []string{"Yes", "No", "Quit"},
