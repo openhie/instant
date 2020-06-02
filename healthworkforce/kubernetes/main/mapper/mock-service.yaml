@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mapper-service
+  name: mock-service
   labels:
     package: hwf
 spec:
   type: LoadBalancer
   selector:
-    component: mapper
+    component: mock-service
   ports:
-    - name: mapper-3003
-      port: 3003
-      targetPort: 3003
+    - name: mock-service
+      port: 4000
+      targetPort: 4000

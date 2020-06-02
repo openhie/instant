@@ -1,15 +1,15 @@
 #!/bin/bash
 
 getExposedServices () {
-	mongoUrl="$(minikube service openhim-mongo-dev-service -n=core-package --url)"
+	mongoUrl="$(minikube service openhim-mongo-dev-service --url)"
 	trimmedMongoUrl=$(sed 's/http:\/\///g' <<< "$mongoUrl")
 	echo -e "The OpenHIM MongoDB url:\n $trimmedMongoUrl\n"
 
-	mysqlUrl="$(minikube service hapi-fhir-mysql-dev-service -n=core-package --url)"
+	mysqlUrl="$(minikube service hapi-fhir-mysql-dev-service --url)"
 	trimmedMysqlUrl=$(sed 's/http:\/\///g' <<< "$mysqlUrl")
 	echo -e "The HAPI FHIR MySQL url:\n $trimmedMysqlUrl\n"
 
-	echo -e "HAPI FHIR server is accessible at:\n $(minikube service hapi-fhir-server-service -n=core-package --url)/hapi-fhir-jpaserver/fhir/"
+	echo -e "HAPI FHIR server is accessible at:\n $(minikube service hapi-fhir-server-service --url)/hapi-fhir-jpaserver/fhir/"
 }
 
 applyDevScripts () {
