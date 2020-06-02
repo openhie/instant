@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: openhim-mongo-dev-service
+  name: mongo
   labels:
     package: core
 spec:
-  type: 'NodePort'
+  clusterIP: None
   selector:
-    component: openhim-mongo
+    app: mongo
   ports:
-    - name: mongo-27017
+    - name: mongo-port
       port: 27017
       targetPort: 27017
