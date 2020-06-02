@@ -31,6 +31,6 @@ spec:
             - name: OPENHIM_PASSWORD
               value: instant101
             - name: MONGO_URL
-              value: mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo/mapping-mediator?replicaSet=mongo-set
+              value: mongodb://mongo-0.mongo-service,mongo-1.mongo-service,mongo-2.mongo-service/mapping-mediator?replicaSet=mongo-set
             - name: PARSER_LIMIT
               value: 10mb
