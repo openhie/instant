@@ -33,4 +33,4 @@ services:
         source: ./importer/volume
         target: /importer
     # This command will only attempt to import the mcsd mediator config when the uptime endpoint responds with 200
-    command: sh -c "wait-on -t 60000 http-get://mcsd-mediator:3003/uptime && node endpoint.js"
+    command: sh -c "wait-on -t 60000 http-get://mcsd-mediator:3003/uptime && sleep 1 && node endpoint.js"
