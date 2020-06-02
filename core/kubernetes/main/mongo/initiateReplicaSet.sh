@@ -12,7 +12,7 @@ sleep 60
 
 kubectl exec -i mongo-0 -- mongo --eval "rs.initiate($config)"
 
-## Allow the replica members to stable
+## Allow the replica members to connect to each other and be in sync
 sleep 60
 
 echo 'Mongo Replica setup finished'
