@@ -7,10 +7,11 @@
     <title>Instant OpenHIE</title>
     <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="main.js"></script>
 </head>
 
 <body>
-    <img src="iohie-logo-whitebg-transparent-resize.png" style="float: left;" />
+    <img src="logo.png" style="float: left;" />
     
     <br><br><br>
     <br><br><br>
@@ -47,22 +48,6 @@
             <button class="mdc-button mdc-button--raised mdc-button--secondary"
                 onclick="location.href('http://localhost:27517/service.html')">Start Core Only</button>
     </div>
-
-    <script>
-        function openCity(evt, cityName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(cityName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-    </script>
 
 </body>
 

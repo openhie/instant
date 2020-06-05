@@ -11,6 +11,7 @@ require (
 	github.com/go-git/go-git/v5 v5.0.0
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gookit/color v1.2.5
+	github.com/gorilla/mux v1.7.4
 	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/manifoldco/promptui v0.7.0

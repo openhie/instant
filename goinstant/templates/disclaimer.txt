@@ -1,8 +1,9 @@
 Project: https://wiki.ohie.org/display/resources/Instant+OpenHIE
-Documentation: https://openhie.github.io/instant/
-Source code: https://github.com/openhie/instant
+Docs: https://openhie.github.io/instant
+Source: https://github.com/openhie/instant
 
-This is an experiemental project to help with testing, demos, and training. It is not an official project of OpenHIE or its membership. 
+
+This is an experiemental project to help with testing, demos, and training. It is not an official project of OpenHIE. 
 
 This application does the following:
 

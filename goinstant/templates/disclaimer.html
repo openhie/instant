@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <title>Instant OpenHIE</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="main.js"></script>
+
+</head>
+
+<body>
+
+    <img src="logo.png" style="vertical-align: text-top;" />
+
+    <h1>Welcome to Instant OpenHIE!</h1>
+    <hr>
+    <h2>A little disclaimer first...</h2>
+    <div>
+        <p>
+            This is an experiemental project to help with testing, demos, and training, and not an official project of
+            OpenHIE. This application:
+        </p>
+
+        <ul>
+            <li>Creates files in the home directory to store things. This includes a copy of the source code from
+                github.com/openhie/instant These are located in .instant/</li>
+            <li>Queries, starts, and stops containers in Docker and Kubernetes. Only the 'instant' workflows are
+                affected.</li>
+        </ul>
+
+        <p>
+            This app will contain bugs. Please report issues <a href="https://github.com/openhie/instant">here</a>.
+        </p>
+
+    </div>
+
+    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+        onclick="location.href('http://localhost:27517/index.html')">Accept and Get Started</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom"
+        onclick="window.open('http://localhost:27517/decline.html', '_blank')">Decline and Quit</button>
+
+    <br><br><br>
+
+    <hr class="foot">
+
+    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
+    <button class="mdc-button mdc-button--raised"
+        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom"
+        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
+
+</body>
+
+</html>

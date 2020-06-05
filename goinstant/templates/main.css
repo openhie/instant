@@ -4,6 +4,7 @@
     --custom-color: rgb(51, 51, 51);
 }
 
+
 .mdc-button--secondary {
     --mdc-theme-primary: var(--mdc-theme-secondary);
 }
@@ -13,15 +14,24 @@
 }
 
 html {
+    vertical-align: text-top;
+    margin: auto;
+    width: 80%;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     font-family: 'Roboto', sans-serif;
     color: #121212;
     background: hsl(0, 0%, 97);
+
+}
+
+div {
+    word-wrap: normal;
 }
 
 body {
     margin: 8vw;
+    margin-top: 4vw;
 }
 
 h1,
@@ -33,7 +43,14 @@ h3 {
 hr {
     border: none;
     border-top: 1px solid #e6e6e6;
+    /* Thick red border */
+
 }
+
+hr.foot {
+    border-top: 1px solid gray;
+}
+
 
 button+button {
     margin-left: 12px;
