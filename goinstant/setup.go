@@ -10,48 +10,6 @@ import (
 	"github.com/gookit/color"
 )
 
-func makeSetup() string {
-
-	home, _ := os.UserHomeDir()
-	dotfiles := filepath.Join(home, ".instant")
-
-	status := "success"
-
-	// check for dotfolder, create if it doesn't exist
-	if _, err := os.Stat(dotfiles); os.IsNotExist(err) {
-		os.Mkdir(dotfiles, 0700)
-	}
-
-	// check repo and clone or pull
-	repo := filepath.Join(dotfiles, "instant")
-	if _, err := os.Stat(repo); os.IsNotExist(err) {
-		_, err := git.PlainClone(repo, false, &git.CloneOptions{
-			URL:      "https://github.com/openhie/instant",
-			Progress: os.Stdout,
-		})
-		if err != nil {
-			status = "fail"
-		}
-	} else {
-		const (
-			repoURL = "https://github.com/openhie/instant.git"
-		)
-
-		dir, _ := ioutil.TempDir("", "temp_dir")
-
-		options := &git.CloneOptions{
-			URL: repoURL,
-		}
-
-		_, err := git.PlainClone(dir, false, options)
-		if err != nil {
-			status = "fail"
-		}
-
-	}
-	return status
-}
-
 func setup() {
 
 	color.Green.Println("getting ready")
@@ -101,5 +59,7 @@ func setup() {
 	}
 	color.Green.Println("git repo is ready")
 	color.Green.Println("ready!")
+	test := "test"
+	consoleSender(server, test)
 
 }

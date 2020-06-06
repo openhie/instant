@@ -17,9 +17,10 @@ require (
 	github.com/manifoldco/promptui v0.7.0
 	github.com/markbates/pkger v0.15.1
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
+	github.com/r3labs/sse v0.0.0-20200310095403-ee05428e4d0e
 	github.com/sirupsen/logrus v1.5.0 // indirect
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
-	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
+	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
 	golang.org/x/sys v0.0.0-20200428200454-593003d681fa // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect

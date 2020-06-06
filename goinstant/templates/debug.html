@@ -8,35 +8,39 @@
     <script src="main.js"></script>
 </head>
 
-<img src="logo.png" style="float: left;" />
+<script>
+    var source = new EventSource('http://localhost:27517/events?stream=messages');
+    source.onmessage = function (e) {
+        document.getElementById('console').innerHTML += e.data + '<br>';
+    };
+</script>
 
-<br><br><br>
-<br><br><br>
 
-<h1>Welcome to Instant OpenHIE!</h1>
+<body>
 
-<hr>
+    <img src="logo.png" style="float: left;" />
 
-<p>Here are some links to help get started.</p>
-<p>When done, go back to the app console and use 'Control + C' to interrupt.</p>
-<p>Then double-click again and choose 'Stop Instant OpenHIE'.</p>
+    <br><br><br>
+    <br><br><br>
 
-<hr>
+    <h1>Debug Tools</h1>
 
-<h3>OpenHIM Console and Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:9000', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('http://openhim.org/docs/introduction/about', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/jembi/openhim-core-js', '_blank')">Code</button>
+    <hr>
 
-<h3>HAPI FHIR Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('https://hapifhir.io/hapi-fhir/docs/', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/hapifhir/hapi-fhir-jpaserver-starter', '_blank')">Code</button>
+    <p>Here are some links to help get started.</p>
+    <p>When done, go back to the app console and use 'Control + C' to interrupt.</p>
+    <p>Then double-click again and choose 'Stop Instant OpenHIE'.</p>
+
+    <hr class="foot">
+
+
+</body>
+
+<h2>Console</h2>
+
+<div id="console"
+    style="font-size: 14px; background-color: #9fc4c6; width: 600px; height: 120px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+</div>
+
 
 </html>

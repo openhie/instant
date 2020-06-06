@@ -8,7 +8,10 @@ import (
 	"github.com/gookit/color"
 	"github.com/gorilla/mux"
 	"github.com/markbates/pkger"
+	"github.com/r3labs/sse"
 )
+
+var server *sse.Server
 
 func main() {
 
@@ -24,50 +27,29 @@ func main() {
 	// stateflag := isFlagPassed(*statePtr)
 
 	router := mux.NewRouter()
-	api := router.PathPrefix("/api/").Subrouter()
-	api.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, version)
-	})
-	api.HandleFunc("/existdisclaimer", func(w http.ResponseWriter, r *http.Request) {
-		x := existDisclaimer()
-		fmt.Fprintln(w, x)
-	})
 
-	api.HandleFunc("/makedisclaimer", func(w http.ResponseWriter, r *http.Request) {
-		x := makeDisclaimer()
-		fmt.Fprintln(w, x)
-	})
+	server = sse.New()
+	server.AutoReplay = true
+	server.CreateStream("messages")
+	router.HandleFunc("/events", sseHandler)
 
-	api.HandleFunc("/makesetup", func(w http.ResponseWriter, r *http.Request) {
-		x := makeSetup()
-		fmt.Fprintln(w, x)
-	})
-	// api.HandleFunc("/debugdocker", func(w http.ResponseWriter, r *http.Request) {
-	// 	z := debugDocker()
-	// 	fmt.Fprintln(w, z)
-	// })
-	// api.HandleFunc("/composeup", func(w http.ResponseWriter, r *http.Request) {
-	// 	z := composeUp()
-	// 	fmt.Fprintln(w, z)
-	// })
-	// api.HandleFunc("/composedown", func(w http.ResponseWriter, r *http.Request) {
-	// 	z := composeDown()
-	// 	fmt.Fprintln(w, z)
-	// })
+	router.HandleFunc("/index", Index)
+	router.HandleFunc("/decline", Decline)
 
 	// Serve static files
 	router.PathPrefix("/").Handler(http.FileServer(pkger.Dir("/templates")))
 	// Serve index page on all unhandled routes
-	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "/index.html")
-	})
+	// router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "/index.html")
+	// })
+
+	// go stanleySender(server)
 
 	go http.ListenAndServe(":27517", router)
 
 	pkgerPrint("/templates/banner.txt", "green")
 	color.Green.Println("Version:", version)
 	color.Green.Println("Site: http://localhost:27517")
-	color.Green.Println("API: http://localhost:27517/api")
 	color.Green.Println("The app can be run in headless mode. Run with -help to see options.\n")
 
 	if *headlessPtr == true {
@@ -87,7 +69,6 @@ func main() {
 		color.Red.Println("Remember to clean up after your work or the app will continue to run in the background and have an adverse impact on performance.")
 
 		c := existDisclaimer()
-		fmt.Println(c)
 		switch c {
 		case "fail":
 			go openBrowser("http://localhost:27517/disclaimer.html")
@@ -97,26 +78,14 @@ func main() {
 			// then redirects to index.html
 		case "success":
 			makeDisclaimer()
-			go openBrowser("http://localhost:27517")
+			go openBrowser("http://localhost:27517/index.html")
+			// locks into prompts
+			setup()
+			selectSetup()
 
 		}
-		// if c == "fail" {
-		// 	go openBrowser("http://localhost:27517/disclaimer.html")
-		// 	cliDisclaimer()
-		// 	// accept hits makeDisclaimer() then redirects to index.html
-		// } else if c == "success" {
-		// 	makeDisclaimer()
-		// 	go openBrowser("http://localhost:27517")
-		// }
 	}
 
-	// TODO:
-	// on the initial startup, the existdisclaimer runs
-	// hit the endpoint for disclaimer which calls the function
-	// func checks if the disclaimer exists, then send to index.html,
-	// if not then to disclaimer page
-
-	// selectSetup()
 }
 
 // // https://stackoverflow.com/questions/35809252/check-if-flag-was-provided-in-go
@@ -129,3 +98,16 @@ func main() {
 // 	})
 // 	return found
 // }
+
+func sseHandler(w http.ResponseWriter, r *http.Request) {
+	// log.Println("new client", r.Header.Get("X-Forwarded-For"))
+	server.HTTPHandler(w, r)
+}
+
+func consoleSender(server *sse.Server, text string) {
+
+	server.Publish("messages", &sse.Event{
+		Data: []byte(text),
+	})
+
+}

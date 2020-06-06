@@ -25,6 +25,18 @@ html {
 
 }
 
+/* doesn't work because of low specificity, declare inline instead */
+/* div.console {
+    background-color: grey;
+    width: 800px;
+    height: 300px;
+    padding: 20px;
+    margin: 20px;
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+} */
+
 div {
     word-wrap: normal;
 }
