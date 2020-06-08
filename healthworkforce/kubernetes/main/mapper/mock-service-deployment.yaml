@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-service-deployment
+  labels:
+    package: hwf
+spec:
+  selector:
+    matchLabels:
+      component: mock-service
+  template:
+    metadata:
+      labels:
+        component: mock-service
+    spec:
+      containers:
+        - name: mock-service
+          image: jembi/instantohie-mcsd-mock-services:slim
+          ports:
+            - containerPort: 4000

@@ -2,7 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: hapi-fhir-mysql-volume-claim
-  namespace: core-package
+  labels:
+    package: core
 spec:
   accessModes:
     - ReadWriteOnce

@@ -2,7 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: openhim-core-deployment
-  namespace: core-package
+  labels:
+    package: core
 spec:
   replicas: 2
   selector:
@@ -16,7 +17,7 @@ spec:
       initContainers:
         - name: check-mongo-status
           image: busybox:1.28
-          command: ['sh', '-c', 'until telnet openhim-mongo-service 27017; do echo Mongo not running yet; sleep 10; done;']
+          command: ['sh', '-c', 'until telnet mongo-service 27017; do echo Mongo not running yet; sleep 10; done;']
       containers:
         - name: openhim-core
           image: jembi/openhim-core:5
