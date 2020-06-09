@@ -9,15 +9,11 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-
-	"github.com/gookit/color"
 )
 
 func debugKubernetes() {
 
-	fmt.Println("...checking your cluster setup")
-
-	color.Yellow.Println("Running on", runtime.GOOS)
+	consoleSender(server, "...checking your cluster setup")
 
 	switch runtime.GOOS {
 	case "linux", "darwin":
@@ -27,10 +23,10 @@ func debugKubernetes() {
 		err := cmd.Run()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
-			color.Red.Println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
+			consoleSender(server, "The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 
 		} else {
-			color.Green.Println("kubectl cluster manager is installed")
+			consoleSender(server, "kubectl cluster manager is installed")
 		}
 
 	case "windows":
@@ -39,12 +35,13 @@ func debugKubernetes() {
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			fmt.Println("Error: ", err)
-			color.Red.Println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
+			consoleSender(server, "The kubectl cluster manager is not installed.")
+			consoleSender(server, "Using a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 		} else {
-			color.Green.Println("kubectl cluster manager is installed")
+			consoleSender(server, "kubectl cluster manager is installed")
 		}
 	default:
-		fmt.Println("What operating system is this?", runtime.GOOS)
+		consoleSender(server, "What operating system is this?")
 	}
 
 	// switch runtime.GOOS {

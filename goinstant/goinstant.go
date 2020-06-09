@@ -106,6 +106,7 @@ func sseHandler(w http.ResponseWriter, r *http.Request) {
 
 func consoleSender(server *sse.Server, text string) {
 
+	fmt.Println(text)
 	server.Publish("messages", &sse.Event{
 		Data: []byte(text),
 	})

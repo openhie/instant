@@ -19,14 +19,14 @@ import (
 
 func debugDocker() {
 
-	fmt.Println("...checking your Docker setup")
+	consoleSender(server, "...checking your Docker setup")
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		color.Red.Println("Can't get current working directory... this is not a great error.")
+		consoleSender(server, "Can't get current working directory... this is not a great error.")
 		// panic(err)
 	} else {
-		color.Green.Println("Running goinstant [v-alpha] from:", cwd)
+		consoleSender(server, cwd)
 	}
 
 	// ctx := context.Background()
@@ -37,18 +37,18 @@ func debugDocker() {
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
-		color.Red.Println("Unable to list Docker containers. Please ensure that Docker is downloaded and running!")
+		consoleSender(server, "Unable to list Docker containers. Please ensure that Docker is downloaded and running")
 		// return
 	}
 
 	info, err := cli.Info(context.Background())
 	if err != nil {
-		color.Red.Println("Unable to get Docker context. Please ensure that Docker is downloaded and running!")
+		consoleSender(server, "Unable to get Docker context. Please ensure that Docker is downloaded and running")
 		// panic(err)
 	} else {
 		// Docker default is 2GB, which may need to be revisited if Instant grows.
 		fmt.Printf("%d bytes memory is allocated.\n", info.MemTotal)
-		color.Green.Println("Docker setup looks good!")
+		consoleSender(server, "Docker setup looks good")
 	}
 
 	// fmt.Println(reflect.TypeOf(containers).String())
@@ -63,11 +63,13 @@ func composeGet(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		color.Red.Println("Are you connected to the Internet? Error:", err)
+		consoleSender(server, "Are you connected to the Internet? Error")
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		color.Red.Println("Strange error reading the downloaded body. Error:", err)
+		consoleSender(server, "Strange error reading the downloaded body.")
 	}
 	fmt.Println(string(body))
 	return (string(body))
@@ -95,7 +97,7 @@ func composeUpCore() {
 			fmt.Println("Error: ", err)
 		}
 	default:
-		fmt.Println("What operating system is this?", runtime.GOOS)
+		consoleSender(server, "What operating system is this?")
 	}
 
 }
@@ -122,7 +124,7 @@ func composeDownCore() {
 			fmt.Println("Error: ", err)
 		}
 	default:
-		fmt.Println("What operating system is this?", runtime.GOOS)
+		consoleSender(server, "What operating system is this?")
 	}
 
 }
@@ -150,7 +152,7 @@ func composeUp(composeFile string) {
 			fmt.Println("Error: ", err)
 		}
 	default:
-		fmt.Println("What operating system is this?", runtime.GOOS)
+		consoleSender(server, "What operating system is this?")
 	}
 
 }
@@ -177,7 +179,6 @@ func composeDown(composeFile string) {
 			fmt.Println("Error: ", err)
 		}
 	default:
-		fmt.Println("What operating system is this?", runtime.GOOS)
-
+		consoleSender(server, "What operating system is this?")
 	}
 }

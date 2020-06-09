@@ -1,47 +1,45 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/gookit/color"
 )
 
 func setup() {
 
-	color.Green.Println("getting ready")
+	consoleSender(server, "getting ready")
 
 	home, _ := os.UserHomeDir()
 	dotfiles := filepath.Join(home, ".instant")
-	fmt.Println("...checking for config folder at:", dotfiles)
+	consoleSender(server, "...checking for config folder")
 
 	// check for dotfolder, create if it doesn't exist
 	if _, err := os.Stat(dotfiles); os.IsNotExist(err) {
-		fmt.Println("config folder does not exist, creating it")
+		consoleSender(server, "config folder does not exist, creating it")
 		os.Mkdir(dotfiles, 0700)
-		color.Green.Println("created", dotfiles)
+		consoleSender(server, "created")
 	} else {
-		color.Green.Println("config folder exists")
+		consoleSender(server, "config folder exists")
 	}
 
 	// check repo and clone or pull
-	fmt.Println("...cloning or pulling latest code from repo")
+	consoleSender(server, "...cloning or pulling latest code from repo")
 
 	repo := filepath.Join(dotfiles, "instant")
 	if _, err := os.Stat(repo); os.IsNotExist(err) {
-		fmt.Println("...repo folder does not exist, cloning it")
+		consoleSender(server, "...repo folder does not exist, cloning it")
 		_, err := git.PlainClone(repo, false, &git.CloneOptions{
 			URL:      "https://github.com/openhie/instant",
 			Progress: os.Stdout,
 		})
 		if err != nil {
 		}
-		color.Green.Println("successfully cloned", dotfiles)
+		consoleSender(server, "successfully cloned")
 	} else {
-		fmt.Println("...repo folder exists, pulling changes")
+		consoleSender(server, "...repo folder exists, pulling changes")
 		const (
 			repoURL = "https://github.com/openhie/instant.git"
 		)
@@ -55,11 +53,6 @@ func setup() {
 		_, err := git.PlainClone(dir, false, options)
 		if err != nil {
 		}
-
 	}
-	color.Green.Println("git repo is ready")
-	color.Green.Println("ready!")
-	test := "test"
-	consoleSender(server, test)
-
+	consoleSender(server, "git repo is ready")
 }
