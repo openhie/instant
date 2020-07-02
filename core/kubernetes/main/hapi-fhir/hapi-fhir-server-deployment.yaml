@@ -22,7 +22,7 @@ spec:
           command: ['sh', '-c', 'until telnet hapi-fhir-mysql-service 3306; do echo MySQL not running yet; sleep 10; done;']
       containers:
         - name: hapi-fhir-server
-          image: hapiproject/hapi:4.1
+          image: hapiproject/hapi:v4.1.0
           env:
             - name: JAVA_OPTS
               value: "'-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'"
