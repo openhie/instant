@@ -24,7 +24,7 @@ services:
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:4.1
+    image: hapiproject/hapi:v4.1.0
     environment:
       - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
     volumes:
