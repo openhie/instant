@@ -2,7 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hapi-fhir-mysql-deployment
-  namespace: core-package
+  labels:
+    package: core
 spec:
   replicas: 1
   selector:

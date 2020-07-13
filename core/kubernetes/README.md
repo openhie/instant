@@ -1,6 +1,6 @@
-# InstantHIE Core Package - Kubernetes
+# Instant OpenHIE Core Package - Kubernetes
 
-The InstantHIE Core Package is the base of the InstantHIE architecture.
+The Instant OpenHIE Core Package is the base of the Instant OpenHIE architecture.
 
 This package consists of two services:
 
@@ -176,10 +176,10 @@ Useful Links:
 
 Before we proceed with creating our `Core Package` services, we need to ensure we are on the correct directory containing our bash setup scripts.
 
-Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core instant ohie deployment with the following command:
+Once you are in the correct working directory (`core/kubernetes`) we can proceed to create our core Instant OpenHIE deployment with the following command:
 
 ```bash
-./main/k8s.sh up
+./main/k8s.sh init
 ```
 
 The OpenHIM console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
@@ -195,10 +195,16 @@ Execute the below commands to see the running Kubernetes resources and the state
 To display all resource: (Some new resources are not listed here)
 
 ```sh
-kubectl get all -n core-package
+kubectl get all
 ```
 
 To tear down this deployment use the opposing command:
+
+```bash
+./main/k8s.sh down
+```
+
+To start up the services after a tear down, use the following command:
 
 ```bash
 ./main/k8s.sh down

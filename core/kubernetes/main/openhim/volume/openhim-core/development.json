@@ -1,8 +1,8 @@
 {
   "bindAddress": "0.0.0.0",
   "mongo": {
-    "url": "mongodb://openhim-mongo-service:27017/openhim",
-    "atnaUrl": "mongodb://openhim-mongo-service:27017/openhim",
+    "url": "mongodb://mongo-0.mongo-service,mongo-1.mongo-service,mongo-2.mongo-service/openhim?replicaSet=mongo-set",
+    "atnaUrl": "mongodb://mongo-0.mongo-service,mongo-1.mongo-service,mongo-2.mongo-service/openhim?replicaSet=mongo-set",
     "connectionOptions": {},
     "openHIMApiReadPreference": "primaryPreferred",
     "openHIMApiWriteConcern": 1,

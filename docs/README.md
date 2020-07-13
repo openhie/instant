@@ -1,6 +1,6 @@
 # Website
 
-The InstantHIE website can be accessed online at the following URL
+The Instant OpenHIE website can be accessed online at the following URL
 
 <https://openhie.github.io/instant/>
 

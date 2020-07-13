@@ -1,0 +1,584 @@
+{
+  "name": "mCSD Orchestration",
+  "endpoint": {
+    "method": "GET",
+    "pattern": "/mcsd"
+  },
+  "transformation": {
+    "input": "JSON",
+    "output": "JSON"
+  },
+  "requests": {
+    "lookup": [
+      {
+        "id": "gofr-location",
+        "config": {
+          "method": "get",
+          "url": "http://mock-service:4000/gofr-location-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.gofr-location.requestStart",
+              "prefix": null,
+              "postfix": null
+            }
+          }
+        }
+      },
+      {
+        "id": "gofr-organization",
+        "config": {
+          "method": "get",
+          "url": "http://mock-service:4000/gofr-organization-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.gofr-organization.requestStart",
+              "prefix": null,
+              "postfix": null
+            }
+          }
+        }
+      },
+      {
+        "id": "ihris-practitioner",
+        "config": {
+          "method": "get",
+          "url": "http://mock-service:4000/ihris-practitioner-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.ihris-practitioner.requestStart",
+              "prefix": null,
+              "postfix": null
+            }
+          }
+        }
+      },
+      {
+        "id": "ihris-practitionerRole",
+        "config": {
+          "method": "get",
+          "url": "http://mock-service:4000/ihris-practitionerRole-mock/_history",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "params": {
+            "_since": {
+              "path": "state.system.timestamps.lookupRequests.ihris-practitionerRole.requestStart",
+              "prefix": null,
+              "postfix": null
+            }
+          }
+        }
+      }
+    ],
+    "response": [
+      {
+        "id": "mcsd-fhir-bundle",
+        "config": {
+          "method": "post",
+          "url": "http://localhost:3003/mcsd-fhir-bundle",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      }
+    ]
+  },
+  "inputValidation": {
+    "type": "object",
+    "properties": {
+      "lookupRequests": {
+        "type": "object",
+        "properties": {
+          "gofr-location": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"enum": ["Location"]},
+                        "id": {"type": "string"}
+                      },
+                      "required": ["id", "resourceType"]
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["type", "resourceType"]
+          },
+          "gofr-organization": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"enum": ["Organization"]},
+                        "id": {"type": "string"}
+                      },
+                      "required": ["id", "resourceType"]
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["type", "resourceType"]
+          },
+          "ihris-practitioner": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"enum": ["Practitioner"]},
+                        "id": {"type": "string"},
+                        "active": {"type": "boolean"},
+                        "extension": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "uri": {"type": "string", "format": "uri"}
+                            }
+                          }
+                        },
+                        "name": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["usual", "official", "temp", "nickname", "anonymous", "old", "maiden"]},
+                              "text": {"type": "string"},
+                              "family": {"type": "string"},
+                              "given": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "prefix": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "suffix": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "telecom": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "system": {"enum": ["phone", "fax", "email", "pajer", "url", "sms", "other"]},
+                              "value": {"type": "string"},
+                              "use": {"enum": ["home", "work", "temp", "old", "mobile"]},
+                              "rank": {"type": "integer", "minimum": 0},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "address": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["home", "work", "temp", "old", "billing"]},
+                              "type": {"enum": ["postal", "physical", "both"]},
+                              "text": {"type": "string"},
+                              "line": {"type": "array", "items": {"type": "string"}},
+                              "city": {"type": "string"},
+                              "district": {"type": "string"},
+                              "state": {"type": "string"},
+                              "postalCode": {"type": "string"},
+                              "country": {"type": "string"},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "qualification": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "identifier": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "use": {"enum": ["usual", "official", "temp", "secondary", "old"]},
+                                    "type": {
+                                      "type": "object",
+                                      "properties": {
+                                        "coding": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "system": {"type": "string", "format": "uri"},
+                                              "version": {"type": "string"},
+                                              "code": {"type": "string"},
+                                              "display": {"type": "string"},
+                                              "userSelected": {"type": "boolean"}
+                                            }
+                                          }
+                                        },
+                                        "text": {"type": "string"}
+                                      }
+                                    },
+                                    "system": {"type": "string", "format": "uri"},
+                                    "value": {"type": "string"},
+                                    "period": {
+                                      "type": "object",
+                                      "properties": {
+                                        "start": {"type": "string", "format": "date"},
+                                        "end": {"type": "string", "format": "date"}
+                                      }
+                                    },
+                                    "assigner": {
+                                      "type": "object",
+                                      "properties": {
+                                        "reference": {"type": "string"},
+                                        "type": {"type": "string", "format": "uri"},
+                                        "identifier": {"type": "object"},
+                                        "display": {"type": "string"}
+                                      }
+                                    }
+                                  }
+                                },
+                                "code": {
+                                  "type": "object",
+                                  "properties": {
+                                    "coding": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "system": {"type": "string", "format": "uri"},
+                                          "version": {"type": "string"},
+                                          "code": {"type": "string"},
+                                          "display": {"type": "string"},
+                                          "userSelected": {"type": "boolean"}
+                                        }
+                                      }
+                                    },
+                                    "text": {"type": "string"}
+                                  }
+                                },
+                                "period": {
+                                  "type": "object",
+                                  "properties": {
+                                    "start": {"type": "string", "format": "date"},
+                                    "end": {"type": "string", "format": "date"}
+                                  }
+                                }
+                              },
+                              "issuer":  {
+                                "type": "object",
+                                "properties": {
+                                  "reference": {"type": "string"},
+                                  "type": {"type": "string", "format": "uri"},
+                                  "identifier": {"type": "object"},
+                                  "display": {"type": "string"}
+                                }
+                              },
+                              "communication": {
+                                "type": "object",
+                                "properties": {
+                                  "coding": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "system": {"type": "string", "format": "uri"},
+                                        "version": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "display": {"type": "string"},
+                                        "userSelected": {"type": "boolean"}
+                                      }
+                                    }
+                                  },
+                                  "text": {"type": "string"}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "gender": {"enum": ["male", "female", "other", "unknown"]},
+                        "birthdate": {"type": "string", "format": "date"}
+                      },
+                      "required": ["id", "resourceType"]
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["type", "resourceType"]
+          },
+          "ihris-practitionerRole": {
+            "type": "object",
+            "properties": {
+              "resourceType": {"enum": ["Bundle"]},
+              "type": {"enum": ["document", "message", "transaction", "transaction-response", "batch", "batch-response", "history", "searchset", "collection"]},
+              "entry": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "fullUrl": {"type": "string"},
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "resourceType": {"enum": ["PractitionerRole"]},
+                        "id": {"type": "string"},
+                        "identifier": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "use": {"enum": ["usual", "official", "temp", "secondary", "old"]},
+                              "type": {
+                                "type": "object",
+                                "properties": {
+                                  "coding": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "system": {"type": "string", "format": "uri"},
+                                        "version": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "display": {"type": "string"},
+                                        "userSelected": {"type": "boolean"}
+                                      }
+                                    }
+                                  },
+                                  "text": {"type": "string"}
+                                }
+                              },
+                              "system": {"type": "string", "format": "uri"},
+                              "value": {"type": "string"},
+                              "period": {
+                                "type": "object",
+                                "properties": {
+                                  "start": {"type": "string", "format": "date"},
+                                  "end": {"type": "string", "format": "date"}
+                                }
+                              },
+                              "assigner": {
+                                "type": "object",
+                                "properties": {
+                                  "reference": {"type": "string"},
+                                  "type": {"type": "string", "format": "uri"},
+                                  "identifier": {"type": "object"},
+                                  "display": {"type": "string"}
+                                }
+                              }
+                            }
+                          },
+                          "code": {
+                            "type": "object",
+                            "properties": {
+                              "coding": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "system": {"type": "string", "format": "uri"},
+                                    "version": {"type": "string"},
+                                    "code": {"type": "string"},
+                                    "display": {"type": "string"},
+                                    "userSelected": {"type": "boolean"}
+                                  }
+                                }
+                              },
+                              "text": {"type": "string"}
+                            }
+                          },
+                          "period": {
+                            "type": "object",
+                            "properties": {
+                              "start": {"type": "string", "format": "date"},
+                              "end": {"type": "string", "format": "date"}
+                            }
+                          }
+                        },
+                        "active": {"type": "boolean"},
+                        "practitioner": {
+                          "type": "object",
+                          "properties": {
+                            "reference": {"type": "string"},
+                            "type": {"type": "string", "format": "uri"},
+                            "identifier": {"type": "object"},
+                            "display": {"type": "string"}
+                          }
+                        },
+                        "location": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "reference": {"type": "string"},
+                              "type": {"type": "string", "format": "uri"},
+                              "identifier": {"type": "object"},
+                              "display": {"type": "string"}
+                            }
+                          }
+                        },
+                        "period":  {
+                          "type": "object",
+                          "properties": {
+                            "start": {"type": "string", "format": "date"},
+                            "end": {"type": "string", "format": "date"}
+                          }
+                        },
+                        "extension": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "uri": {"type": "string", "format": "uri"}
+                            }
+                          }
+                        },
+                        "code": {
+                          "type": "array",
+                          "items":{
+                            "coding": {
+                              "type": "array",
+                              "items": {
+                                "system": {"type": "string"},
+                                "code": {"type": "string"}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "required": ["resourceType", "id"]
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["type", "resourceType"]
+          }
+        },
+        "required": ["gofr-location", "gofr-organization", "ihris-practitioner", "ihris-practitionerRole"]
+      }
+    }
+  },
+  "inputMapping": {
+    "lookupRequests.gofr-location.entry[]": "Locations",
+    "constants.location.request.method": {
+      "key": "Locations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.location.request.url": {
+      "key": "Locations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.gofr-organization.entry[]": "Organizations",
+    "constants.organization.request.method": {
+      "key": "Organizations[].request.method",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "constants.organization.request.url": {
+      "key": "Organizations[].request.url",
+      "transform": {
+        "function": "oneToAllElements"
+      }
+    },
+    "lookupRequests.ihris-practitionerRole.entry[]": "PractitionerRoles",
+    "lookupRequests.ihris-practitioner.entry[]": "Practitioners"
+  },
+  "state": {},
+  "constants": {
+    "location": {
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    "organization": {
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    "practitionerRole": {
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    "practitioner": {
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    }
+  }
+}

@@ -1,15 +1,17 @@
 version: '3.3'
 
 services:
-  mongo:
-    container_name: openhim-mongo
+  mongo-1:
     image: mongo:4.2
+    container_name: mongo-1
+    volumes:
+      - './data/mongo1:/data/db'
     ports:
       - "27017:27017"
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:4.1
+    image: hapiproject/hapi:v4.1.0
     ports:
       - "3447:8080"
 
