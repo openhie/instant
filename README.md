@@ -94,10 +94,19 @@ If we want to add more packages that aren't included in the base docker orchestr
 
 The commands that the go app runs in the background are similar to these:
 
+Note: named volume need to be deleted if the instant image is updated.
+
+General example - mount is needed so the repo data can be used by other containers on the host:
 ```sh
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock instant up
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock --mount='type=volume,src=instant,dst=/instant' --network host instant-local init
 ```
 
+Example with mounted 3rd party package
+```sh
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock --mount='type=volume,src=instant,dst=/instant' -v '../fake-ohie-package:/instant/fake' --network host instant-local init
+```
+
+Example with kubernetes config
 ```sh
 docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v ~/.kube/config:/root/.kube/config -v ~/.minikube:/home/ryan/.minikube -v ~/.minikube:/root/.minikube -v /usr/local/bin/minikube:/usr/local/bin/minikube --network host instant up k8s
 ```
