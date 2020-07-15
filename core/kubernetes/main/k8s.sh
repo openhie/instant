@@ -68,7 +68,7 @@ cloud_setup () {
 }
 
 local_setup () {
-    minikubeIP=$(minikube ip)
+    minikubeIP=$(kubectl config view -o=jsonpath='{.clusters[?(@.name=="minikube")].cluster.server}' | awk '{ split($0,A,/:\/*/) ; print A[2] }')
     openhimCoreMediatorSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[0].nodePort})
     openhimCoreTransactionPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[2].nodePort})
     openhimCoreTransactionSSLPort=$(kubectl get service openhim-core-service -o=jsonpath={.spec.ports[1].nodePort})

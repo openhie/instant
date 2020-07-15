@@ -42,11 +42,15 @@ async function runBashScript(path: string, filename: string, args: string[]) {
 
   try {
     const promise = exec(cmd)
-    promise.child.stdout.on('data', (data) => console.log(data))
-    promise.child.stderr.on('data', (data) => console.log(data))
+    if (promise.child) {
+      promise.child.stdout.on('data', (data) => console.log(data))
+      promise.child.stderr.on('data', (data) => console.error(data))
+    }
     await promise
   } catch (err) {
     console.error(`Error: Script ${filename} returned an error`)
+    console.log(err.stdout)
+    console.log(err.stderr)
   }
 }
 

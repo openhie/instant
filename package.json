@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "instant.ts",
   "repository": "git@github.com:openhie/instant.git",
-  "author": "Jembi and IntaHealth",
+  "author": "Jembi and IntraHealth",
   "license": "Apache-2.0",
   "dependencies": {
     "@types/command-line-args": "^5.0.0",
