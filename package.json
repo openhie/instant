@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "cucumber": "cucumber-js ./*/features/"
+  },
   "devDependencies": {
     "cucumber": "^6.0.5"
   }
