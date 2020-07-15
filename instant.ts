@@ -41,13 +41,12 @@ async function runBashScript(path: string, filename: string, args: string[]) {
   console.log(`Executing: ${cmd}`)
 
   try {
-    const { stdout, stderr } = await exec(cmd)
-    console.log(stdout)
-    console.error(stderr)
+    const promise = exec(cmd)
+    promise.child.stdout.on('data', (data) => console.log(data))
+    promise.child.stderr.on('data', (data) => console.log(data))
+    await promise
   } catch (err) {
     console.error(`Error: Script ${filename} returned an error`)
-    console.log(err.stdout)
-    console.error(err.stderr)
   }
 }
 
@@ -119,9 +118,11 @@ async function runBashScript(path: string, filename: string, args: string[]) {
       case 'k8s':
       case 'kubernetes':
         for (const id of chosenPackageIds) {
-          await runBashScript(`${allPackages[id].path}kubernetes/`, 'k8s.sh', [
-            main.command,
-          ])
+          await runBashScript(
+            `${allPackages[id].path}kubernetes/main/`,
+            'k8s.sh',
+            [main.command]
+          )
         }
         break
       default:

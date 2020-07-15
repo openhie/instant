@@ -37,9 +37,9 @@ if [ "$TARGET" == "kubernetes" ] || [ "$TARGET" == "k8s" ]; then
 
     if [ "$COMMAND" == "init" ]; then
         ./core/kubernetes/main/k8s.sh init
-        ./core/kubernetes/importer/k8s.sh up
-        ./healthworkforce/kubernetes/main/k8s.sh up
-        ./healthworkforce/kubernetes/importer/k8s.sh up
+        # ./core/kubernetes/importer/k8s.sh up
+        ./healthworkforce/kubernetes/main/k8s.sh init
+        # ./healthworkforce/kubernetes/importer/k8s.sh up
     elif [ "$COMMAND" == "up" ]; then
         ./core/kubernetes/main/k8s.sh up
         ./healthworkforce/kubernetes/main/k8s.sh up

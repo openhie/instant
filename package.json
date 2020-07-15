@@ -16,7 +16,7 @@
   },
   "scripts": {
     "instant": "ts-node instant.ts",
-    "docker:instant": "docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock --mount='type=volume,src=instant,dst=/instant' --network host instant",
-    "docker:build": "docker build -t instant:latest ."
+    "docker:instant": "docker volume rm instant ; docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.kube/config:/root/.kube/config:ro -v ~/.minikube:/home/$USER/.minikube:ro --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
+    "docker:build": "docker build -t openhie/instant:latest ."
   }
 }

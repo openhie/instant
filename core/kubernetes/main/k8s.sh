@@ -123,6 +123,8 @@ if [ "$1" == "init" ]; then
 
     print_services_url
     printf ">>> The OpenHIM Console Url will take a few minutes to become active <<<\n\n"
+
+    bash "$k8sMainRootFilePath"/../importer/k8s.sh up
 elif [ "$1" == "up" ]; then
     kubectl apply -k $k8sMainRootFilePath
 
