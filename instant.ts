@@ -61,7 +61,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
     `Found ${Object.keys(allPackages).length} packages: ${Object.values(
       allPackages
     )
-      .map((p) => p.metadata.name)
+      .map((p) => p.metadata.id)
       .join(', ')}`
   )
 
@@ -136,6 +136,23 @@ async function runBashScript(path: string, filename: string, args: string[]) {
 
   // test command
   if (main.command === 'test') {
+    const testOptions = commandLineArgs(
+      [
+        {
+          name: 'host',
+          alias: 'h',
+          defaultValue: 'localhost',
+        },
+        {
+          name: 'port',
+          alias: 'p',
+          defaultValue: '5000',
+        },
+      ],
+      { argv, stopAtFirstUnknown: true }
+    )
+
+    argv = testOptions._unknown || []
     let chosenPackageIds = argv
 
     if (
@@ -148,9 +165,12 @@ async function runBashScript(path: string, filename: string, args: string[]) {
       chosenPackageIds = Object.keys(allPackages)
     }
 
+    console.log(`Running tests for packages: ${chosenPackageIds.join(', ')}`)
+    console.log(`Using host: ${testOptions.host}:${testOptions.port}`)
+
     for (const id of chosenPackageIds) {
       await runBashScript(`${allPackages[id].path}`, 'test.sh', [
-        'localhost:5000',
+        `${testOptions.host}:${testOptions.port}`,
       ])
     }
   }
