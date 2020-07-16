@@ -5,10 +5,13 @@ const axios = require('axios')
 const { Given, When, Then } = require('cucumber')
 const { expect } = require('chai')
 
-const OPENHIM_PROTOCOL = process.OPENHIM_PROTOCOL || 'http'
-const OPENHIM_API_HOSTNAME = process.OPENHIM_API_HOSTNAME || 'localhost'
-const OPENHIM_API_PORT = process.OPENHIM_API_PORT || '5001'
-
+const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
+const OPENHIM_API_HOSTNAME = process.env.OPENHIM_API_HOSTNAME || 'localhost'
+const OPENHIM_TRANSACTION_API_PORT =
+  process.env.OPENHIM_TRANSACTION_API_PORT || '5001'
+const OPENHIM_MEDIATOR_API_PORT =
+  process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
+const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
 
 Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   const options = {
