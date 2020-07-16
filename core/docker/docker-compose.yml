@@ -8,6 +8,7 @@ services:
       - mongo_url=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
       - mongo_atnaUrl=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
       - api_authenticationTypes=["token", "basic"]
+      - authentication_enableCustomTokenAuthentication=true
     ports:
       - "8080:8080"
       - "5000:5000"
@@ -18,7 +19,7 @@ services:
 
   console:
     container_name: openhim-console
-    image: jembi/openhim-console:1.13
+    image: jembi/openhim-console:1.14
     ports:
         - "9000:80"
 

@@ -16,7 +16,16 @@
       "tokenType": null
     }
   ],
-  "Clients": [],
+  "Clients": [
+    {
+      "roles": [
+        "instant"
+      ],
+      "customTokenID": "test",
+      "clientID": "test",
+      "name": "Test Client"
+    }
+  ],
   "Channels": [
     {
       "methods": [
@@ -31,9 +40,11 @@
         "PATCH"
       ],
       "type": "http",
-      "allow": [],
+      "allow": [
+        "test"
+      ],
       "whitelist": [],
-      "authType": "public",
+      "authType": "private",
       "matchContentTypes": [],
       "properties": [],
       "txViewAcl": [],
