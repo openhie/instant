@@ -65,8 +65,50 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   }
 })
 
-Given('an authorised client, Alice, exists in the OpenHIM', function () {
-  return 'pending'
+Given('an authorised client, Alice, exists in the OpenHIM', async function () {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+  const checkClientExistsOptions = {
+    url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+    }
+  }
+
+  const checkClientExistsResponse = await axios(checkClientExistsOptions)
+
+  let createClient = true
+  // Previous test data should have been cleaned out
+  for (let client of checkClientExistsResponse.data) {
+    if (client.clientID === 'test-harness-client') {
+      createClient = false
+      break
+    }
+  }
+
+  if (createClient) {
+    console.log(`The test Harness Client does not exist. Creating Client...`)
+    const options = {
+      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/clients`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+      },
+      data: {
+        roles: ['instant'],
+        clientID: 'test-harness-client',
+        name: 'Alice',
+        customTokenID: 'test-harness-token'
+      }
+    }
+
+    const response = await axios(options)
+    expect(response.status).to.eql(201)
+  } else {
+    console.log(`The Test Harness Client (Alice) already exists...`)
+  }
 })
 
 When('Alice searches for a patient', function () {
