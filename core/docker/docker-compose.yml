@@ -26,9 +26,12 @@ services:
     container_name: hapi-fhir
     image: hapiproject/hapi:v4.1.0
     environment:
-      - JAVA_OPTS='-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'
+      - JAVA_OPTS='-Dhapi.properties=/instant/core/docker/hapi.properties'
     volumes:
-      - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
+      # - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
+      - type: volume
+        source: instant
+        target: /instant
     depends_on:
       - mysql
 
@@ -43,3 +46,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'instant101'
     volumes:
       - './data/mysql:/var/lib/mysql'
+
+volumes:
+  instant:
+    external: true
