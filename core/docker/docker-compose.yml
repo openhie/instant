@@ -28,7 +28,6 @@ services:
     environment:
       - JAVA_OPTS='-Dhapi.properties=/instant/core/docker/hapi.properties'
     volumes:
-      # - ./hapi.properties:/usr/local/tomcat/conf/hapi.properties
       - type: volume
         source: instant
         target: /instant
