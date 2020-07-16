@@ -2,7 +2,9 @@
   "scripts": {
     "cucumber": "cucumber-js ./*/features/"
   },
-  "devDependencies": {
-    "cucumber": "^6.0.5"
+  "dependencies": {
+    "cucumber": "^6.0.5",
+    "axios": "^0.19.2",
+    "chai": "^4.2.0"
   }
 }
