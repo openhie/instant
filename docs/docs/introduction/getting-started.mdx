@@ -120,6 +120,8 @@ If you have the Instant [OpenHIE codebase](https://github.com/openhie/instant) c
     yarn docker:instant destroy
     ```
 
+Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
+
 If you do not have the code checked-out then you can still startup the environment with the correct command. You can find the docker commands to run in the scripts section of [this file](https://github.com/openhie/instant/blob/ohie-420-docker-outside-of-docker/package.json) in the codebase. Add the action you would like to perform (init, up, down, destroy) to the end of that command.
 
 </TabItem>
@@ -149,6 +151,8 @@ If you have the Instant [OpenHIE codebase](https://github.com/openhie/instant) c
     ```sh
     yarn docker:instant destroy -t kubernetes
     ```
+
+Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
 
 If you do not have the code checked-out then you can still startup the environment with the correct command. You can find the docker commands to run in the scripts section of [this file](https://github.com/openhie/instant/blob/ohie-420-docker-outside-of-docker/package.json) in the codebase. Add the action you would like to perform (init, up, down, destroy) to the end of that command and make sure to add the `-t kubernetes` option after the action.
 
