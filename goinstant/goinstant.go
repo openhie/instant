@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -86,14 +85,22 @@ func composeGet(url string) string {
 	return (string(body))
 }
 
-func composeUp(composeFile string) {
+// TODO: This will need to be run when we destory the stack
+func clearInstantVolume() {
+	cmd := exec.Command("docker", "volume", "rm", "-f", "instant")
+	cmd.Run()
+}
+
+func composeUp() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
 
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		// cmd := exec.Command("docker-compose", "-f", "-", "up", "-d")
-		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "instant", "up")
-		cmd.Stdin = strings.NewReader(composeFile)
+		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:test", "init", "-t", "docker")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
@@ -101,8 +108,7 @@ func composeUp(composeFile string) {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 	case "windows":
-		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "-", "up", "-d")
-		cmd.Stdin = strings.NewReader(composeFile)
+		cmd := exec.Command("cmd", "/C", "docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"\\.kube:/root/.kube/config:ro", "--mount=type=volume,src=instant,dst=/instant", "openhie/instant:test", "init", "-t", "docker")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -118,13 +124,16 @@ func composeUp(composeFile string) {
 	openBrowser("http://localhost:27517")
 }
 
-func composeDown(composeFile string) {
+func composeDown() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+
 	fmt.Println("Running on", runtime.GOOS)
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		// cmd := exec.Command("docker-compose", "-f", "-", "down")
-		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "instant", "down")
-		cmd.Stdin = strings.NewReader(composeFile)
+		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:test", "down", "-t", "docker")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
@@ -132,8 +141,7 @@ func composeDown(composeFile string) {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 	case "windows":
-		cmd := exec.Command("cmd", "/C", "docker-compose", "-f", "-", "down")
-		cmd.Stdin = strings.NewReader(composeFile)
+		cmd := exec.Command("cmd", "/C", "docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"\\.kube:/root/.kube/config:ro", "--mount=type=volume,src=instant,dst=/instant", "openhie/instant:test", "down", "-t", "docker")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -141,7 +149,6 @@ func composeDown(composeFile string) {
 		}
 	default:
 		fmt.Println("What operating system is this?", runtime.GOOS)
-
 	}
 }
 
@@ -165,14 +172,10 @@ func main() {
 	}
 	fmt.Printf("You chose %q\n", result)
 
-	// stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
-
 	switch result {
 	case "Start Instant OpenHIE":
 		debug()
-		// stuff := composeGet(stack) - now not needed as it's now bundled in the docker container
-		stuff := ""
-		composeUp(stuff)
+		composeUp()
 
 		box := packr.New("someBoxName", "./templates")
 		http.Handle("/", http.FileServer(box))
@@ -180,9 +183,7 @@ func main() {
 		http.ListenAndServe(":27517", nil)
 
 	case "Stop Instant OpenHIE":
-		// stuff := composeGet(stack)
-		stuff := ""
-		composeDown(stuff)
+		composeDown()
 	case "Debug":
 		debug()
 	case "Help":
