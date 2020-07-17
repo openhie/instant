@@ -44,8 +44,9 @@ services:
       MYSQL_PASSWORD: 'instant101'
       MYSQL_ROOT_PASSWORD: 'instant101'
     volumes:
-      - './data/mysql:/var/lib/mysql'
+      - 'hapi-mysql:/var/lib/mysql'
 
 volumes:
+  hapi-mysql:
   instant:
     external: true
