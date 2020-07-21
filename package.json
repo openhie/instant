@@ -19,5 +19,8 @@
     "docker:instant": "docker volume rm instant ; docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.kube/config:/root/.kube/config:ro -v ~/.minikube:/home/$USER/.minikube:ro --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
     "docker:instant:win": "docker volume rm instant & docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %USERPROFILE%\\.kube:/root/.kube/config:ro  --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
     "docker:build": "docker build -t openhie/instant:latest ."
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
   }
 }

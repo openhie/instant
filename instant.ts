@@ -71,7 +71,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
     [
       {
         name: 'command',
-        defaultOption: true,
+        defaultOption: true
       }
     ],
     {
@@ -88,7 +88,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
         {
           name: 'target',
           alias: 't',
-          defaultValue: 'docker',
+          defaultValue: 'docker'
         }
       ],
       { argv, stopAtFirstUnknown: true }
@@ -117,7 +117,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
       case 'docker':
         for (const id of chosenPackageIds) {
           await runBashScript(`${allPackages[id].path}docker/`, 'compose.sh', [
-            main.command,
+            main.command
           ])
         }
         break
@@ -143,12 +143,12 @@ async function runBashScript(path: string, filename: string, args: string[]) {
         {
           name: 'host',
           alias: 'h',
-          defaultValue: 'localhost',
+          defaultValue: 'localhost'
         },
         {
           name: 'port',
           alias: 'p',
-          defaultValue: '5000',
+          defaultValue: '5000'
         }
       ],
       { argv, stopAtFirstUnknown: true }
@@ -172,7 +172,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
 
     for (const id of chosenPackageIds) {
       await runBashScript(`${allPackages[id].path}`, 'test.sh', [
-        `${testOptions.host}:${testOptions.port}`,
+        `${testOptions.host}:${testOptions.port}`
       ])
     }
   }
