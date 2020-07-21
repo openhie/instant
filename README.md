@@ -15,25 +15,25 @@ To set the Instant OpenHIE services run the following command:
 ```sh
 yarn
 yarn docker:build
-yarn docker:instant init
+yarn docker:instant init -t docker
 ```
 
 To tear down the deployments use the opposing command:
 
 ```bash
-yarn docker:instant down
+yarn docker:instant down -t docker
 ```
 
 To start up the services after a tear down, use the following command:
 
 ```bash
-yarn docker:instant up
+yarn docker:instant up -t docker
 ```
 
 To completely remove all project components use the following option:
 
 ```bash
-yarn docker:instant destroy
+yarn docker:instant destroy -t docker
 ```
 
 Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
@@ -54,7 +54,7 @@ yarn docker:build
 yarn docker:instant init -t k8s
 ```
 
-To tear down the deployments use the following command:
+To tear down the deployments, use the following command:
 
 ```bash
 yarn docker:instant down -t k8s
@@ -66,7 +66,7 @@ To start up the services after a tear down, use the following command:
 yarn docker:instant up -t k8s
 ```
 
-To completely remove all project components use the following option:
+To completely remove all project components, use the following option:
 
 ```bash
 yarn docker:instant destroy -t k8s
