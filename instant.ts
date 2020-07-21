@@ -1,3 +1,5 @@
+'use strict'
+
 import * as commandLineArgs from 'command-line-args'
 import * as glob from 'glob'
 import * as fs from 'fs'
@@ -29,7 +31,7 @@ function getInstantOHIEPackages(): PackagesMap {
     const metadata = JSON.parse(fs.readFileSync(path).toString())
     packages[metadata.id] = {
       metadata,
-      path: path.replace('instant.json', ''),
+      path: path.replace('instant.json', '')
     }
   }
 
@@ -70,10 +72,10 @@ async function runBashScript(path: string, filename: string, args: string[]) {
       {
         name: 'command',
         defaultOption: true,
-      },
+      }
     ],
     {
-      stopAtFirstUnknown: true,
+      stopAtFirstUnknown: true
     }
   )
 
@@ -87,7 +89,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
           name: 'target',
           alias: 't',
           defaultValue: 'docker',
-        },
+        }
       ],
       { argv, stopAtFirstUnknown: true }
     )
@@ -147,7 +149,7 @@ async function runBashScript(path: string, filename: string, args: string[]) {
           name: 'port',
           alias: 'p',
           defaultValue: '5000',
-        },
+        }
       ],
       { argv, stopAtFirstUnknown: true }
     )
