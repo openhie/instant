@@ -68,7 +68,9 @@ For example, a `compose.sh` script could look like this:
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
-    echo "execute other setup scripts or commands here..."
+    # execute other setup scripts or commands here
+    # ...
+
     docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 elif [ "$1" == "up" ]; then
     docker-compose -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
@@ -89,7 +91,9 @@ A `k8s.sh` script could look like this:
 k8sMainRootFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
-    echo "execute other setup scripts or commands here..."
+    # execute other setup scripts or commands here
+    # ...
+
     # Create the namespace
     kubectl apply -f $k8sMainRootFilePath/healthworkforce-namespace.yaml
     kubectl apply -k $k8sMainRootFilePath
