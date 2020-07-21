@@ -14,11 +14,11 @@ services:
       # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
-      - type: bind
-        source: ./importer/volume
-        target: /importer
+      - type: volume
+        source: instant
+        target: /instant
     # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
-    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node openhimConfig.js"
+    command: sh -c "wait-on -t 60000 https-get://core:8080/heartbeat && node /instant/healthworkforce/docker/importer/volume/openhimConfig.js"
 
   # container for executing config import scripts for setting up initial config
   mcsd-config-importer:
@@ -29,8 +29,12 @@ services:
       MEDIATOR_HOSTNAME: 'mcsd-mediator'
       MEDIATOR_API_PORT: 3003
     volumes:
-      - type: bind
-        source: ./importer/volume
-        target: /importer
+      - type: volume
+        source: instant
+        target: /instant
     # This command will only attempt to import the mcsd mediator config when the uptime endpoint responds with 200
-    command: sh -c "wait-on -t 60000 http-get://mcsd-mediator:3003/uptime && sleep 1 && node endpoint.js"
+    command: sh -c "wait-on -t 60000 http-get://mcsd-mediator:3003/uptime && sleep 1 && node /instant/healthworkforce/docker/importer/volume/endpoint.js"
+
+volumes:
+  instant:
+    external: true

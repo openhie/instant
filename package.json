@@ -1,0 +1,26 @@
+{
+  "name": "instant",
+  "version": "0.0.1",
+  "main": "instant.ts",
+  "repository": "git@github.com:openhie/instant.git",
+  "author": "Jembi and IntraHealth",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/command-line-args": "^5.0.0",
+    "@types/glob": "^7.1.3",
+    "@types/node": "^14.0.22",
+    "command-line-args": "^5.1.1",
+    "glob": "^7.1.6",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6"
+  },
+  "scripts": {
+    "instant": "ts-node instant.ts",
+    "docker:instant": "docker volume rm instant ; docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.kube/config:/root/.kube/config:ro -v ~/.minikube:/home/$USER/.minikube:ro --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
+    "docker:instant:win": "docker volume rm instant & docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %USERPROFILE%\\.kube:/root/.kube/config:ro  --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
+    "docker:build": "docker build -t openhie/instant:latest ."
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  }
+}
