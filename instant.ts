@@ -5,6 +5,7 @@ import * as glob from 'glob'
 import * as fs from 'fs'
 import * as child from 'child_process'
 import * as util from 'util'
+import * as path from 'path'
 
 const exec = util.promisify(child.exec)
 
@@ -51,6 +52,23 @@ async function runBashScript(path: string, filename: string, args: string[]) {
     await promise
   } catch (err) {
     console.error(`Error: Script ${filename} returned an error`)
+    console.log(err.stdout)
+    console.log(err.stderr)
+  }
+}
+
+async function runTests(path: string) {
+  const cmd = `node_modules/.bin/cucumber-js ${path}`
+
+  try {
+    const promise = exec(cmd)
+    if (promise.child) {
+      promise.child.stdout.on('data', (data) => console.log(data))
+      promise.child.stderr.on('data', (data) => console.error(data))
+    }
+    await promise
+  } catch (err) {
+    console.error(`Error: Tests at ${path} returned an error`)
     console.log(err.stdout)
     console.log(err.stderr)
   }
@@ -171,9 +189,8 @@ async function runBashScript(path: string, filename: string, args: string[]) {
     console.log(`Using host: ${testOptions.host}:${testOptions.port}`)
 
     for (const id of chosenPackageIds) {
-      await runBashScript(`${allPackages[id].path}`, 'test.sh', [
-        `${testOptions.host}:${testOptions.port}`
-      ])
+      const features = path.resolve(allPackages[id].path, 'features')
+      await runTests(features)
     }
   }
 })()
