@@ -5,7 +5,7 @@ services:
     image: mongo:4.2
     container_name: mongo-1
     volumes:
-      - './data/mongo1:/data/db'
+      - 'openhim-mongo1:/data/db'
     command:
         - --replSet
         - mongo-set
@@ -14,7 +14,7 @@ services:
     image: mongo:4.2
     container_name: mongo-2
     volumes:
-      - './data/mongo2:/data/db'
+      - 'openhim-mongo2:/data/db'
     command:
         - --replSet
         - mongo-set
@@ -23,7 +23,12 @@ services:
     image: mongo:4.2
     container_name: mongo-3
     volumes:
-      - './data/mongo3:/data/db'
+      - 'openhim-mongo3:/data/db'
     command:
         - --replSet
         - mongo-set
+
+volumes:
+  openhim-mongo1:
+  openhim-mongo2:
+  openhim-mongo3:
