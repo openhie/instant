@@ -25,7 +25,7 @@ const organizationName = "Clinical Lab"
 
 exports.triggerSync = async () => {
   await axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/mcsd`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/mcsd-trigger`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -35,8 +35,8 @@ exports.triggerSync = async () => {
   .then(() => {
     console.log('Data successfully sent to dhis')
   })
-  .catch(() => {
-    console.log('Error in sending data to dhis')
+  .catch((err) => {
+    console.log('Error in sending data to dhis', err.message)
   })
 }
 
@@ -208,7 +208,7 @@ const getResource = resource => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom ${authHeader}`
+      Authorization: `Basic ${authHeader}`
     }
   })
 }
@@ -219,7 +219,7 @@ const removeResource = resource => {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom ${authHeader}`
+      Authorization: `Basic ${authHeader}`
     }
   })
 }
