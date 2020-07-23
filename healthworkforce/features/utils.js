@@ -239,7 +239,7 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
   const response = await getResource(resource)
 
   expect(response.status).to.eql(200)
-  expect(response.body.name[0].given, practitionerName)
+  expect(response.data.name[0].given, practitionerName)
 
   await removeResource(resource)
   .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
@@ -251,7 +251,7 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
   const response = await getResource(resource)
 
   expect(response.status).to.eql(200)
-  expect(response.body.id, practitionerRoleId)
+  expect(response.data.id, practitionerRoleId)
 
   await removeResource(resource)
     .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
@@ -263,7 +263,7 @@ exports.verifyLocationExistsAndCleanup = async () => {
   const response = await getResource(resource)
 
   expect(response.status).to.eql(200)
-  expect(response.body.name, locationName)
+  expect(response.data.name, locationName)
 
   await removeResource(resource)
     .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
@@ -275,7 +275,7 @@ exports.verifyOrganizationExistsAndCleanup = async () => {
   const response = await getResource(resource)
 
   expect(response.status).to.eql(200)
-  expect(response.body.name, organizationName)
+  expect(response.data.name, organizationName)
 
   await removeResource(resource)
   .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
