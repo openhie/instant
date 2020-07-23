@@ -44,7 +44,7 @@ E.g only run `core` package: `yarn docker:instant init -t docker core`
 
 A kubernetes deployment can either be to AWS using [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or locally using [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) and `kubectl`.
 
-For a quick setup of these environments navigate to `/core/kubernetes/README.md`
+For a quick setup of these environments navigate to [the Kubernetes development readme](kubernetes.md)
 
 Navigate to the main folder to execute the commands.
 
