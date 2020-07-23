@@ -57,7 +57,6 @@ BeforeAll(async () => {
     const createPatientResponse = await axios(options)
 
     expect(createPatientResponse.status).to.eql(201)
-
   } else if (checkPatientExistsResponse.data.total === 1) {
     console.log(`Patient record for Jane Doe already exists...`)
   } else {
@@ -128,8 +127,12 @@ Given('a patient, Jane Doe, exists in the FHIR server', async () => {
 
   const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
   expect(checkPatientExistsResponse.data.total).to.eql(1)
-  expect(checkPatientExistsResponse.data.entry[0].resource.name[0].given).to.eql(['Jane'])
-  expect(checkPatientExistsResponse.data.entry[0].resource.name[0].family).to.eql('Doe')
+  expect(
+    checkPatientExistsResponse.data.entry[0].resource.name[0].given
+  ).to.eql(['Jane'])
+  expect(
+    checkPatientExistsResponse.data.entry[0].resource.name[0].family
+  ).to.eql('Doe')
 })
 
 Given('an authorised client, Alice, exists in the OpenHIM', async () => {
@@ -155,17 +158,43 @@ Given('an authorised client, Alice, exists in the OpenHIM', async () => {
 })
 
 When('Alice searches for a patient', async function () {
-  return 'pending'
+  const checkPatientExistsOptions = {
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Custom test-harness-token`
+    }
+  }
+  const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
+  expect(checkPatientExistsResponse.status).to.eql(200)
+  this.setTo(checkPatientExistsResponse.data.entry[0])
 })
 
 Then('Alice is able to get a result', function () {
-  return 'pending'
+  expect(this.searchResults.resource.resourceType).equal('Patient')
+  expect(this.searchResults.resource.identifier[0].value).equal('test')
+  expect(this.searchResults.resource.name[0].given[0]).equal('Jane')
+  expect(this.searchResults.resource.name[0].family).equal('Doe')
 })
 
-When('Malice searches for a patient', function () {
-  return 'pending'
+When('Malice searches for a patient', async function () {
+  const checkPatientExistsOptions = {
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Custom invalid-token`
+    },
+    validateStatus: (status) => {
+      return status >= 400
+    }
+  }
+  const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
+  expect(checkPatientExistsResponse.status).to.eql(401)
+  this.setTo(checkPatientExistsResponse.data)
 })
 
 Then('Malice is NOT able to get a result', function () {
-  return 'pending'
+  expect(this.searchResults).to.eql('')
 })
