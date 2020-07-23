@@ -3,8 +3,9 @@
     "cucumber": "cucumber-js ./*/features/"
   },
   "dependencies": {
-    "cucumber": "^6.0.5",
     "axios": "^0.19.2",
-    "chai": "^4.2.0"
+    "chai": "^4.2.0",
+    "cucumber": "^6.0.5",
+    "nock": "^13.0.2"
   }
 }
