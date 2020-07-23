@@ -19,7 +19,8 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom ${CUSTOM_TOKEN_ID}`
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+      'Cache-Control': 'no-cache'
     }
   }
 
@@ -34,7 +35,8 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Custom ${CUSTOM_TOKEN_ID}`
+        Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+        'Cache-Control': 'no-cache'
       },
       data: {
         resourceType: 'Patient',
