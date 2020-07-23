@@ -2,7 +2,7 @@
 
 const axios = require('axios')
 
-const { Given, When, Then } = require('cucumber')
+const { BeforeAll, Given, Then, When } = require('cucumber')
 const { expect } = require('chai')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
@@ -13,7 +13,8 @@ const OPENHIM_MEDIATOR_API_PORT =
   process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
 
-Given('a patient, Jane Doe, exists in the FHIR server', async function () {
+// Ensure FHIR Test Patient exists
+BeforeAll(async () => {
   const checkPatientExistsOptions = {
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
     method: 'GET',
@@ -53,12 +54,12 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
       }
     }
 
-    const response = await axios(options)
-    expect(response.status).to.eql(201)
+    const createPatientResponse = await axios(options)
+
+    expect(createPatientResponse.status).to.eql(201)
+
   } else if (checkPatientExistsResponse.data.total === 1) {
-    console.log(
-      `Patient record for Jane Doe already exists...`
-    )
+    console.log(`Patient record for Jane Doe already exists...`)
   } else {
     // Previous test data should have been cleaned out
     throw new Error(
@@ -67,7 +68,8 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   }
 })
 
-Given('an authorised client, Alice, exists in the OpenHIM', async function () {
+// Ensure OpenHIM Test Client exists
+BeforeAll(async () => {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   const checkClientExistsOptions = {
     url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
@@ -92,7 +94,7 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
   if (createClient) {
     console.log(`The test Harness Client does not exist. Creating Client...`)
     const options = {
-      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/clients`,
+      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,7 +115,46 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
   }
 })
 
-When('Alice searches for a patient', function () {
+Given('a patient, Jane Doe, exists in the FHIR server', async () => {
+  const checkPatientExistsOptions = {
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+      'Cache-Control': 'no-cache'
+    }
+  }
+
+  const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
+  expect(checkPatientExistsResponse.data.total).to.eql(1)
+  expect(checkPatientExistsResponse.data.entry[0].resource.name[0].given).to.eql(['Jane'])
+  expect(checkPatientExistsResponse.data.entry[0].resource.name[0].family).to.eql('Doe')
+})
+
+Given('an authorised client, Alice, exists in the OpenHIM', async () => {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+  const checkClientExistsOptions = {
+    url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+    }
+  }
+
+  const checkClientExistsResponse = await axios(checkClientExistsOptions)
+
+  // Previous test data should have been cleaned out
+  for (let client of checkClientExistsResponse.data) {
+    if (client.clientID === 'test-harness-client') {
+      expect(client.name).to.eql('Alice')
+      break
+    }
+  }
+})
+
+When('Alice searches for a patient', async function () {
   return 'pending'
 })
 
