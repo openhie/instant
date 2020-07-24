@@ -17,53 +17,6 @@ const BASIC_AUTH_HEADER = process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaG
 // Save test Patient resource ID for post test cleanup
 let hapiFhirPatientID
 
-// Ensure OpenHIM Test Client exists
-BeforeAll(async function () {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-  const checkClientExistsOptions = {
-    url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: BASIC_AUTH_HEADER
-    }
-  }
-
-  const checkClientExistsResponse = await axios(checkClientExistsOptions)
-
-  let createClient = true
-  // Previous test data should have been cleaned out
-  for (let client of checkClientExistsResponse.data) {
-    if (client.clientID === 'test-harness-client') {
-      createClient = false
-      break
-    }
-  }
-
-  if (createClient) {
-    console.log(`The test Harness Client does not exist. Creating Client...`)
-    const options = {
-      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: BASIC_AUTH_HEADER
-      },
-      data: {
-        roles: ['instant'],
-        clientID: 'test-harness-client',
-        name: 'Alice',
-        customTokenID: 'test-harness-token'
-      }
-    }
-
-    const response = await axios(options)
-    expect(response.status).to.eql(201)
-  } else {
-    console.log(`The Test Harness Client (Alice) already exists...`)
-  }
-})
-
 Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   const checkPatientExistsOptions = {
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
@@ -141,12 +94,37 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
 
   const checkClientExistsResponse = await axios(checkClientExistsOptions)
 
-  // Previous test data should have been cleaned out
+  let createClient = true
+
   for (let client of checkClientExistsResponse.data) {
     if (client.clientID === 'test-harness-client') {
       expect(client.name).to.eql('Alice')
+      createClient = false
       break
     }
+  }
+
+  if (createClient) {
+    console.log(`The test Harness Client does not exist. Creating Client...`)
+    const options = {
+      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: BASIC_AUTH_HEADER
+      },
+      data: {
+        roles: ['instant'],
+        clientID: 'test-harness-client',
+        name: 'Alice',
+        customTokenID: 'test-harness-token'
+      }
+    }
+
+    const response = await axios(options)
+    expect(response.status).to.eql(201)
+  } else {
+    console.log(`The Test Harness Client (Alice) already exists...`)
   }
 })
 
