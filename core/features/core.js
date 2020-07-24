@@ -2,7 +2,7 @@
 
 const axios = require('axios')
 
-const { AfterAll, BeforeAll, Given, Then, When } = require('cucumber')
+const { AfterAll, Given, Then, When } = require('cucumber')
 const { expect } = require('chai')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
@@ -12,7 +12,8 @@ const OPENHIM_TRANSACTION_API_PORT =
 const OPENHIM_MEDIATOR_API_PORT =
   process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
-const BASIC_AUTH_HEADER = process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx'
+const BASIC_AUTH_HEADER =
+  process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx'
 
 // Save test Patient resource ID for post test cleanup
 let hapiFhirPatientID
