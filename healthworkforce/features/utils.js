@@ -54,7 +54,8 @@ const getResource = (resource, id) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom ${CUSTOM_TOKEN_ID}`
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+      'Cache-Control': 'no-cache'
     }
   })
 }
