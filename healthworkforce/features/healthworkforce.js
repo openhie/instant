@@ -1,6 +1,6 @@
 'use strict'
 
-const { Given, When, Then } = require('cucumber')
+const { Given, When, Then, setDefaultTimeout} = require('cucumber')
 
 const {
   gofrMockServiceLocation, gofrMockServiceOrganization,
@@ -8,6 +8,9 @@ const {
   verifyLocationExistsAndCleanup, verifyOrganizationExistsAndCleanup,
   verifyPractitionerExistsAndCleanup, verifyPractitionerRoleExistsAndCleanup
 } = require('./utils')
+
+// Set timeout for the steps. The default timeout of 5000 is not enough as the process take a while
+setDefaultTimeout(120000)
 
 Given('a new practitioner, Dr Bob, has been added in iHRIS', ihrisMockServicePractitioner)
 Given('a new practitionerRole has been added in iHRIS', ihrisMockServicePractitionerRole)
