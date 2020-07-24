@@ -163,7 +163,8 @@ When('Alice searches for a patient', async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom test-harness-token`
+      Authorization: `Custom test-harness-token`,
+      'Cache-Control': 'no-cache'
     }
   }
   const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
@@ -184,7 +185,8 @@ When('Malice searches for a patient', async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom invalid-token`
+      Authorization: `Custom invalid-token`,
+      'Cache-Control': 'no-cache'
     },
     validateStatus: (status) => {
       return status >= 400
