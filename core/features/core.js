@@ -2,7 +2,7 @@
 
 const axios = require('axios')
 
-const { BeforeAll, Given, Then, When } = require('cucumber')
+const { AfterAll, BeforeAll, Given, Then, When } = require('cucumber')
 const { expect } = require('chai')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
@@ -13,8 +13,11 @@ const OPENHIM_MEDIATOR_API_PORT =
   process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
 
+// Save test Patient resource ID for post test cleanup
+let hapiFhirPatientID
+
 // Ensure FHIR Test Patient exists
-BeforeAll(async () => {
+BeforeAll(async function () {
   const checkPatientExistsOptions = {
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
     method: 'GET',
@@ -57,8 +60,12 @@ BeforeAll(async () => {
     const createPatientResponse = await axios(options)
 
     expect(createPatientResponse.status).to.eql(201)
+
+    hapiFhirPatientID = createPatientResponse.data.id
   } else if (checkPatientExistsResponse.data.total === 1) {
     console.log(`Patient record for Jane Doe already exists...`)
+
+    hapiFhirPatientID = checkPatientExistsResponse.data.entry[0].resource.id
   } else {
     // Previous test data should have been cleaned out
     throw new Error(
@@ -68,7 +75,7 @@ BeforeAll(async () => {
 })
 
 // Ensure OpenHIM Test Client exists
-BeforeAll(async () => {
+BeforeAll(async function () {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   const checkClientExistsOptions = {
     url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
@@ -114,7 +121,7 @@ BeforeAll(async () => {
   }
 })
 
-Given('a patient, Jane Doe, exists in the FHIR server', async () => {
+Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   const checkPatientExistsOptions = {
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
     method: 'GET',
@@ -135,7 +142,7 @@ Given('a patient, Jane Doe, exists in the FHIR server', async () => {
   ).to.eql('Doe')
 })
 
-Given('an authorised client, Alice, exists in the OpenHIM', async () => {
+Given('an authorised client, Alice, exists in the OpenHIM', async function () {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   const checkClientExistsOptions = {
     url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
@@ -199,4 +206,58 @@ When('Malice searches for a patient', async function () {
 
 Then('Malice is NOT able to get a result', function () {
   expect(this.searchResults).to.eql('')
+})
+
+AfterAll(async function () {
+  if (hapiFhirPatientID) {
+    console.log(`Deleting FHIR test Patient record`)
+    const deletePatientOptions = {
+      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient/${hapiFhirPatientID}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+        'Cache-Control': 'no-cache'
+      }
+    }
+
+    const deletePatientResponse = await axios(deletePatientOptions)
+    expect(deletePatientResponse.status).to.eql(200)
+  }
+
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+  const checkClientExistsOptions = {
+    url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+    }
+  }
+
+  const checkClientExistsResponse = await axios(checkClientExistsOptions)
+
+  let clientObjectId
+  // Previous test data should have been cleaned out
+  for (let client of checkClientExistsResponse.data) {
+    if (client.clientID === 'test-harness-client') {
+      clientObjectId = client._id
+      break
+    }
+  }
+
+  if (clientObjectId) {
+    console.log(`Deleting OpenHIM test Client record`)
+    const deleteClientOptions = {
+      url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients/${clientObjectId}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+      }
+    }
+
+    const deleteClientResponse = await axios(deleteClientOptions)
+    expect(deleteClientResponse.status).to.eql(200)
+  }
 })
