@@ -17,64 +17,6 @@ const BASIC_AUTH_HEADER = process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaG
 // Save test Patient resource ID for post test cleanup
 let hapiFhirPatientID
 
-// Ensure FHIR Test Patient exists
-BeforeAll(async function () {
-  const checkPatientExistsOptions = {
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
-      'Cache-Control': 'no-cache'
-    }
-  }
-
-  const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
-
-  if (checkPatientExistsResponse.data.total === 0) {
-    console.log(
-      `Patient record for Jane Doe does not exist. Creating Patient...`
-    )
-    const options = {
-      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
-        'Cache-Control': 'no-cache'
-      },
-      data: {
-        resourceType: 'Patient',
-        name: {
-          use: 'temp',
-          family: 'Doe',
-          given: ['Jane']
-        },
-        identifier: {
-          use: 'temp',
-          value: 'test'
-        },
-        gender: 'male'
-      }
-    }
-
-    const createPatientResponse = await axios(options)
-
-    expect(createPatientResponse.status).to.eql(201)
-
-    hapiFhirPatientID = createPatientResponse.data.id
-  } else if (checkPatientExistsResponse.data.total === 1) {
-    console.log(`Patient record for Jane Doe already exists...`)
-
-    hapiFhirPatientID = checkPatientExistsResponse.data.entry[0].resource.id
-  } else {
-    // Previous test data should have been cleaned out
-    throw new Error(
-      `Multiple Patient records for Jane Doe exist: ${checkPatientExistsResponse.data.total}`
-    )
-  }
-})
-
 // Ensure OpenHIM Test Client exists
 BeforeAll(async function () {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
@@ -134,13 +76,56 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   }
 
   const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
-  expect(checkPatientExistsResponse.data.total).to.eql(1)
-  expect(
-    checkPatientExistsResponse.data.entry[0].resource.name[0].given
-  ).to.eql(['Jane'])
-  expect(
-    checkPatientExistsResponse.data.entry[0].resource.name[0].family
-  ).to.eql('Doe')
+
+  if (checkPatientExistsResponse.data.total === 0) {
+    console.log(
+      `Patient record for Jane Doe does not exist. Creating Patient...`
+    )
+    const options = {
+      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+        'Cache-Control': 'no-cache'
+      },
+      data: {
+        resourceType: 'Patient',
+        name: {
+          use: 'temp',
+          family: 'Doe',
+          given: ['Jane']
+        },
+        identifier: {
+          use: 'temp',
+          value: 'test'
+        },
+        gender: 'male'
+      }
+    }
+
+    const createPatientResponse = await axios(options)
+
+    expect(createPatientResponse.status).to.eql(201)
+
+    hapiFhirPatientID = createPatientResponse.data.id
+  } else if (checkPatientExistsResponse.data.total === 1) {
+    console.log(`Patient record for Jane Doe already exists...`)
+
+    expect(
+      checkPatientExistsResponse.data.entry[0].resource.name[0].given
+    ).to.eql(['Jane'])
+    expect(
+      checkPatientExistsResponse.data.entry[0].resource.name[0].family
+    ).to.eql('Doe')
+
+    hapiFhirPatientID = checkPatientExistsResponse.data.entry[0].resource.id
+  } else {
+    // Previous test data should have been cleaned out
+    throw new Error(
+      `Multiple Patient records for Jane Doe exist: ${checkPatientExistsResponse.data.total}`
+    )
+  }
 })
 
 Given('an authorised client, Alice, exists in the OpenHIM', async function () {
