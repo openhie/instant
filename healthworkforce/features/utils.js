@@ -66,7 +66,8 @@ const removeResource = (resource, id) => {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Custom ${CUSTOM_TOKEN_ID}`
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
+      'Cache-Control': 'no-cache'
     }
   })
 }
