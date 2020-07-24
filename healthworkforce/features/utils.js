@@ -1,283 +1,147 @@
 'use strict'
 
 const axios = require('axios')
-const { expect } = require('chai')
-const nock = require('nock')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
 const OPENHIM_API_HOSTNAME = process.env.OPENHIM_API_HOSTNAME || 'localhost'
 const OPENHIM_TRANSACTION_API_PORT =
   process.env.OPENHIM_TRANSACTION_API_PORT || '5001'
+const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
 
-const OPENHIM_API_PASSWORD =
-  process.env.OPENHIM_API_PASSWORD || 'instant101'
-const OPENHIM_API_USERNAME =
-  process.env.OPENHIM_API_USERNAME || 'root@openhim.org'
-
-const authHeader = new Buffer.from(
-  `${OPENHIM_API_USERNAME}:${OPENHIM_API_PASSWORD}`
-).toString('base64')
-
-const practitionerName = "Bob"
-const practitionerRoleId = "PR123566"
-const locationName = "GoodHealth Clinic"
-const organizationName = "Clinical Lab"
+const practitionerId = 'P10004'
+const practitionerRoleId = 'PR10001'
+const locationId = '2'
+const organizationId = '3'
 
 exports.triggerSync = async () => {
   await axios({
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/mcsd-trigger`,
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${authHeader}`
+      'Content-Type': 'application/json'
     }
   })
-  .then(() => {
-    console.log('Data successfully sent to dhis')
-  })
-  .catch((err) => {
-    console.log('Error in sending data to dhis', err.message)
+
+  // Allow the syncing to finish. The data will only be available in FHIR after a few seconds
+  await new Promise ((resolve, _reject) => {
+    setTimeout(() => resolve(), 60000)
   })
 }
 
 exports.ihrisMockServicePractitioner = async () => {
-  await verifyResourceDoesNotExist('Practitioner')
-
-  nock('http://mock-service:4000')
-    .get('/ihris-practitioner-mock/_history')
-    .reply(
-      200,
-      {
-        "resourceType": "Bundle",
-        "type": "transaction",
-        "entry": [
-          {
-            "resource": {
-              "resourceType": "Practitioner",
-              "meta": {
-                "profile": [
-                  "http://ihris.org/fhir/StructureDefinition/iHRISPractitioner"
-                ]
-              },
-              "id": "P123456",
-              "active": true,
-              "name": [
-                {
-                  "use": "official",
-                  "text": "Tekiokio Traifrop",
-                  "given": [
-                    practitionerName
-                  ],
-                  "family": "Traifrop"
-                }
-              ],
-              "identifier": [
-                {
-                  "system": "http://www.acme.org.au/units",
-                  "value": "testPractitioner"
-                }
-              ],
-              "gender": "female",
-              "birthDate": "1979-01-01"
-            },
-            "request": {
-              "method": "PUT",
-              "url": "Practitioner/P123456"
-            }
-          }
-        ]
-      })
+  await verifyResourceDoesNotExist('Practitioner', practitionerId)
 }
 
 exports.ihrisMockServicePractitionerRole = async () => {
-  await verifyResourceDoesNotExist('PractitionerRole')
-
-  nock('http://mock-service:4000')
-    .get('/ihris-practitionerRole-mock/_history')
-    .reply(
-      200,
-      {
-        "resourceType": "Bundle",
-        "type": "transaction",
-        "entry": [
-          {
-            "resource": {
-              "resourceType": "PractitionerRole",
-              "meta": {
-                "profile": [
-                  "http://ihris.org/fhir/StructureDefinition/iHRISPractitionerRole"
-                ]
-              },
-              "id": practitionerRoleId,
-              "active": true,
-              "practitioner": {
-                "reference": "Practitioner/P123456"
-              },
-              "identifier": [
-                {
-                  "system": "http://www.acme.org.au/units",
-                  "value": "testPractitionerRole"
-                }
-              ],
-              "location": [
-                {
-                  "reference": "Location/TF.S.NYS.11"
-                }
-              ],
-              "period": {
-                "start": "1998-01-01"
-              }
-            },
-            "request": {
-              "method": "PUT",
-              "url": "PractitionerRole/PR123456"
-            }
-          }
-        ]
-      })
+  await verifyResourceDoesNotExist('PractitionerRole', practitionerRoleId)
 }
 
 exports.gofrMockServiceLocation = async () => {
-  await verifyResourceDoesNotExist('Location')
-
-  nock('http://mock-service:4000')
-    .get('/gofr-location-mock/_history')
-    .reply(
-      200,
-      {
-        "resourceType": "Bundle",
-        "type": "searchset",
-        "entry": [
-          {
-            "fullUrl": "http://hl7.org/fhir/Location/123456",
-            "resource": {
-              "resourceType": "Location",
-              "id": "123456",
-              "text": {
-                "status": "generated",
-                "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">USS Enterprise</div>"
-              },
-              "identifier": [
-                {
-                  "system": "http://www.acme.org.au/units",
-                  "value": "testLocation"
-                }
-              ],
-              "status": "active",
-              "name": locationName,
-              "mode": "instance"
-            }
-          }
-        ]
-      })
+  await verifyResourceDoesNotExist('Location', locationId)
 }
 
 exports.gofrMockServiceOrganization = async () => {
-  await getResource('Organization')
-
-  nock('http://mock-service:4000')
-    .get('/gofr-organization-mock/_history')
-    .reply(
-      200,
-      {
-        "resourceType": "Bundle",
-        "type": "searchset",
-        "entry": [
-          {
-            "resourceType": "Organization",
-            "id": "123456",
-            "text": {
-              "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n      \n      <p>Clinical Laboratory @ Acme Hospital. ph: +1 555 234 1234, email: \n        <a href=\"mailto:contact@labs.acme.org\">contact@labs.acme.org</a>\n      </p>\n    \n    </div>"
-            },
-            "identifier": [
-              {
-                "system": "http://www.acme.org.au/units",
-                "value": "testOrganization"
-              }
-            ],
-            "name": organizationName
-          }
-        ]
-      })
+  await verifyResourceDoesNotExist('Organization', organizationId)
 }
 
-const getResource = resource => {
+const getResource = (resource, id) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=test${resource}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?_id=${id}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic ${authHeader}`
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`
     }
   })
 }
 
-const removeResource = resource => {
+const removeResource = (resource, id) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=test${resource}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?_id=${id}`,
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic ${authHeader}`
+      Authorization: `Custom ${CUSTOM_TOKEN_ID}`
     }
   })
 }
 
-const verifyResourceDoesNotExist = async resource => {
-  const response = await getResource(resource)
-
-  expect(response.status).to.eql(200)
+const verifyResourceDoesNotExist = async (resource, resourceId) => {
+  const response = await getResource(resource, resourceId)
 
   if (response.data.total > 0) throw Error(
-    `Test aborted! ${resource} resource used in test already exists and will be removed from the FHIR server`
+    `Test aborted! ${resource} resource (id: ${resourceId}) used in test already exists and will be removed from the FHIR server`
     )
 }
 
 exports.verifyPractitionerExistsAndCleanup = async () => {
   const resource = 'Practitioner'
-  const response = await getResource(resource)
 
-  expect(response.status).to.eql(200)
-  expect(response.data.name[0].given, practitionerName)
+  const response = await getResource(resource, practitionerId)
 
-  await removeResource(resource)
-  .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
-  .catch(() => {console.error(`Clean up failed, test ${resource} not removed from FHIR`)})
+  if (
+    !(response.status === 200) ||
+    !(response.data.total === 1) ||
+    !(response.data.entry[0].resource.name[0].text === 'Tekiokio Traifrop')
+    ) throw Error(`${resource} with id ${practitionerId} does not exist`)
+
+  const result = await removeResource(resource, practitionerId)
+
+  if (
+    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    ) throw(`Clean up failed, test ${resource} (id: ${practitionerId}) not removed from FHIR`)
 }
 
 exports.verifyPractitionerRoleExistsAndCleanup = async () => {
   const resource = 'PractitionerRole'
-  const response = await getResource(resource)
 
-  expect(response.status).to.eql(200)
-  expect(response.data.id, practitionerRoleId)
+  const response = await getResource(resource, practitionerRoleId)
 
-  await removeResource(resource)
-    .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
-    .catch(() => {console.error(`Clean up failed, test ${resource} not removed from FHIR`)})
+  if (
+    !(response.status === 200) ||
+    !(response.data.total === 1) ||
+    !(response.data.entry[0].resource.id === practitionerRoleId)
+    ) throw Error(`${resource} with id ${practitionerRoleId} does not exist`)
+
+  const result = await removeResource(resource, practitionerRoleId)
+
+  if (
+    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    ) throw(`Clean up failed, test ${resource} (id: ${practitionerRoleId}) not removed from FHIR`)
 }
 
 exports.verifyLocationExistsAndCleanup = async () => {
   const resource = 'Location'
-  const response = await getResource(resource)
 
-  expect(response.status).to.eql(200)
-  expect(response.data.name, locationName)
+  const response = await getResource(resource, locationId)
 
-  await removeResource(resource)
-    .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
-    .catch(() => {console.error(`Clean up failed, test ${resource} not removed from FHIR`)})
+  if (
+    !(response.status === 200) ||
+    !(response.data.total === 1) ||
+    !(response.data.entry[0].resource.name === 'USSS Enterprise-D')
+    ) throw Error(`${resource} with id ${locationId} does not exist`)
+
+  const result = await removeResource(resource, locationId)
+
+  if (
+    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    ) throw(`Clean up failed, test ${resource} (id: ${locationId}) not removed from FHIR`)
 }
 
 exports.verifyOrganizationExistsAndCleanup = async () => {
   const resource = 'Organization'
-  const response = await getResource(resource)
 
-  expect(response.status).to.eql(200)
-  expect(response.data.name, organizationName)
+  const response = await getResource(resource, organizationId)
 
-  await removeResource(resource)
-  .then(() => {console.log(`Test ${resource} successfully removed from FHIR`)})
-  .catch(() => {console.error(`Clean up failed, test ${resource} not removed from FHIR`)})
+  if (
+    !(response.status === 200) ||
+    !(response.data.total === 1) ||
+    !(response.data.entry[0].resource.name === 'Clinical Lab')
+    ) throw Error(`${resource} with id ${organizationId} does not exist`)
+
+  const result = await removeResource(resource, organizationId)
+
+  if (
+    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    ) throw(`Clean up failed, test ${resource} (id: ${organizationId}) not removed from FHIR`)
 }
