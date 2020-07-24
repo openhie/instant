@@ -29,19 +29,23 @@ exports.triggerSync = async () => {
 }
 
 exports.ihrisMockServicePractitioner = async () => {
-  await verifyResourceDoesNotExist('Practitioner', practitionerId)
+  // Mock ihris service running in docker container
+  await verifyResourceDoesNotExistInFHIR('Practitioner', practitionerId)
 }
 
 exports.ihrisMockServicePractitionerRole = async () => {
-  await verifyResourceDoesNotExist('PractitionerRole', practitionerRoleId)
+  // Mock ihris service running in docker container 
+  await verifyResourceDoesNotExistInFHIR('PractitionerRole', practitionerRoleId)
 }
 
 exports.gofrMockServiceLocation = async () => {
-  await verifyResourceDoesNotExist('Location', locationId)
+  // Mock gofr service running in docker container
+  await verifyResourceDoesNotExistInFHIR('Location', locationId)
 }
 
 exports.gofrMockServiceOrganization = async () => {
-  await verifyResourceDoesNotExist('Organization', organizationId)
+  // Mock gofr service running in docker container
+  await verifyResourceDoesNotExistInFHIR('Organization', organizationId)
 }
 
 const getResource = (resource, id) => {
@@ -66,7 +70,7 @@ const removeResource = (resource, id) => {
   })
 }
 
-const verifyResourceDoesNotExist = async (resource, resourceId) => {
+const verifyResourceDoesNotExistInFHIR = async (resource, resourceId) => {
   const response = await getResource(resource, resourceId)
 
   if (response.data.total > 0) throw Error(
@@ -118,7 +122,7 @@ exports.verifyLocationExistsAndCleanup = async () => {
   if (
     !(response.status === 200) ||
     !(response.data.total === 1) ||
-    !(response.data.entry[0].resource.name === 'USSS Enterprise-D')
+    !(response.data.entry[0].resource.name === 'USSS Enterprise-D Sickbay')
     ) throw Error(`${resource} with id ${locationId} does not exist`)
 
   const result = await removeResource(resource, locationId)
