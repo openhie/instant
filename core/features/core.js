@@ -12,6 +12,7 @@ const OPENHIM_TRANSACTION_API_PORT =
 const OPENHIM_MEDIATOR_API_PORT =
   process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
+const BASIC_AUTH_HEADER = process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx'
 
 // Save test Patient resource ID for post test cleanup
 let hapiFhirPatientID
@@ -82,7 +83,7 @@ BeforeAll(async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+      Authorization: BASIC_AUTH_HEADER
     }
   }
 
@@ -104,7 +105,7 @@ BeforeAll(async function () {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+        Authorization: BASIC_AUTH_HEADER
       },
       data: {
         roles: ['instant'],
@@ -149,7 +150,7 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+      Authorization: BASIC_AUTH_HEADER
     }
   }
 
@@ -231,7 +232,7 @@ AfterAll(async function () {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+      Authorization: BASIC_AUTH_HEADER
     }
   }
 
@@ -253,7 +254,7 @@ AfterAll(async function () {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx`
+        Authorization: BASIC_AUTH_HEADER
       }
     }
 
