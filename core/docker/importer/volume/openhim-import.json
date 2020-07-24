@@ -41,7 +41,7 @@
       ],
       "type": "http",
       "allow": [
-        "test"
+        "instant"
       ],
       "whitelist": [],
       "authType": "private",
