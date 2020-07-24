@@ -2,7 +2,7 @@
 
 const axios = require('axios')
 
-const { AfterAll, BeforeAll, Given, Then, When } = require('cucumber')
+const { AfterAll, Given, Then, When } = require('cucumber')
 const { expect } = require('chai')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'
@@ -12,13 +12,13 @@ const OPENHIM_TRANSACTION_API_PORT =
 const OPENHIM_MEDIATOR_API_PORT =
   process.env.OPENHIM_MEDIATOR_API_PORT || '8080'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
-const BASIC_AUTH_HEADER = process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx'
+const BASIC_AUTH_HEADER =
+  process.env.BASIC_AUTH_HEADER || 'Basic cm9vdEBvcGVuaGltLm9yZzppbnN0YW50MTAx'
 
 // Save test Patient resource ID for post test cleanup
 let hapiFhirPatientID
 
-// Ensure FHIR Test Patient exists
-BeforeAll(async function () {
+Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   const checkPatientExistsOptions = {
     url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
     method: 'GET',
@@ -66,6 +66,13 @@ BeforeAll(async function () {
   } else if (checkPatientExistsResponse.data.total === 1) {
     console.log(`Patient record for Jane Doe already exists...`)
 
+    expect(
+      checkPatientExistsResponse.data.entry[0].resource.name[0].given
+    ).to.eql(['Jane'])
+    expect(
+      checkPatientExistsResponse.data.entry[0].resource.name[0].family
+    ).to.eql('Doe')
+
     hapiFhirPatientID = checkPatientExistsResponse.data.entry[0].resource.id
   } else {
     // Previous test data should have been cleaned out
@@ -75,8 +82,7 @@ BeforeAll(async function () {
   }
 })
 
-// Ensure OpenHIM Test Client exists
-BeforeAll(async function () {
+Given('an authorised client, Alice, exists in the OpenHIM', async function () {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   const checkClientExistsOptions = {
     url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
@@ -90,9 +96,10 @@ BeforeAll(async function () {
   const checkClientExistsResponse = await axios(checkClientExistsOptions)
 
   let createClient = true
-  // Previous test data should have been cleaned out
+
   for (let client of checkClientExistsResponse.data) {
     if (client.clientID === 'test-harness-client') {
+      expect(client.name).to.eql('Alice')
       createClient = false
       break
     }
@@ -119,49 +126,6 @@ BeforeAll(async function () {
     expect(response.status).to.eql(201)
   } else {
     console.log(`The Test Harness Client (Alice) already exists...`)
-  }
-})
-
-Given('a patient, Jane Doe, exists in the FHIR server', async function () {
-  const checkPatientExistsOptions = {
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Custom ${CUSTOM_TOKEN_ID}`,
-      'Cache-Control': 'no-cache'
-    }
-  }
-
-  const checkPatientExistsResponse = await axios(checkPatientExistsOptions)
-  expect(checkPatientExistsResponse.data.total).to.eql(1)
-  expect(
-    checkPatientExistsResponse.data.entry[0].resource.name[0].given
-  ).to.eql(['Jane'])
-  expect(
-    checkPatientExistsResponse.data.entry[0].resource.name[0].family
-  ).to.eql('Doe')
-})
-
-Given('an authorised client, Alice, exists in the OpenHIM', async function () {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-  const checkClientExistsOptions = {
-    url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: BASIC_AUTH_HEADER
-    }
-  }
-
-  const checkClientExistsResponse = await axios(checkClientExistsOptions)
-
-  // Previous test data should have been cleaned out
-  for (let client of checkClientExistsResponse.data) {
-    if (client.clientID === 'test-harness-client') {
-      expect(client.name).to.eql('Alice')
-      break
-    }
   }
 })
 
