@@ -9,101 +9,61 @@ const OPENHIM_TRANSACTION_API_PORT =
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
 const MOCK_SERVER_PORT = process.env.MOCK_SERVER_PORT || '4000'
 
-const testLocationBundle = {
-  resourceType: 'Bundle',
-  type: 'searchset',
-  entry: [
+const testLocation = {
+  resourceType: 'Location',
+  id: '2test',
+  name: 'GoodHealth Clinic',
+  identifier: [
     {
-      resource: {
-        resourceType: 'Location',
-        id: '2test',
-        name: 'GoodHealth Clinic',
-        identifier: [
-          {
-            use: 'temp',
-            value: 'testLocation'
-         }
-        ]
-      }
+      use: 'temp',
+      value: 'testLocation'
     }
   ]
 }
 
-const testOrganizationBundle = {
-  resourceType: 'Bundle',
-  type: 'searchset',
-  entry: [
+const testOrganization = {
+  resourceType: 'Organization',
+  id: '2test',
+  identifier: [
     {
-      resource: {
-        resourceType: 'Organization',
-        id: '2test',
-        identifier: [
-          {
-            system: 'http://www.acme.org.au/units',
-            value: 'testOrganization'
-          }
-        ],
-        name: 'Clinical Lab'
-      }
+      system: 'http://www.acme.org.au/units',
+      value: 'testOrganization'
+    }
+  ],
+  name: 'Clinical Lab'
+}
+
+const testPractitioner = {
+  resourceType: 'Practitioner',
+  id: 'P10004test',
+  active: true,
+  identifier: [
+    {
+      system: 'http://www.acme.org.au/units',
+      value: 'testPractitioner'
+    }
+  ],
+  name: [
+    {
+      use: 'official',
+      text: 'Bob Murray',
+      given: ['Bob'],
+      family: 'Murray'
     }
   ]
 }
 
-const testPractitionerBundle = {
-  resourceType: 'Bundle',
-  type: 'transaction',
-  entry: [
+const testPractitionerRole = {
+  resourceType: 'PractitionerRole',
+  id: 'PR10001Test',
+  active: true,
+  practitioner: {
+    reference: 'Practitioner/P10004test'
+  },
+  identifier: [
     {
-      resource: {
-        resourceType: 'Practitioner',
-        id: 'P10004test',
-        active: true,
-        identifier: [
-          {
-            system: 'http://www.acme.org.au/units',
-            value: 'testPractitioner'
-          }
-        ],
-        name: [
-          {
-            use: 'official',
-            text: 'Bob Murray',
-            given: ['Bob'],
-            family: 'Murray'
-          }
-        ]
-      },
-      request: {
-        method: 'PUT',
-        url: 'Practitioner/P10004test'
-      }
-    }
-  ]
-}
-
-const testPractitionerRoleBundle = {
-  resourceType: 'Bundle',
-  type: 'transaction',
-  entry: [
-    {
-      resource: {
-        resourceType: 'PractitionerRole',
-        id: 'PR10001Test',
-        active: true,
-        practitioner: {
-          reference: 'Practitioner/P10004test'
-        },
-        identifier: [
-          {
-            system: 'http://www.acme.org.au/units',
-            value: 'testPractitionerRole'
-          }
-        ],
-      },
-      request: {
-        method: 'PUT',
-        url: 'PractitionerRole/PR10001test'
-      }
+      system: 'http://www.acme.org.au/units',
+      value: 'testPractitionerRole'
     }
   ]
 }
@@ -123,10 +83,10 @@ exports.triggerSync = async () => {
 exports.ihrisMockServicePractitioner = async () => {
   const name = 'Practitioner'
 
-  await verifyResourceDoesNotExistInFHIR(name, testPractitionerBundle.entry[0].resource.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR(name, testPractitioner.identifier[0].value)
 
   // create new practitioner Dr Bob on ihris mock server
-  const response = await createResourceBundle(name, testPractitionerBundle)
+  const response = await createResource(name, testPractitioner)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 
@@ -136,10 +96,10 @@ exports.ihrisMockServicePractitioner = async () => {
 exports.ihrisMockServicePractitionerRole = async () => {
   const name = 'PractitionerRole'
 
-  await verifyResourceDoesNotExistInFHIR('PractitionerRole', testPractitionerRoleBundle.entry[0].resource.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR('PractitionerRole', testPractitionerRole.identifier[0].value)
 
   // create new practitionerRole for Dr Bob on ihris mock server
-  const response = await createResourceBundle(name, testPractitionerRoleBundle)
+  const response = await createResource(name, testPractitionerRole)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 
@@ -149,10 +109,10 @@ exports.ihrisMockServicePractitionerRole = async () => {
 exports.gofrMockServiceLocation = async () => {
   const name = 'Location'
 
-  await verifyResourceDoesNotExistInFHIR('Location', testLocationBundle.entry[0].resource.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR('Location', testLocation.identifier[0].value)
 
   // create new location on gofr mock server
-  const response = await createResourceBundle(name, testLocationBundle)
+  const response = await createResource(name, testLocation)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 
@@ -162,10 +122,10 @@ exports.gofrMockServiceLocation = async () => {
 exports.gofrMockServiceOrganization = async () => {
   const name = 'Organization'
 
-  await verifyResourceDoesNotExistInFHIR('Organization', testOrganizationBundle.entry[0].resource.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR('Organization', testOrganization.identifier[0].value)
 
   // create new organization on gofr mock server
-  const response = await createResourceBundle(name, testOrganizationBundle)
+  const response = await createResource(name, testOrganization)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 
@@ -204,7 +164,7 @@ const verifyResourceDoesNotExistInFHIR = async (resource, resourceId) => {
     )
 }
 
-const createResourceBundle = (resourceName, resourceBundle) => {
+const createResource = (resourceName, resourceBundle) => {
   return axios({
     url: `http://localhost:${MOCK_SERVER_PORT}/create-resource/${resourceName}`,
     method: 'POST',
@@ -221,7 +181,7 @@ const deleteResourceBundle = resourceName => {
 
 exports.verifyPractitionerExistsAndCleanup = async () => {
   const resource = 'Practitioner'
-  const identifierValue = testPractitionerBundle.entry[0].resource.identifier[0].value
+  const identifierValue = testPractitioner.identifier[0].value
 
   const response = await getResource(resource, identifierValue)
 
@@ -248,7 +208,7 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
 
 exports.verifyPractitionerRoleExistsAndCleanup = async () => {
   const resource = 'PractitionerRole'
-  const identifierValue = testPractitionerRoleBundle.entry[0].resource.identifier[0].value
+  const identifierValue = testPractitionerRole.identifier[0].value
 
   const response = await getResource(resource, identifierValue)
 
@@ -274,7 +234,7 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
 
 exports.verifyLocationExistsAndCleanup = async () => {
   const resource = 'Location'
-  const identifierValue = testLocationBundle.entry[0].resource.identifier[0].value
+  const identifierValue = testLocation.identifier[0].value
 
   const response = await getResource(resource, identifierValue)
 
@@ -301,7 +261,7 @@ exports.verifyLocationExistsAndCleanup = async () => {
 
 exports.verifyOrganizationExistsAndCleanup = async () => {
   const resource = 'Organization'
-  const identifierValue = testOrganizationBundle.entry[0].resource.identifier[0].value
+  const identifierValue = testOrganization.identifier[0].value
 
   const response = await getResource(resource, identifierValue)
 
