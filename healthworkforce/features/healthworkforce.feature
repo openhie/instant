@@ -11,4 +11,4 @@ Feature: mCSD support
       Then the new practitioner, Dr Bob, can be found in the FHIR server
       And the new practitionerRole can be found in the FHIR server
       And the new location, GoodHealth Clinic, can be found in the FHIR server
-      And the new organization, Clinic Lab, can be found in the FHIR server
+      And the new organization, Clinical Lab, can be found in the FHIR server
