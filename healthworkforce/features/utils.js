@@ -116,6 +116,8 @@ exports.triggerSync = async () => {
       'Content-Type': 'application/json'
     }
   })
+
+  console.log('\n Triggered sync')
 }
 
 exports.ihrisMockServicePractitioner = async () => {
@@ -127,6 +129,8 @@ exports.ihrisMockServicePractitioner = async () => {
   const response = await createResourceBundle(name, testPractitionerBundle)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+
+  console.log('\n Created Practitioner resource (Dr Bob) on mock ihris mock server')
 }
 
 exports.ihrisMockServicePractitionerRole = async () => {
@@ -138,6 +142,8 @@ exports.ihrisMockServicePractitionerRole = async () => {
   const response = await createResourceBundle(name, testPractitionerRoleBundle)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+
+  console.log('\n Created PractitionerRole resource (for Dr Bob) on mock ihris mock server')
 }
 
 exports.gofrMockServiceLocation = async () => {
@@ -149,6 +155,8 @@ exports.gofrMockServiceLocation = async () => {
   const response = await createResourceBundle(name, testLocationBundle)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+
+  console.log('\n Created Location resource (GoodHealth Clinic) on mock gofr mock server')
 }
 
 exports.gofrMockServiceOrganization = async () => {
@@ -160,6 +168,8 @@ exports.gofrMockServiceOrganization = async () => {
   const response = await createResourceBundle(name, testOrganizationBundle)
 
   if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+
+  console.log('\n Created Organization resource (Clinical Lab) on mock gofr mock server...')
 }
 
 const getResource = (resource, identifierValue) => {
@@ -232,6 +242,8 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
   const result_2 = await deleteResourceBundle(resource)
 
   if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+
+  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
 
 exports.verifyPractitionerRoleExistsAndCleanup = async () => {
@@ -256,6 +268,8 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
   const result_2 = await deleteResourceBundle(resource)
 
   if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+
+  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
 
 exports.verifyLocationExistsAndCleanup = async () => {
@@ -281,6 +295,8 @@ exports.verifyLocationExistsAndCleanup = async () => {
   const result_2 = await deleteResourceBundle(resource)
 
   if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+
+  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
 
 exports.verifyOrganizationExistsAndCleanup = async () => {
@@ -306,4 +322,6 @@ exports.verifyOrganizationExistsAndCleanup = async () => {
   const result_2 = await deleteResourceBundle(resource)
 
   if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+
+  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
