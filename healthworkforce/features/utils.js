@@ -232,16 +232,16 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
     ) throw Error(`${resource} with identifier value ${identifierValue} does not exist in FHIR`)
 
   // Remove resource from FHIR
-  const result = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
 
   if (
-    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
   // Remove the practitioner bundle created on the ihris server
-  const result_2 = await deleteResourceBundle(resource)
+  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
 
-  if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
   console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
@@ -258,16 +258,16 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
     ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist in FHIR`)
 
   // Remove resource from FHIR
-  const result = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
 
   if (
-    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
   // Remove the practitionerRole bundle created on the ihris server
-  const result_2 = await deleteResourceBundle(resource)
+  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
 
-  if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
   console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
@@ -285,16 +285,16 @@ exports.verifyLocationExistsAndCleanup = async () => {
     ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist`)
 
   // Remove resource from FHIR
-  const result = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
 
   if (
-    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
   // Remove the location bundle created on the gofr server
-  const result_2 = await deleteResourceBundle(resource)
+  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
 
-  if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
   console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
@@ -312,16 +312,16 @@ exports.verifyOrganizationExistsAndCleanup = async () => {
     ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist`)
 
   // Remove resource from FHIR
-  const result = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
 
   if (
-    !JSON.stringify(result.data).match(/Successfully deleted 1 resource/)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (id: ${identifierValue}) not removed from FHIR`)
 
   // Remove the organization bundle created on the gofr server
-  const result_2 = await deleteResourceBundle(resource)
+  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
 
-  if (result_2.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
   console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
 }
