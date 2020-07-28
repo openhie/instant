@@ -7,11 +7,106 @@ const OPENHIM_API_HOSTNAME = process.env.OPENHIM_API_HOSTNAME || 'localhost'
 const OPENHIM_TRANSACTION_API_PORT =
   process.env.OPENHIM_TRANSACTION_API_PORT || '5001'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
+const MOCK_SERVER_PORT = process.env.MOCK_SERVER_PORT || '4000'
 
-const practitionerId = 'P10004'
-const practitionerRoleId = 'PR10001'
-const locationId = '2'
-const organizationId = '3'
+const testLocationBundle = {
+  resourceType: 'Bundle',
+  type: 'searchset',
+  entry: [
+    {
+      resource: {
+        resourceType: 'Location',
+        id: '2test',
+        name: 'GoodHealth Clinic',
+        identifier: [
+          {
+            use: 'temp',
+            value: 'testLocation'
+         }
+        ]
+      }
+    }
+  ]
+}
+
+const testOrganizationBundle = {
+  resourceType: 'Bundle',
+  type: 'searchset',
+  entry: [
+    {
+      resource: {
+        resourceType: 'Organization',
+        id: '2test',
+        identifier: [
+          {
+            system: 'http://www.acme.org.au/units',
+            value: 'testOrganization'
+          }
+        ],
+        name: 'Clinical Lab'
+      }
+    }
+  ]
+}
+
+const testPractitionerBundle = {
+  resourceType: 'Bundle',
+  type: 'transaction',
+  entry: [
+    {
+      resource: {
+        resourceType: 'Practitioner',
+        id: 'P10004test',
+        active: true,
+        identifier: [
+          {
+            system: 'http://www.acme.org.au/units',
+            value: 'testPractitioner'
+          }
+        ],
+        name: [
+          {
+            use: 'official',
+            text: 'Bob Murray',
+            given: ['Bob'],
+            family: 'Murray'
+          }
+        ]
+      },
+      request: {
+        method: 'PUT',
+        url: 'Practitioner/P10004test'
+      }
+    }
+  ]
+}
+
+const testPractitionerRoleBundle = {
+  resourceType: 'Bundle',
+  type: 'transaction',
+  entry: [
+    {
+      resource: {
+        resourceType: 'PractitionerRole',
+        id: 'PR10001Test',
+        active: true,
+        practitioner: {
+          reference: 'Practitioner/P10004test'
+        },
+        identifier: [
+          {
+            system: 'http://www.acme.org.au/units',
+            value: 'testPractitionerRole'
+          }
+        ],
+      },
+      request: {
+        method: 'PUT',
+        url: 'PractitionerRole/PR10001test'
+      }
+    }
+  ]
+}
 
 exports.triggerSync = async () => {
   await axios({
@@ -21,36 +116,55 @@ exports.triggerSync = async () => {
       'Content-Type': 'application/json'
     }
   })
-
-  // Allow the syncing to finish. The data will only be available in FHIR after a few seconds
-  await new Promise ((resolve, _reject) => {
-    setTimeout(() => resolve(), 60000)
-  })
 }
 
 exports.ihrisMockServicePractitioner = async () => {
-  // Mock ihris service running in docker container
-  await verifyResourceDoesNotExistInFHIR('Practitioner', practitionerId)
+  const name = 'Practitioner'
+
+  await verifyResourceDoesNotExistInFHIR(name, testPractitionerBundle.entry[0].resource.identifier[0].value)
+
+  // create new practitioner Dr Bob on ihris mock server
+  const response = await createResourceBundle(name, testPractitionerBundle)
+
+  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 }
 
 exports.ihrisMockServicePractitionerRole = async () => {
-  // Mock ihris service running in docker container 
-  await verifyResourceDoesNotExistInFHIR('PractitionerRole', practitionerRoleId)
+  const name = 'PractitionerRole'
+
+  await verifyResourceDoesNotExistInFHIR('PractitionerRole', testPractitionerRoleBundle.entry[0].resource.identifier[0].value)
+
+  // create new practitionerRole for Dr Bob on ihris mock server
+  const response = await createResourceBundle(name, testPractitionerRoleBundle)
+
+  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 }
 
 exports.gofrMockServiceLocation = async () => {
-  // Mock gofr service running in docker container
-  await verifyResourceDoesNotExistInFHIR('Location', locationId)
+  const name = 'Location'
+
+  await verifyResourceDoesNotExistInFHIR('Location', testLocationBundle.entry[0].resource.identifier[0].value)
+
+  // create new location on gofr mock server
+  const response = await createResourceBundle(name, testLocationBundle)
+
+  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 }
 
 exports.gofrMockServiceOrganization = async () => {
-  // Mock gofr service running in docker container
-  await verifyResourceDoesNotExistInFHIR('Organization', organizationId)
+  const name = 'Organization'
+
+  await verifyResourceDoesNotExistInFHIR('Organization', testOrganizationBundle.entry[0].resource.identifier[0].value)
+
+  // create new organization on gofr mock server
+  const response = await createResourceBundle(name, testOrganizationBundle)
+
+  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
 }
 
-const getResource = (resource, id) => {
+const getResource = (resource, identifierValue) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?_id=${id}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=${identifierValue}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -60,9 +174,9 @@ const getResource = (resource, id) => {
   })
 }
 
-const removeResource = (resource, id) => {
+const removeResource = (resource, identifierValue) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?_id=${id}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=${identifierValue}`,
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
