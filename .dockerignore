@@ -12,3 +12,4 @@ docs
 
 # Dependency directories
 node_modules/
+.editorconfig

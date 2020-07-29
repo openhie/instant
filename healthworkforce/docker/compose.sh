@@ -1,3 +1,5 @@
+#!/bin/bash
+
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
