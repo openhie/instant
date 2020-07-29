@@ -7,6 +7,7 @@ const OPENHIM_API_HOSTNAME = process.env.OPENHIM_API_HOSTNAME || 'localhost'
 const OPENHIM_TRANSACTION_API_PORT =
   process.env.OPENHIM_TRANSACTION_API_PORT || '5001'
 const CUSTOM_TOKEN_ID = process.env.CUSTOM_TOKEN_ID || 'test'
+const MOCK_SERVER_HOST = process.env.MOCK_SERVER_HOST || 'localhost'
 const MOCK_SERVER_PORT = process.env.MOCK_SERVER_PORT || '4000'
 
 const testLocation = {
@@ -164,17 +165,17 @@ const verifyResourceDoesNotExistInFHIR = async (resource, resourceId) => {
     )
 }
 
-const createResource = (resourceName, resourceBundle) => {
+const createResource = (resourceName, resource) => {
   return axios({
-    url: `http://localhost:${MOCK_SERVER_PORT}/create-resource/${resourceName}`,
+    url: `http://${MOCK_SERVER_HOST}:${MOCK_SERVER_PORT}/create-resource/${resourceName}`,
     method: 'POST',
-    data: resourceBundle
+    data: resource
   })
 }
 
-const deleteResourceBundle = resourceName => {
+const deleteResource = resourceName => {
   return axios({
-    url: `http://localhost:${MOCK_SERVER_PORT}/cleanup/${resourceName}`,
+    url: `http://${MOCK_SERVER_HOST}:${MOCK_SERVER_PORT}/cleanup/${resourceName}`,
     method: 'DELETE'
   })
 }
@@ -198,8 +199,8 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
     !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
-  // Remove the practitioner bundle created on the ihris server
-  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
+  // Remove the practitioner created on the ihris server
+  const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
   if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
@@ -224,8 +225,8 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
     !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
-  // Remove the practitionerRole bundle created on the ihris server
-  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
+  // Remove the practitionerRole created on the ihris server
+  const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
   if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
@@ -251,8 +252,8 @@ exports.verifyLocationExistsAndCleanup = async () => {
     !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
 
-  // Remove the location bundle created on the gofr server
-  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
+  // Remove the location created on the gofr server
+  const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
   if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
@@ -278,8 +279,8 @@ exports.verifyOrganizationExistsAndCleanup = async () => {
     !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
     ) throw(`Clean up failed, test ${resource} (id: ${identifierValue}) not removed from FHIR`)
 
-  // Remove the organization bundle created on the gofr server
-  const resultOfDeleteResourceMockServer = await deleteResourceBundle(resource)
+  // Remove the organization created on the gofr server
+  const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
   if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
 
