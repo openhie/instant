@@ -13,55 +13,67 @@ Navigate to the main folder to execute the commands.
 To set the Instant OpenHIE services run the following command:
 
 ```sh
-./instant.sh init docker
+yarn
+yarn docker:build
+yarn docker:instant init -t docker
 ```
 
 To tear down the deployments use the opposing command:
 
 ```bash
-./instant.sh down docker
+yarn docker:instant down -t docker
 ```
 
 To start up the services after a tear down, use the following command:
 
 ```bash
-./instant.sh up docker
+yarn docker:instant up -t docker
 ```
 
 To completely remove all project components use the following option:
 
 ```bash
-./instant.sh destroy docker
+yarn docker:instant destroy -t docker
 ```
+
+Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
+
+E.g only run `core` package: `yarn docker:instant init -t docker core`
 
 ## Kubernetes
 
 A kubernetes deployment can either be to AWS using [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or locally using [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) and `kubectl`.
 
-For a quick setup of these environments navigate to `/core/kubernetes/README.md`
+For a quick setup of these environments navigate to [the Kubernetes development readme](kubernetes.md)
 
 Navigate to the main folder to execute the commands.
 
 To set the Instant OpenHIE services run the following command:
 
 ```sh
-./instant.sh init k8s
+yarn
+yarn docker:build
+yarn docker:instant init -t k8s
 ```
 
-To tear down the deployments use the following command:
+To tear down the deployments, use the following command:
 
 ```bash
-./instant.sh down k8s
+yarn docker:instant down -t k8s
 ```
 
 To start up the services after a tear down, use the following command:
 
 ```bash
-./instant.sh up k8s
+yarn docker:instant up -t k8s
 ```
 
-To completely remove all project components use the following option:
+To completely remove all project components, use the following option:
 
 ```bash
-./instant.sh destroy k8s
+yarn docker:instant destroy -t k8s
 ```
+
+Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
+
+E.g only run `core` package: `yarn docker:instant init -t k8s core`
