@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: mock-service
-          image: jembi/instantohie-mcsd-mock-services:slim
+          image: jembi/instantohie-mcsd-mock-services:v1.1.1
           ports:
             - containerPort: 4000
