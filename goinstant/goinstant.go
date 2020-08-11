@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 
 	"github.com/gookit/color"
@@ -29,18 +28,10 @@ func main() {
 	// stateflag := isFlagPassed(*statePtr)
 
 	router := mux.NewRouter()
-
 	server = sse.New()
 	server.AutoReplay = true
 	server.CreateStream("messages")
-	router.HandleFunc("/events", sseHandler)
-
-	router.HandleFunc("/setup", Setup)
-	router.HandleFunc("/decline", Decline)
-	router.HandleFunc("/debugdocker", DebugDocker)
-	router.HandleFunc("/debugkubernetes", DebugKubernetes)
-	router.HandleFunc("/composeupcoredod", ComposeUpCoreDOD)
-
+	addHandler(router)
 	// Serve static files
 	router.PathPrefix("/").Handler(http.FileServer(pkger.Dir("/templates")))
 	// Serve index page on all unhandled routes
@@ -49,7 +40,6 @@ func main() {
 	// })
 
 	// go stanleySender(server)
-
 	go http.ListenAndServe(":27517", router)
 
 	pkgerPrint("/templates/banner.txt", "green")
@@ -57,7 +47,7 @@ func main() {
 	color.Green.Println("Site: http://localhost:27517")
 	// color.Green.Println("The app can be run in headless mode. Run with -help to see options.\n")
 
-	color.Green.Println("Welcome to Instant. The tool can be run from the web interface or the prompt below.\n")
+	color.Green.Println("Welcome to Instant.\n")
 	color.Red.Println("Remember to clean up after your work or the app will continue to run in the background and have an adverse impact on performance.")
 
 	c := existDisclaimer()
@@ -67,9 +57,6 @@ func main() {
 		// disable cli mode for now
 		// cliDisclaimer()
 		mainMenu()
-		// TODO: disclaimer accept button hits: makeDisclaimer(), makeSetup(),
-		//
-		// then redirects to index.html
 	case "success":
 		go openBrowser("http://localhost:27517/index.html")
 		// makeDisclaimer()
@@ -127,17 +114,3 @@ func main() {
 // 	})
 // 	return found
 // }
-
-func sseHandler(w http.ResponseWriter, r *http.Request) {
-	// log.Println("new client", r.Header.Get("X-Forwarded-For"))
-	server.HTTPHandler(w, r)
-}
-
-func consoleSender(server *sse.Server, text string) {
-
-	fmt.Println(text)
-	server.Publish("messages", &sse.Event{
-		Data: []byte(text),
-	})
-
-}

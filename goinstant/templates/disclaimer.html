@@ -9,11 +9,30 @@
 
 </head>
 
+<script>
+
+    function Setup() {
+        var url = "http://localhost:27517/index.html";
+        window.location = url;
+        fetch("http://localhost:27517/disclaimer")
+        fetch("http://localhost:27517/setup")
+    }
+
+</script>
+
+
 <body>
 
     <img src="logo.png" style="vertical-align: text-top;" />
 
     <h1>Welcome to Instant OpenHIE!</h1>
+
+    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
+    <button class="mdc-button mdc-button--raised"
+        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom"
+        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
     <h2>A little disclaimer first...</h2>
     <div>
@@ -35,21 +54,20 @@
 
     </div>
 
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+    <!-- <button class="mdc-button mdc-button--raised mdc-button--secondary"
         onclick="window.location.replace('http://localhost:27517/index.html')">Accept and Get Started</button>
     <button class="mdc-button mdc-button--raised mdc-button--custom"
+        onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button> -->
+
+    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+        onclick="Setup()">Accept and Get Started</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom"
         onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button>
+
 
     <br><br><br>
 
     <hr class="foot">
-
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
-        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
-    <button class="mdc-button mdc-button--raised"
-        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
-        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
 
 </body>
 

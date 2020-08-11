@@ -23,6 +23,10 @@
         fetch("http://localhost:27517/debugdocker")
     }
 
+    function DebugKubernetes() {
+        fetch("http://localhost:27517/debugkubernetes")
+    }
+
     function ComposeUpCoreDOD() {
         fetch("http://localhost:27517/composeupcoredod")
     }
@@ -37,7 +41,7 @@
     <br><br><br>
     <h1>Welcome to Instant OpenHIE!</h1>
     <hr>
-    <h2>Step Two: Launch Instant with Docker</h2>
+    <h2>Step Two: Launch Instant with Kubernetes</h2>
     <hr>
 
 
@@ -61,6 +65,9 @@
     <button class="mdc-button mdc-button--raised mdc-button--custom" id='setup' onclick="Setup()">Debug Setup</button>
     <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugdocker' onclick="DebugDocker()">Debug
         Docker</button>
+    <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugkubernetes'
+        onclick="DebugKubernetes()">Debug
+        Kubernetes</button>
 
 </body>
 
