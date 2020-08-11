@@ -61,7 +61,8 @@
   },
   "authentication": {
     "enableMutualTLSAuthentication": true,
-    "enableBasicAuthentication": true
+    "enableBasicAuthentication": true,
+    "enableCustomTokenAuthentication": true
   },
   "email": {
     "fromAddress": "address@example.com",
