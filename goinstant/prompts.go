@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/gookit/color"
@@ -228,10 +227,8 @@ func selectPackageDockerDev() {
 // old start menu system
 func mainMenu() {
 
-	setup()
-
 	prompt := promptui.Select{
-		Label: "Choose Setup if this is your first time",
+		Label: "Developer Mode",
 		Items: []string{"Setup", "Select Packages", "Start Instant OpenHIE", "Stop Instant OpenHIE", "Debug", "Help", "Quit"},
 	}
 
@@ -245,20 +242,21 @@ func mainMenu() {
 	stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
 
 	switch result {
-	case "Check Setup Again":
+	case "Setup":
+		setup()
 		selectSetup()
 	case "Select Packages":
 		fmt.Println("in-progress")
 	case "Start Instant OpenHIE":
 
-		http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintln(w, "Hello, you hit foo!")
-		})
+		// http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
+		// 	fmt.Fprintln(w, "Hello, you hit foo!")
+		// })
 
-		dir := http.FileServer(pkger.Dir("/templates"))
-		// use in goroutine to return control
-		go http.ListenAndServe(":27517", dir)
-		go openBrowser("http://localhost:27517")
+		// dir := http.FileServer(pkger.Dir("/templates"))
+		// // use in goroutine to return control
+		// go http.ListenAndServe(":27517", dir)
+		// go openBrowser("http://localhost:27517")
 
 		debugDocker()
 		stuff := composeGet(stack)

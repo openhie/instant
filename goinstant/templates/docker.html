@@ -27,7 +27,9 @@
         fetch("http://localhost:27517/debugkubernetes")
     }
 
-
+    function ComposeUpCoreDOD() {
+        fetch("http://localhost:27517/composeupcoredod")
+    }
 
 </script>
 
@@ -39,40 +41,9 @@
     <br><br><br>
     <h1>Welcome to Instant OpenHIE!</h1>
     <hr>
-    <h2>Step One: Choose how you will run it</h2>
+    <h2>Step Two: Launch Instant with Docker</h2>
     <hr>
 
-    <form name="platform">
-
-        <br />
-        <input type="radio" name="programType" id="basicProgram" value="Docker" checked /> Docker Desktop
-        <br>
-
-        <p class="tab2">
-            Default. Only Docker is currently supported.
-        </p>
-
-        <p class="tab2">
-            <a href="https://www.docker.com/products/docker-desktop">Install</a> Docker before continuing. Admin
-            privileges are required.
-        </p>
-
-        <input type="radio" name="programType" id="proProgram" value="Kubernetes" disabled /> Kubernetes Cluster
-
-        <p class="tab2">
-            Disabled. Kubernetes clusters will be supported in a future version.
-        </p>
-
-        <input type="button" class="mdc-button mdc-button--raised mdc-button--secondary" value="Get Started"
-            onclick="window.location.replace('http://localhost:27517/docker.html')">
-        
-        <!-- <button class="mdc-button mdc-button--raised mdc-button--secondary"
-            onclick="window.location.replace('http://localhost:27517/index.html')">Accept and Get Started</button> -->
-
-
-    </form>
-
-    <br>
 
     <!-- <h2>Debug Menu</h2>
     <button class="mdc-button mdc-button--raised"
@@ -80,9 +51,15 @@
     <button class="mdc-button mdc-button--raised mdc-button--custom"
         onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button> -->
 
-</body>
-
 <h2>Console</h2>
+
+<button class="mdc-button mdc-button--raised mdc-button--secondary" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch the Core package in Docker</button>
+
+<div id="console"
+    style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+</div>
+
+<h2>Debug</h2>
 
 <button class="mdc-button mdc-button--raised mdc-button--custom" id='setup' onclick="Setup()">Debug Setup</button>
 <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugdocker' onclick="DebugDocker()">Debug
@@ -90,9 +67,6 @@
 <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugkubernetes' onclick="DebugKubernetes()">Debug
     Kubernetes</button>
 
-<div id="console"
-    style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
-</div>
-
+</body>
 
 </html>

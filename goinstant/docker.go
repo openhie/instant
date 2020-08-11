@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -9,6 +11,7 @@ import (
 	"os/exec"
 	"path"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -48,6 +51,10 @@ func debugDocker() {
 	} else {
 		// Docker default is 2GB, which may need to be revisited if Instant grows.
 		fmt.Printf("%d bytes memory is allocated.\n", info.MemTotal)
+		str1 := " bytes memory is allocated.\n"
+		str2 := strconv.FormatInt(info.MemTotal, 10)
+		result := str2 + str1
+		consoleSender(server, result)
 		consoleSender(server, "Docker setup looks good")
 	}
 
@@ -58,7 +65,7 @@ func debugDocker() {
 
 }
 
-// ComposeGet gets a docker-cmpose from github
+// ComposeGet gets a docker-compose from github
 func composeGet(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -73,6 +80,75 @@ func composeGet(url string) string {
 	}
 	fmt.Println(string(body))
 	return (string(body))
+}
+
+// SomeStuff tests some stuff - new way to stream real-time, only test core package
+func SomeStuff() {
+	home, _ := os.UserHomeDir()
+	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", "init", "-t", "docker", "core")
+	// create a pipe for the output of the script
+	cmdReader, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		return
+	}
+
+	scanner := bufio.NewScanner(cmdReader)
+	go func() {
+		for scanner.Scan() {
+			fmt.Printf("\t > %s\n", scanner.Text())
+			consoleSender(server, scanner.Text())
+		}
+	}()
+
+	err = cmd.Start()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
+		return
+	}
+
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+		return
+	}
+
+}
+
+func composeUpCoreDOD() {
+
+	home, _ := os.UserHomeDir()
+	color.Yellow.Println("Running on", runtime.GOOS)
+	switch runtime.GOOS {
+	case "linux", "darwin":
+		// cmd := exec.Command("docker-compose", "-f", composefile, "up", "-d")
+		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", "init", "-t", "docker")
+
+		var outb, errb bytes.Buffer
+		cmd.Stdout = &outb
+		cmd.Stderr = &errb
+		// cmd.Stdout = os.Stdout
+		// cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+
+		}
+		consoleSender(server, outb.String())
+		fmt.Println("out:", outb.String(), "err:", errb.String())
+
+	case "windows":
+		// cmd := exec.Command("cmd", "/C", "docker-compose", "-f", composefile, "up", "-d")
+		cmd := exec.Command("cmd", "/C", "docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"\\.kube:/root/.kube/config:ro", "--mount=type=volume,src=instant,dst=/instant", "openhie/instant:latest", "init", "-t", "docker")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			fmt.Println("Error: ", err)
+		}
+	default:
+		consoleSender(server, "What operating system is this?")
+	}
+
 }
 
 func composeUpCore() {
