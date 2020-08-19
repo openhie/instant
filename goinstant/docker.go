@@ -44,6 +44,10 @@ func debugDocker() {
 		// return
 	}
 
+	for _, container := range containers {
+		fmt.Println("test", container.Labels, container.Status, container.State, container.Names, container.Image)
+	}
+
 	info, err := cli.Info(context.Background())
 	if err != nil {
 		consoleSender(server, "Unable to get Docker context. Please ensure that Docker is downloaded and running")
@@ -59,6 +63,32 @@ func debugDocker() {
 	}
 
 	// fmt.Println(reflect.TypeOf(containers).String())
+	for _, container := range containers {
+		fmt.Printf("ContainerID: %s Status: %s Image: %s\n", container.ID[:10], container.State, container.Image)
+	}
+
+}
+
+func listDocker() {
+
+	consoleSender(server, "listing containers")
+
+	// ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		// panic(err)
+	}
+
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	if err != nil {
+		consoleSender(server, "Unable to list Docker containers. Please ensure that Docker is downloaded and running")
+		// return
+	}
+
+	// for _, container := range containers {
+	// 	fmt.Println("test", container.Labels, container.Status, container.State, container.Names, container.Image)
+	// }
+
 	for _, container := range containers {
 		fmt.Printf("ContainerID: %s Status: %s Image: %s\n", container.ID[:10], container.State, container.Image)
 	}
