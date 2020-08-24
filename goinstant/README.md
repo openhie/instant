@@ -21,3 +21,13 @@ git tag 0.0.1
 git push origin 0.0.1
 # then upload the binaries.
 ```
+
+## OpenAPI
+
+
+
+how to use go with swagger:
+https://www.ribice.ba/swagger-golang/
+
+
+swagger generate spec -o templates/openapi/openapi.yml
