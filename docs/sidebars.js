@@ -23,6 +23,9 @@ module.exports = {
     'Existing Packages': [
       'packages/core',
       'packages/health-workforce'
+    ],
+    'More Information': [
+      'more-info/architecture'
     ]
   }
 };
