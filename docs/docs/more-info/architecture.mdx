@@ -1,0 +1,83 @@
+---
+id: architecture
+title: Architecture
+sidebar_label: Architecture
+keywords:
+  - Instant OpenHIE
+  - Architecture
+description: A description of the instant OpenHIE technical architecture
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
+The fundamental concept of Instant OpenHIE is that it can be extended to support additional use cases and workflows. This is achieved through packages. Packages conform to a specific set of rules and contain scripts and resources that allow particular applications to be spun up and configured on the platforms supported by Instant OpenHIE. The currently supported platforms are **local deployments via Docker and Docker Compose** and deployment to a **Kubernetes cluster**.
+
+Packages alone, however, do not solve the whole problem. A consistent way of managing and executing these packages is necessary. Much of the work that goes into Instant OpenHIE is developing the software that enables the packages to be managed and executed.
+
+# Package architecture
+
+Packages can be one of two different types. An **infrastructural package** or a **use case package**. Infrastructural packages setup and configure particular applications or sets of applications that are commonly grouped together. By themselves these packages just get the applications started and they aren't configured for a particular use case. On the other hand, use case packages depend on infrastructural packages and configure the applications set up by them and setup additional mediators that allow these applications to work together. They do this to enable a particular use case to be enacted.
+
+You can think of use case packages as adding features to the end-user whereas infrastructural packages provide the dependencies to the use case packages. This separation allows an infrastructural package that, say implements a FHIR server to be replaced with different packages that implement a different FHIR server. As long as these packages can be configured in a standards-based way, a use case packages could work with either of these infrastructural packages. This gives users options for the applications that they wish to use.
+
+<div class="text--center">
+  <img alt="Package architecture" src={useBaseUrl('img/instant-openhie-package-arch.png')} />
+</div>
+
+Each package will contain the following sorts of technical artifacts that allow it to be spun up and down within the supported platforms:
+* Docker Compose scripts for setting up the applications required for this package’s use cases and workflows
+* Kubernetes scripts for setting up the applications required for this package’s use cases and workflows
+* Configuration scripts to setup required configuration metadata
+* Extensions to the test harness to test the added use cases with test data
+
+The exact artefacts that go into a package are described in the section on [creating packages](../how-to/creating-packages.mdx).
+
+# Execution architecture
+
+Much of the tooling that Instant OpenHIE provides is to allow packages to be executed once they have been defined. The core principles of the execution architecture are that:
+
+* Packages may be executed in a cross platform way (on Window, OSX or Linux)
+* Complexity should be hidden from the user to make spinning up packages easy
+* The software that executes the packages should be self contained so that it is easy to download and get running
+
+The core concept of the execution architecture is that all the tooling to execute packages contained within a single docker image - called the execution image. This enables it to run cross-platform as long as the required dependencies are installed (Docker Desktop for Windows/OSX or Docker engine and Docker compose for Linux). To enable the execution image to spin up packages using docker it is passed the docker socket file from the host so that any containers it created are in fact created on the host. It may also be passed other configuration form the host for other platforms such as Kubernetes to allow it to deploy packages to those platforms as well using the user's current cluster configuration. The execution image gives us a consistent environment to develop for and allow us to run the scripts that execute the packages without caring about the underlying host OS, we just need to interface with the deployment platform.
+
+An overview of the architecture is displayed below. Following that we describe how these components all works together in the sections that follow.
+
+<div class="text--center">
+  <img alt="Package architecture" src={useBaseUrl('img/instant-openhie-arch.png')} />
+</div>
+
+## Go executable CLI app
+
+The CLI app will allow the setup and configuration of Instant OpenHIE to be easily managed by the user. It is the only executable that the user would need to download to interact with instant OpenHIE. It is written in Go so that it may compile to a platform-independent executable with 0 dependencies. It will know how to fetch the execution image from docker hub and be able to execute it at the command of the user.
+
+The app will allow the user to execute it as an interactive CLI tool, however, it will also have the ability to launch a Web UI and API server that work together to provide the user with a Web interface for managing and executing Instant OpenHIE. Choices made in the Web UI will be sent to the API server and from there the server will issue commands by running the execution image with a particular set of parameters as shown in the diagram.
+
+The CLI app will also be responsible for ensuring the execution image is executed with the correct configuration to ensure it works cross-platform and with the necessary user setting. For example, it will mount the docker socket file into the container so that docker containers are created on the host and it will mount various user config files for Kubernetes, docker hub and/or AWS credentials. This enables the execution image to execute as if it were configured like the user's host system.
+
+## The entry point script
+
+The execution image, when executed itself, runs an execution script that is written in Typescript. The purpose of this script is to accept various parameters via the command line, discover the available packages and execute the requested action for a list of the available packages. The list of commandline options that it supports is shown as an example in the architecture diagram. This script is the heart of Instant OpenHIE as it is what actually executes and controls the packages. When the execution image is run this is the script that gets executed to perform all actions.
+
+The execution image bundles all the dependencies that the execution script requires so that when the CLI app downloads the execution image from docker hub it is ready to go. The user will be required to have docker installed to run this image. The bundled dependencies in this image include: the docker and docker-compose clients, kubectl and the cucumber executable for testing purposes.
+
+It is also the responsibility of this script to determine dependencies between packages and ensure that the packages are spun up in dependency order, starting with the [Core package](../packages/core.mdx).
+
+## Bundled packages
+
+The execution image also bundles a number of official Instant OpenHIE packages. The list of packages will increase over time as more applications and use cases are added to the default Instant OpenHIE installation. View the current packages that have been created along with a description of what they do in the sidebar.
+
+## 3rd party packages
+
+Instant OpenHIE can be extended to support more packages than those that are bundled by default in the execution image. The 3rd party package's folder need only be mounted into the container in the `/instant/` folder. As long as the package folder contains an `instant.json` file it will be detected and made available. The CLI app may choose in the future to enable the user to download external packages (e.g. from a github repo) and make them available to the execution image to make it easy for the user to extend Instant OpenHIE functionality with custom packages.
+
+## Test harness
+
+A test harness is also built into the execution image that can execute a suite of tests against the stood up infrastructure and ensure that they are functioning correctly. The test harness utilizes the Gerkin language to describe tests and the Cucumber tool to execute these. Packages are required to include a Gerkin feature file and the source code that is able to execute the features in a `features` folder. The entry point script can then execute these test scripts on demand for each package. This provides the user with a mechanism to test an instantiation of the architecture and provides a way to explore what each use case package can do.
+
+If you are looking for more information see the [getting started section](../introduction/getting-started.mdx) or learn about [how package are structured](../how-to/creating-packages.mdx).

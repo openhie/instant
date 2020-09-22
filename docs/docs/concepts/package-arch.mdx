@@ -19,6 +19,8 @@ The fundamental concept of Instant OpenHIE is that it can be extended to support
 
 A package is intended to encompass a set of functionality rather than just setup generic applications. Packages are expected to configure the applications so that they may enact a particular functional role with the HIE. This may include setting up test data and pre-configuring applications.
 
+Packages can be one of two different types. An **infrastructural package** and a **use case package**. Infrastructural packages setup and configure particular applications or sets of applications that may be grouped together. By themselves, these packages only start the applications and they aren't configured for a particular use case. On the other hand, use case packages rely on infrastructural packages and configure the applications set up by them and setup additional mediators that allow applications to work together. They do this to enable a particular use case to be enacted. You can think of use case packages as adding features for the end-user whereas infrastructural packages provide the dependencies to the use case packages that enable the feature to work.
+
 Each package will contain the following types of technical artefacts:
 
 - Docker Compose scripts for setting up the applications required for this package’s use cases and workflows
@@ -29,7 +31,7 @@ Each package will contain the following types of technical artefacts:
 The below diagram shows how packages will extend off of each other to add use cases of increasing complexity.
 
 <div class="text--center">
-  <img alt="Package architecture" src={useBaseUrl('img/package-arch.png')} />
+  <img alt="Package architecture" src={useBaseUrl('img/instant-openhie-package-arch.png')} />
 </div>
 
 Several essential packages are bundled with Instant OpenHIE. However, it is designed to be extended for implementation-specific needs. See [creating packages](../how-to/creating-packages.mdx) for more information on how to create your own packages to extend Instant OpenHIE.
