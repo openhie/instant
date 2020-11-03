@@ -8,12 +8,12 @@ configMapGenerator:
 resources:
   # volumes
   # deployments
-  - ./mongo/mongo-deployment.yaml
-  - ./hearth/hearth-deployment.yaml
-  - ./redis/redis-deployment.yaml
-  - ./facility-recon/facility-recon-deployment.yaml
+  - mongo-deployment.yaml
+  - hearth-deployment.yaml
+  - redis-deployment.yaml
+  - facility-recon-deployment.yaml
   # services
-  - ./mongo/mongo-service.yaml
-  - ./hearth/hearth-service.yaml
-  - ./redis/redis-service.yaml
-  - ./facility-recon/facility-recon-service.yaml
+  - mongo-service.yaml
+  - hearth-service.yaml
+  - redis-service.yaml
+  - facility-recon-service.yaml
