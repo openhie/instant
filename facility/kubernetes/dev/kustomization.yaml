@@ -1,0 +1,19 @@
+configMapGenerator:
+#   - name: core-hapi-fhir-server-configmap
+#     files:
+#       - ./hapi-fhir/volume/hapi.properties
+#   - name: core-openhim-core-configmap
+#     files:
+#       - ./openhim/volume/openhim-core/development.json
+resources:
+  # volumes
+  # deployments
+  - mongo-deployment.yaml
+  - hearth-deployment.yaml
+  - redis-deployment.yaml
+  - facility-recon-deployment.yaml
+  # services
+  - mongo-service.yaml
+  - hearth-service.yaml
+  - redis-service.yaml
+  - facility-recon-service.yaml

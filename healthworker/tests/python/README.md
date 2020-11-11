@@ -1,5 +1,7 @@
 # Tests
 
+> This folder of sample tests will eventually be revised or removed. It remains for archival purposes'.
+
 These is a sample of how to construct `.feature` files, the associated steps in Python to run them, and how to load sample data.
 
 # Feature files preparation
