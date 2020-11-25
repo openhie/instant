@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.cicd.yml convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: opencr
+  name: opencr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: opencr
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose.cicd.yml convert
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: opencr
+    spec:
+      containers:
+        - env:
+            - name: NODE_ENV
+              value: cicd
+          image: intrahealth/opencr
+          name: opencr
+          ports:
+            - containerPort: 3000
+          resources: {}
+      restartPolicy: Always
+status: {}
