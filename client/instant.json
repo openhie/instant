@@ -1,0 +1,8 @@
+{
+  "id": "client",
+  "name": "client",
+  "description": "",
+  "type": "infrastructure",
+  "version": "v0.0.1",
+  "dependencies": ["core"]
+}
