@@ -21,3 +21,9 @@ docker-compose -f docker-compose.ihris.yml up
 
 ## Using `./compose.sh`
 
+```bash
+bash compose.sh init
+bash compose.sh up
+bash compose.sh down
+bash compose.sh destroy
+```

@@ -12,9 +12,8 @@ docker-compose up
 ```
 Or:
 ```
+bash compose.sh init
 bash compose.sh up
-# the bash support script also includes:
-bash compose.sh stop
 bash compose.sh down
 bash compose.sh destroy
 ```
