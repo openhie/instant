@@ -10,15 +10,19 @@ services:
     depends_on:
       - fhir
       - es
-    restart: on-failure
+    restart: always
     environment:
       - NODE_ENV=cicd
+    # networks: 
+    #   - opencr
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:v4.1.0
+    image: hapiproject/hapi:v5.1.0
     ports:
       - "8080:8080"
+    # networks:
+    #   - opencr
 
   es:
     container_name: es
@@ -36,8 +40,14 @@ services:
       - data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    # networks:
+    #   - opencr
 
 
 volumes:
   data01:
     driver: local
+
+# networks:
+#   opencr:
+#     driver: bridge

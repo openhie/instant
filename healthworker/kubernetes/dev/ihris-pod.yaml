@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.ihris.yml
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ihris
+  name: ihris
+spec:
+  containers:
+  - name: ihris
+    image: ihris/ihris:latest
+    ports:
+    - containerPort: 3000
+    env:
+      - name: IHRIS_ELASTICSEARCH__BASE
+        value: http://es:9200
+      - name: IHRIS_FHIR__BASE
+        value: http://fhir:8080/fhir
+      - name: IHRIS_KIBANA__BASE
+        value: http://kibana:5601
+      - name: IHRIS_REDIS__URL
+        value: redis://redis
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: "1"
+      requests:
+        memory: 256Mi
+        cpu: "0.2"
+
+  initContainers:
+  - name: hapi-config
+    image: ihris/upload-definitions:latest
+    env:
+      - name: IHRIS_FHIR__BASE
+        value: http://fhir:8080/fhir
+  - name: ihris-config
+    image: ihris/ihris-config:latest
+    env:
+      - name: IHRIS_FHIR__BASE
+        value: http://fhir:8080/fhir
+  - name: ihris-data
+    image: ihris/ihris-data:latest
+    env:
+      - name: IHRIS_FHIR__BASE
+        value: http://fhir:8080/fhir
+

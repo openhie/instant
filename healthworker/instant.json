@@ -1,0 +1,8 @@
+{
+  "id": "healthworker",
+  "name": "healthworker",
+  "description": "",
+  "type": "infrastructure",
+  "version": "v0.0.1",
+  "dependencies": ["core"]
+}

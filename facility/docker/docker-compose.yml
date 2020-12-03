@@ -6,14 +6,14 @@ services:
     image: mongo:3.6
     ports:
       - "27017:27017"
-    restart: unless-stopped
+    restart: always
 
   redis:
     container_name: redis-gofr
     image: redis
     ports:
       - "6379:6379"
-    restart: unless-stopped
+    restart: always
 
   hearth:
     container_name: hearth-gofr
@@ -25,7 +25,7 @@ services:
       # - idGenerator=uuidv4 <- setting from jembi/health, is untested
     ports:
       - "3447:3447"
-    restart: unless-stopped
+    restart: always
 
   facility-recon:
     container_name: facility-recon
@@ -34,6 +34,10 @@ services:
       - HEARTH_URL=http://hearth:3447 
       - REDIS_HOST=redis 
       - DB_HOST=mongo 
+    depends_on:
+      - mongo
+      - redis
+      - hearth
     ports:
       - "3000:3000"
-    restart: unless-stopped
+    restart: always

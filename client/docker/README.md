@@ -8,9 +8,8 @@ Clone the repo and start the docker apps.
 
 To run:
 ```
+bash compose.sh init
 bash compose.sh up
-# the bash support script also includes:
-bash compose.sh stop
 bash compose.sh down
 bash compose.sh destroy
 ```
@@ -18,8 +17,3 @@ bash compose.sh destroy
 * Visit the UI at: [https://localhost:3000/crux](https://localhost:3000/crux)
     * **Default username**: root@intrahealth.org 
     * **Default password**: intrahealth
-
-# Todo
-- [x] Initial version with compose bash script.
-- [ ] Migrate FHIR backend to HAPI when complete in home repo.
-- [ ] Add OpenHIM user, roles, channel, route.
