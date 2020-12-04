@@ -74,6 +74,46 @@ async function runTests(path: string) {
   }
 }
 
+const orderPackageIds = (allPackages, chosenPackageIds) => {
+  const orderedPackageIds = []
+  const packagesWithDependencies = []
+
+  chosenPackageIds.forEach(id => {
+    if (
+      !allPackages[id].metadata.dependencies ||
+      !allPackages[id].metadata.dependencies.length
+    ) {
+      orderedPackageIds.push(id)
+    } else {
+      allPackages[id].metadata.dependencies.forEach(dependency => {
+        if (!Object.keys(allPackages).includes(dependency)) {
+          throw Error(`Dependency ${dependency} for package ${id} does not exist`)
+        }
+      })
+      packagesWithDependencies.push(id)
+    }
+  })
+
+  while (packagesWithDependencies.length) {
+    for (let index = 0; index < packagesWithDependencies.length; index++) {
+      const id = packagesWithDependencies[index]
+      let containDependencies = true
+
+      allPackages[id].metadata.dependencies.forEach(dependency => {
+        if (!orderedPackageIds.includes(dependency)) {
+          containDependencies = false
+        }
+      })
+
+      if (containDependencies) {
+        orderedPackageIds.push(id)
+        packagesWithDependencies.splice(index, 1)
+      }
+    }
+  }
+  return orderedPackageIds
+}
+
 // Main script execution
 ;(async () => {
   const allPackages = getInstantOHIEPackages()
@@ -126,6 +166,9 @@ async function runTests(path: string) {
     if (chosenPackageIds.length < 1) {
       chosenPackageIds = Object.keys(allPackages)
     }
+
+    // Order the packages such that the dependencies are instantiated first
+    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
 
     console.log(
       `Selected package IDs to operate on: ${chosenPackageIds.join(', ')}`
@@ -184,6 +227,9 @@ async function runTests(path: string) {
     if (chosenPackageIds.length < 1) {
       chosenPackageIds = Object.keys(allPackages)
     }
+
+    // Order the packages such that the dependencies are instantiated first
+    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
 
     console.log(`Running tests for packages: ${chosenPackageIds.join(', ')}`)
     console.log(`Using host: ${testOptions.host}:${testOptions.port}`)
