@@ -26,7 +26,8 @@ func debugKubernetes() {
 			consoleSender(server, "The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 
 		} else {
-			consoleSender(server, "kubectl cluster manager is installed")
+			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
+			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
 
 	case "windows":
@@ -38,7 +39,8 @@ func debugKubernetes() {
 			consoleSender(server, "The kubectl cluster manager is not installed.")
 			consoleSender(server, "Using a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 		} else {
-			consoleSender(server, "kubectl cluster manager is installed")
+			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
+			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
 	default:
 		consoleSender(server, "What operating system is this?")
@@ -72,6 +74,7 @@ func debugKubernetes() {
 	// 	fmt.Println("What operating system is this?", runtime.GOOS)
 	// }
 
+	// TODO: choose kubernetes cluster to use
 	home, _ := os.UserHomeDir()
 	kubeconfig := path.Join(home, ".kube/config")
 	fmt.Println("...using cluster config file at:", kubeconfig)

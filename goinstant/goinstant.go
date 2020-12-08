@@ -1,12 +1,12 @@
 package main
 
 import (
-	"flag"
 	"net/http"
 
 	"github.com/gookit/color"
 	"github.com/gorilla/mux"
 	"github.com/markbates/pkger"
+	"github.com/pkg/browser"
 	"github.com/r3labs/sse"
 )
 
@@ -15,17 +15,6 @@ var server *sse.Server
 func main() {
 
 	version := "1.0.0-alpha"
-
-	// defaults are not used for package or state
-
-	// headless mode disabled for now
-	// headlessPtr := flag.Bool("headless", false, "headless mode, no prompts or ui. this is for automated testing.")
-	// packagePtr := flag.String("package", "", "[headless mode] package(s): core, core+hwf, core+facility, all")
-	// statePtr := flag.String("state", "", "[headless mode] up or down")
-
-	flag.Parse()
-	// packageflag := isFlagPassed(*packagePtr)
-	// stateflag := isFlagPassed(*statePtr)
 
 	router := mux.NewRouter()
 	server = sse.New()
@@ -39,78 +28,26 @@ func main() {
 	// 	http.ServeFile(w, r, "/index.html")
 	// })
 
-	// go stanleySender(server)
-	go http.ListenAndServe(":27517", router)
-
 	pkgerPrint("/templates/banner.txt", "green")
 	color.Green.Println("Version:", version)
 	color.Green.Println("Site: http://localhost:27517")
-	// color.Green.Println("The app can be run in headless mode. Run with -help to see options.\n")
-
 	color.Green.Println("Welcome to Instant.\n")
 	color.Red.Println("Remember to clean up after your work or the app will continue to run in the background and have an adverse impact on performance.")
 
 	c := existDisclaimer()
 	switch c {
 	case "fail":
-		go openBrowser("http://localhost:27517/disclaimer.html")
-		// disable cli mode for now
-		// cliDisclaimer()
-		mainMenu()
+		const url = "http://localhost:27517/disclaimer.html"
+		browser.OpenURL(url)
+		http.ListenAndServe(":27517", router)
+		// disable cli
+		// mainMenu()
 	case "success":
-		go openBrowser("http://localhost:27517/index.html")
-		// makeDisclaimer()
-		mainMenu()
-		// locks into prompts
-		// setup()
-		// selectSetup()
+		const url = "http://localhost:27517/index.html"
+		browser.OpenURL(url)
+		http.ListenAndServe(":27517", router)
+		// disable cli
+		// mainMenu()
 
 	}
-
-	// headless mode is disabled for now
-	// if *headlessPtr == true {
-
-	// 	color.Green.Println("Starting in headless mode...\n")
-	// 	fmt.Println("Options provided:")
-	// 	fmt.Println("package:", *packagePtr)
-	// 	fmt.Println("state:", *statePtr)
-	// 	if *statePtr == "" {
-	// 		color.Red.Println("state is empty but required. type goinstant -h for help.")
-	// 	}
-	// 	if *packagePtr == "" {
-	// 		color.Red.Println("package flag is empty but required. type goinstant -h for help.")
-	// 	}
-	// } else {
-	// 	color.Green.Println("Welcome to Instant. The tool can be run from the web interface or the prompt below.\n")
-	// 	color.Red.Println("Remember to clean up after your work or the app will continue to run in the background and have an adverse impact on performance.")
-
-	// 	c := existDisclaimer()
-	// 	switch c {
-	// 	case "fail":
-	// 		go openBrowser("http://localhost:27517/disclaimer.html")
-	// 		cliDisclaimer()
-	// 		// TODO: disclaimer accept button hits: makeDisclaimer(), makeSetup(),
-	// 		//
-	// 		// then redirects to index.html
-	// 	case "success":
-	// 		makeDisclaimer()
-	// 		go openBrowser("http://localhost:27517/index.html")
-	// 		// locks into prompts
-	// 		setup()
-	// 		selectSetup()
-
-	// 	}
-	// }
-
 }
-
-// // https://stackoverflow.com/questions/35809252/check-if-flag-was-provided-in-go
-// func isFlagPassed(name string) bool {
-// 	found := false
-// 	flag.Visit(func(f *flag.Flag) {
-// 		if f.Name == name {
-// 			found = true
-// 		}
-// 	})
-// 	return found
-// }
