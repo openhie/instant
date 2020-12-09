@@ -1,3 +1,5 @@
+
+/* modified from: https: //www.w3schools.com/css/css3_buttons.asp */
 /* Green */
 .button {
   background-color: rgb(59, 131, 66);
@@ -25,13 +27,14 @@
 
 /* Gray */
 .buttongray {
-  background-color: #e7e7e7;
+  background-color: #a8a2a2;
   color: black;
 }
 
 /* Black */
 .buttonblack {
   background-color: #555555;
+  color: white;
 }
 
 /* Orange */

@@ -13,10 +13,37 @@
     <p></p>
     <button class="button"
         onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
-    <button class="button buttonblue" onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
-    <button class="button buttonblack" onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
+    <button class="button buttonblue"
+        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="button buttonblack"
+        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
     <h1>Step Two: Select Packages to Launch with Docker</h1>
+    <hr>
+
+    <h2>Core Only -- Launch this First</h2>
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch Core package</button>
+    <button class="button buttonblack" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenHIM</button>
+    <button class="button buttonorange" onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver/', '_blank')">Go
+        to HAPI FHIR </button>
+    <hr>
+
+    <h2>Facility Registry (GOFR)</h2>
+
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch GOFR package</button>
+    <button class="button buttongray" onclick="window.open('http://localhost:9000/', '_blank')">Go to GOFR</button>
+    <hr>
+
+    <h2>Health Worker Registry (iHRIS)</h2>
+
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch iHRIS package</button>
+    <button class="button buttonblue" onclick="window.open('http://localhost:9000/', '_blank')">Go to iHRIS</button>
+    <hr>
+
+    <h2>Client Registry (OpenCR)</h2>
+
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch OpenCR package</button>
+    <button class="button buttonred" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenCR</button>
     <hr>
 
     <h2>Console</h2>

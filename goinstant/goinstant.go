@@ -14,7 +14,7 @@ var server *sse.Server
 
 func main() {
 
-	version := "1.0.0-alpha"
+	version := "1.0.0-beta"
 
 	router := mux.NewRouter()
 	server = sse.New()
