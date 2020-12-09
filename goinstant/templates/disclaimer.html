@@ -2,8 +2,6 @@
 
 <head>
     <title>Instant OpenHIE</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
     <script src="main.js"></script>
 
@@ -27,18 +25,20 @@
 
     <h1>Welcome to Instant OpenHIE!</h1>
 
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
+    <button class="button"
         onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
-    <button class="mdc-button mdc-button--raised"
+    <button class="button buttonblue"
         onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
+    <button class="button buttonblack"
         onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
     <h2>A little disclaimer first...</h2>
     <div>
+
+        <p>Do not use this app in production or with sensitive data. </p>
         <p>
-            This is an experiemental project to help with testing, demos, and training, and not an official project of
-            OpenHIE. This application:
+            This is an experiemental desktop app to help with testing, demos, and training, and not an official project
+            of OpenHIE. This app:
         </p>
 
         <ul>
@@ -59,10 +59,8 @@
     <button class="mdc-button mdc-button--raised mdc-button--custom"
         onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button> -->
 
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
-        onclick="Setup()">Accept and Get Started</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
-        onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button>
+    <button class="button" onclick="Setup()">Accept and Get Started</button>
+    <button class="button buttonred" onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button>
 
 
     <br><br><br>

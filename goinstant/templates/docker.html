@@ -2,8 +2,6 @@
 
 <head>
     <title>Instant OpenHIE</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
     <script src="main.js"></script>
 
@@ -35,25 +33,15 @@
 
     <br><br><br>
     <br><br><br>
-    <h1>Welcome to Instant OpenHIE!</h1>
+    <!-- <h1>Welcome to Instant OpenHIE!</h1> -->
     <hr>
-    <h2>Step Two: Launch Instant with Docker</h2>
+    <h2>Step Two: Select Packages to Launch with Docker</h2>
     <hr>
 
 
-    <!-- <h2>Debug Menu</h2>
-    <button class="mdc-button mdc-button--raised"
-        onclick="window.open('https://openhim.readthedocs.io/en/latest/', '_blank')">Docs</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
-        onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button> -->
-
-    <button class="mdc-button mdc-button--raised mdc-button--secondary" id='composeupcoredod'
-        onclick="ComposeUpCoreDOD()">Launch the Core package</button>
-
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
-        onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenHIM Console</button>
-    <button class="mdc-button mdc-button--raised mdc-button--secondary"
-        onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver/', '_blank')">Go to HAPI FHIR Web
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch the Core package</button>
+    <button class="button" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenHIM Console</button>
+    <button class="button" onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver/', '_blank')">Go to HAPI FHIR Web
         Inteface</button>
 
     <h2>Console</h2>
@@ -64,8 +52,8 @@
 
     <h2>Debug</h2>
 
-    <button class="mdc-button mdc-button--raised mdc-button--custom" id='setup' onclick="Setup()">Debug Setup</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugdocker' onclick="DebugDocker()">Debug
+    <button class="button buttonblack" id='setup' onclick="Setup()">Debug Setup</button>
+    <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Debug
         Docker</button>
 
 </body>

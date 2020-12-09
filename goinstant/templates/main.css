@@ -1,122 +1,115 @@
-:root {
-    --mdc-theme-secondary: rgb(59, 131, 66);
-    --mdc-theme-primary: rgb(33, 116, 146);
-    --custom-color: rgb(51, 51, 51);
+/* Green */
+.button {
+  background-color: rgb(59, 131, 66);
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* Blue */
+.buttonblue {
+  background-color: rgb(33, 116, 146);
+}
+
+/* Red */
+.buttonred {
+  background-color: #f44336;
+}
+
+/* Gray */
+.buttongray {
+  background-color: #e7e7e7;
+  color: black;
+}
+
+/* Black */
+.buttonblack {
+  background-color: #555555;
+}
+
+/* Orange */
+.buttonorange {
+  background-color: rgb(200, 80, 20);
 }
 
 
-.mdc-button--secondary {
-    --mdc-theme-primary: var(--mdc-theme-secondary);
-}
 
-.mdc-button--custom {
-    --mdc-theme-primary: var(--custom-color);
-}
+
 
 html {
-    vertical-align: text-top;
-    margin: auto;
-    width: 80%;
-    display: flex;
-    /* justify-content: center; */
-    font-family: 'Roboto', sans-serif;
-    color: #121212;
-    background: hsl(0, 0%, 97);
+  vertical-align: text-top;
+  margin: auto;
+  width: 80%;
+  display: flex;
+  /* justify-content: center; */
+  font-family: 'Roboto', sans-serif;
+  color: #121212;
+  background: hsl(0, 0%, 97);
 
 }
 
-/* doesn't work because of low specificity, declare inline instead */
 /* div.console {
-    background-color: grey;
-    width: 800px;
-    height: 300px;
-    padding: 20px;
-    margin: 20px;
-    overflow-y: scroll;
-    overscroll-behavior-y: contain;
-    scroll-snap-type: y mandatory;
+  font-size: 14px;
+  background-color: #9fc4c6;
+  width: 900px;
+  height: 200px;
+  padding: 10px;
+  margin: 10px;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
 } */
 
 div {
-    word-wrap: normal;
+  word-wrap: normal;
 }
 
 body {
-    margin: 8vw;
-    margin-top: 4vw;
+  margin: 8vw;
+  margin-top: 4vw;
 }
 
 h1,
 h2,
 h3 {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 hr {
-    border: none;
-    border-top: 1px solid #e6e6e6;
-    /* Thick red border */
+  border: none;
+  border-top: 1px solid #e6e6e6;
+  /* Thick red border */
 
 }
 
 hr.foot {
-    border-top: 1px solid gray;
+  border-top: 1px solid gray;
 }
 
 
-button+button {
-    margin-left: 12px;
-}
+/* button+button {
+  margin-left: 12px;
+} */
 
 .tab {
-    margin-left: 48px;
+  margin-left: 48px;
 }
 
 .tab2 {
-    margin-left: 48px;
+  margin-left: 48px;
 }
 
 p.thick {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 body {
-    font-family: Arial;
-}
-
-/* Style the tab */
-.tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-.tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-    font-size: 17px;
-}
-
-/* Change background color of buttons on hover */
-.tab button:hover {
-    background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab button.active {
-    background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-    display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
+  font-family: Arial;
 }

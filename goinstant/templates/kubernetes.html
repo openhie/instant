@@ -2,8 +2,6 @@
 
 <head>
     <title>Instant OpenHIE</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
     <script src="main.js"></script>
 
@@ -53,8 +51,7 @@
 
     <h2>Console</h2>
 
-    <button class="mdc-button mdc-button--raised mdc-button--secondary" id='composeupcoredod'
-        onclick="ComposeUpCoreDOD()">Launch the Core package</button>
+    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch the Core package</button>
 
     <div id="console"
         style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
@@ -62,11 +59,10 @@
 
     <h2>Debug</h2>
 
-    <button class="mdc-button mdc-button--raised mdc-button--custom" id='setup' onclick="Setup()">Debug Setup</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugdocker' onclick="DebugDocker()">Debug
+    <button class="button buttonblack" id='setup' onclick="Setup()">Debug Setup</button>
+    <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Debug
         Docker</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom" id='debugkubernetes'
-        onclick="DebugKubernetes()">Debug
+    <button class="button buttonblack" id='debugkubernetes' onclick="DebugKubernetes()">Debug
         Kubernetes</button>
 
 </body>
