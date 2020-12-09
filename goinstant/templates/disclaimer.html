@@ -7,24 +7,11 @@
 
 </head>
 
-<script>
-
-    function Setup() {
-        var url = "http://localhost:27517/index.html";
-        window.location = url;
-        fetch("http://localhost:27517/disclaimer")
-        fetch("http://localhost:27517/setup")
-    }
-
-</script>
-
-
 <body>
 
     <img src="logo.png" style="vertical-align: text-top;" />
-
+    <p></p>
     <h1>Welcome to Instant OpenHIE!</h1>
-
     <button class="button"
         onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
     <button class="button buttonblue"
@@ -32,7 +19,7 @@
     <button class="button buttonblack"
         onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
-    <h2>A little disclaimer first...</h2>
+    <h1>A little disclaimer first...</h2>
     <div>
 
         <p>Do not use this app in production or with sensitive data. </p>
@@ -54,18 +41,12 @@
 
     </div>
 
-    <!-- <button class="mdc-button mdc-button--raised mdc-button--secondary"
-        onclick="window.location.replace('http://localhost:27517/index.html')">Accept and Get Started</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
-        onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button> -->
-
     <button class="button" onclick="Setup()">Accept and Get Started</button>
-    <button class="button buttonred" onclick="window.location.replace('http://localhost:27517/decline.html')">Decline and Quit</button>
-
-
-    <br><br><br>
+    <button class="button buttonred" onclick="window.location.replace('http://localhost:27517/decline.html')">Decline
+        and Quit</button>
 
     <hr class="foot">
+
 
 </body>
 

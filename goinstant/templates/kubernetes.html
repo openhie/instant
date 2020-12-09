@@ -7,47 +7,17 @@
 
 </head>
 
-<script>
-    var source = new EventSource('http://localhost:27517/events?stream=messages');
-    source.onmessage = function (e) {
-        document.getElementById('console').innerHTML += e.data + '<br>';
-    };
-
-    function Setup() {
-        fetch("http://localhost:27517/setup")
-    }
-
-    function DebugDocker() {
-        fetch("http://localhost:27517/debugdocker")
-    }
-
-    function DebugKubernetes() {
-        fetch("http://localhost:27517/debugkubernetes")
-    }
-
-    function ComposeUpCoreDOD() {
-        fetch("http://localhost:27517/composeupcoredod")
-    }
-
-</script>
-
 <body>
 
-    <img src="logo.png" style="float: left;" />
-
-    <br><br><br>
-    <br><br><br>
-    <h1>Welcome to Instant OpenHIE!</h1>
+    <img src="logo.png" style="vertical-align: text-top;" />
+    <p></p>
+    <button class="button"
+        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
+    <button class="button buttonblue" onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="button buttonblack" onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
-    <h2>Step Two: Launch Instant with Kubernetes</h2>
+    <h1>Step Two: Select Packages to Launch with Docker</h1>
     <hr>
-
-
-    <!-- <h2>Debug Menu</h2>
-    <button class="mdc-button mdc-button--raised"
-        onclick="window.open('https://openhim.readthedocs.io/en/latest/', '_blank')">Docs</button>
-    <button class="mdc-button mdc-button--raised mdc-button--custom"
-        onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button> -->
 
     <h2>Console</h2>
 
@@ -60,9 +30,7 @@
     <h2>Debug</h2>
 
     <button class="button buttonblack" id='setup' onclick="Setup()">Debug Setup</button>
-    <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Debug
-        Docker</button>
-    <button class="button buttonblack" id='debugkubernetes' onclick="DebugKubernetes()">Debug
+    <button class="button buttonblack" id='debugkubernetes' onclick="main.DebugKubernetes()">Debug
         Kubernetes</button>
 
 </body>

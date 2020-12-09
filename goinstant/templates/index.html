@@ -7,43 +7,16 @@
 
 </head>
 
-<script>
-    var source = new EventSource('http://localhost:27517/events?stream=messages');
-    source.onmessage = function (e) {
-        document.getElementById('console').innerHTML += e.data + '<br>';
-    };
-
-    function Setup() {
-        fetch("http://localhost:27517/setup")
-    }
-
-    function DebugDocker() {
-        fetch("http://localhost:27517/debugdocker")
-    }
-
-    function DebugKubernetes() {
-        fetch("http://localhost:27517/debugkubernetes")
-    }
-
-
-
-</script>
-
 <body>
 
-    <img src="logo.png" style="float: left;" />
-
-    <br><br><br>
-    <br><br><br>
-    <h1>Welcome to Instant OpenHIE!</h1>
+    <img src="logo.png" style="vertical-align: text-top;" />
+    <p></p>
     <button class="button"
         onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
-    <button class="button buttongray"
-        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
-    <button class="button buttonblack"
-        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
+    <button class="button buttonblue" onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="button buttonblack" onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
-    <h2>Step One: Docker or Kubernetes?</h2>
+    <h1>Step One: Choose Docker or Kubernetes...</h2>
     <hr>
 
     <form name="platform">
@@ -55,7 +28,7 @@
 
         <input type="button" class="button" value="Get Started with Docker"
             onclick="window.location.replace('http://localhost:27517/docker.html')">
-        <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Test Kubernetes</button>
+        <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Test Docker</button>
 
 
         <br>
@@ -65,10 +38,9 @@
             minikube or Docker for Desktop.
         </h3>
 
-        <input type="button" class="button"
-            value="Get Started with Kubernetes" onclick="window.location.replace('http://localhost:27517/docker.html')">
-        <button class="button buttonblack" id='debugkubernetes'
-            onclick="DebugKubernetes()">Test Kubernetes</button>
+        <input type="button" class="button" value="Get Started with Kubernetes"
+            onclick="window.location.replace('http://localhost:27517/docker.html')">
+        <button class="button buttonblack" id='debugkubernetes' onclick="DebugKubernetes()">Test Kubernetes</button>
 
     </form>
 
@@ -76,10 +48,12 @@
 
 <h2>Console</h2>
 
-<!-- <button class="mdc-button mdc-button--raised mdc-button--custom" id='setup' onclick="Setup()">Debug Everything</button> -->
-
 <div id="console"
     style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+</div>
+
+<div>
+
 </div>
 
 
