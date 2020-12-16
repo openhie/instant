@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/r3labs/sse"
@@ -14,7 +13,7 @@ func sseHandler(w http.ResponseWriter, r *http.Request) {
 
 func consoleSender(server *sse.Server, text string) {
 
-	fmt.Println(text)
+	// fmt.Println(text)
 	server.Publish("messages", &sse.Event{
 		Data: []byte(text),
 	})

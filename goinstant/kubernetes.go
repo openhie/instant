@@ -35,7 +35,7 @@ func debugKubernetes() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			fmt.Println("Error: ", err)
+			// fmt.Println("Error: ", err)
 			consoleSender(server, "The kubectl cluster manager is not installed.")
 			consoleSender(server, "Using a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 		} else {
@@ -77,8 +77,8 @@ func debugKubernetes() {
 	// TODO: choose kubernetes cluster to use
 	home, _ := os.UserHomeDir()
 	kubeconfig := path.Join(home, ".kube/config")
-	fmt.Println("...using cluster config file at:", kubeconfig)
-
+	consoleSender(server, "...using cluster config file at:")
+	consoleSender(server, kubeconfig)
 }
 
 func configServerKubernetes() {
@@ -92,10 +92,11 @@ func configServerKubernetes() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(files)
+	// fmt.Println(files)
 
 	for _, file := range files {
 		fmt.Println(file.Name())
+		consoleSender(server, file.Name())
 	}
 
 	for _, file := range files {

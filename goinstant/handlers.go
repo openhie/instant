@@ -14,6 +14,7 @@ func addHandler(router *mux.Router) {
 	router.HandleFunc("/debugdocker", DebugDocker)
 	router.HandleFunc("/debugkubernetes", DebugKubernetes)
 	router.HandleFunc("/composeupcoredod", ComposeUpCoreDOD)
+	router.HandleFunc("/listdocker", ListDocker)
 }
 
 // Setup makes the disclaimer and installs dotfolder and clones/updates the repo
@@ -31,13 +32,11 @@ func Disclaimer(w http.ResponseWriter, r *http.Request) {
 // Decline just displays the decline page
 func Decline(w http.ResponseWriter, r *http.Request) {
 	// makeDisclaimer()
-	// setup()
 }
 
 // DebugDocker checks that docker is running
 func DebugDocker(w http.ResponseWriter, r *http.Request) {
 	debugDocker()
-	// setup()
 }
 
 // DebugKubernetes checks that kubectl has a config
@@ -49,6 +48,11 @@ func DebugKubernetes(w http.ResponseWriter, r *http.Request) {
 // ComposeUpCoreDOD checks that kubectl has a config
 func ComposeUpCoreDOD(w http.ResponseWriter, r *http.Request) {
 	consoleSender(server, "Note: Initial setup takes 1-5 minutes. wait for the DONE message")
+	// composeUpCoreDOD()
 	SomeStuff()
-	// setup()
+}
+
+// ListDocker gets list of running containers
+func ListDocker(w http.ResponseWriter, r *http.Request) {
+	listDocker()
 }
