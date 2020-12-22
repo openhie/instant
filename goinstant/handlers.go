@@ -13,7 +13,7 @@ func addHandler(router *mux.Router) {
 	router.HandleFunc("/decline", Decline)
 	router.HandleFunc("/debugdocker", DebugDocker)
 	router.HandleFunc("/debugkubernetes", DebugKubernetes)
-	router.HandleFunc("/composeupcoredod", ComposeUpCoreDOD)
+	router.HandleFunc("/onefunc", OneFunc)
 	router.HandleFunc("/listdocker", ListDocker)
 }
 
@@ -45,11 +45,10 @@ func DebugKubernetes(w http.ResponseWriter, r *http.Request) {
 	// setup()
 }
 
-// ComposeUpCoreDOD checks that kubectl has a config
-func ComposeUpCoreDOD(w http.ResponseWriter, r *http.Request) {
-	consoleSender(server, "Note: Initial setup takes 1-5 minutes. wait for the DONE message")
+// OneFunc runs, stops, starts, destroys everything
+func OneFunc(w http.ResponseWriter, r *http.Request) {
 	// composeUpCoreDOD()
-	SomeStuff()
+	SomeStuff(r)
 }
 
 // ListDocker gets list of running containers

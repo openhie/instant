@@ -1,16 +1,22 @@
 
+img.icon {
+  max-width: 25%;
+  max-height: 25%;
+  vertical-align: text-top;
+}
+
 /* modified from: https: //www.w3schools.com/css/css3_buttons.asp */
 /* Green */
 .button {
   background-color: rgb(59, 131, 66);
   border: none;
   color: white;
-  padding: 12px 24px;
+  padding: 8px 16px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px;
-  margin: 4px 2px;
+  font-size: 14px;
+  margin: 2px 2px;
   cursor: pointer;
   border-radius: 8px;
 }
@@ -42,6 +48,12 @@
   background-color: rgb(200, 80, 20);
 }
 
+/* Yellow */
+.buttonyellow {
+  background-color: rgb(234, 192, 6);
+  color: black;
+
+}
 
 
 

@@ -49,6 +49,11 @@ function ListDocker() {
     fetch("http://localhost:27517/listdocker")
 }
 
-function ComposeUpCoreDOD() {
-    fetch("http://localhost:27517/composeupcoredod")
+async function OneFunc(runner, package, state) {
+    // fetch("http://localhost:27517/composeupcoredod?runner=${runner}&package=${package}&state=${state}")
+    fetch('http://localhost:27517/onefunc?' + new URLSearchParams({
+        runner: runner,
+        package: package,
+        state: state,
+    }))
 }

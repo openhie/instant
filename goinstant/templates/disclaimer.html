@@ -9,7 +9,7 @@
 
 <body>
 
-    <img src="logo.png" style="vertical-align: text-top;" />
+    <img class="icon" src="logo.png" />
     <p></p>
     <h1>Welcome to Instant OpenHIE!</h1>
     <button class="button"
@@ -19,7 +19,7 @@
     <button class="button buttonblack"
         onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
-    <h1>A little disclaimer first...</h2>
+    <h2>A little disclaimer first...</h2>
     <div>
 
         <p>Do not use this app in production or with sensitive data. </p>
@@ -41,9 +41,9 @@
 
     </div>
 
-    <button class="button" onclick="Setup()">Accept and Get Started</button>
-    <button class="button buttonred" onclick="window.location.replace('http://localhost:27517/decline.html')">Decline
-        and Quit</button>
+    <!-- <button class="button" onclick="Setup()">Accept and Get Started</button> -->
+    <button class="button" onclick="window.location.replace('http://localhost:27517/index.html')">Accept and Get Started</button>
+    <button class="button buttonred" onclick="window.location.replace('http://localhost:27517/decline.html')">Decline</button>
 
     <hr class="foot">
 

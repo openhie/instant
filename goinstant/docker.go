@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -74,10 +75,22 @@ func listDocker() {
 
 }
 
-// SomeStuff tests some stuff - new way to stream real-time, only test core package
-func SomeStuff() {
+// SomeStuff is the one func to rule them all
+func SomeStuff(r *http.Request) {
+	consoleSender(server, "Note: Initial setup takes 1-5 minutes. wait for the DONE message")
+	runner := r.URL.Query().Get("runner")
+	pk := r.URL.Query().Get("package")
+	state := r.URL.Query().Get("state")
+	consoleSender(server, "Runner requested: "+runner)
+	consoleSender(server, "Package requested: "+pk)
+	consoleSender(server, "State requested: "+state)
 	home, _ := os.UserHomeDir()
-	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", "init", "-t", "docker", "core")
+
+	// args := []string{runner, "ever", "you", "like"}
+	// cmd := exec.Command(app, args...)
+	// consoleSender(server, args[0])
+
+	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", state, "-t", runner, pk)
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {

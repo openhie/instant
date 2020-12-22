@@ -8,8 +8,7 @@
 </head>
 
 <body>
-
-    <img src="logo.png" style="vertical-align: text-top;" />
+    <img class="icon" src="logo.png" />
     <p></p>
     <button class="button"
         onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
@@ -18,39 +17,47 @@
     <button class="button buttonblack"
         onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
     <hr>
-    <h1>Step Two: Select Packages to Launch with Docker</h1>
+    <h2>Step Two: Select a Package to Launch with Docker (One Only)</h1>
     <hr>
 
-
-    <h2>Core Only -- Launch this First</h2>
-    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch Core package</button>
+    <h3>Core (OpenHIM and HAPI FHIR)</h2>
+    <p>Default user is root@openhim.org and password is openhim-password</p>
+    <button class="button" id='onefunc' onclick="OneFunc('docker', 'core', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('docker', 'core', 'destroy')">Remove</button>
     <button class="button buttonblack" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenHIM</button>
     <button class="button buttonorange" onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver/', '_blank')">Go
         to HAPI FHIR </button>
     <hr>
 
-    <h2>Facility Registry (GOFR)</h2>
-
-    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch GOFR package</button>
-    <button class="button buttongray" onclick="window.open('http://localhost:9000/', '_blank')">Go to GOFR</button>
+    <h3>Facility Registry (GOFR)</h2>
+    <p>Default user is root@gofr.org and password is gofr</p>
+    <button class="button" id='onefunc' onclick="OneFunc('docker', 'facility', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('docker', 'facility', 'destroy')">Remove</button>
+    <button class="button buttongray" onclick="window.open('http://localhost:3000', '_blank')">Go to GOFR</button>
     <hr>
 
-    <h2>Health Worker Registry (iHRIS)</h2>
-
-    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch iHRIS package</button>
+    <h3>Health Worker Registry (iHRIS)</h2>
+    <p>Default user is admin@ihris.org and password is ihris</p>
+    <button class="button" id='onefunc' onclick="OneFunc('docker', 'healthworker', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('docker', 'healthworker', 'destroy')">Remove</button>
     <button class="button buttonblue" onclick="window.open('http://localhost:9000/', '_blank')">Go to iHRIS</button>
+    <button class="button buttonorange" onclick="window.open('http://localhost:8080', '_blank')">Go
+        to HAPI FHIR </button>
     <hr>
 
-    <h2>Client Registry (OpenCR)</h2>
-
-    <button class="button" id='composeupcoredod' onclick="ComposeUpCoreDOD()">Launch OpenCR package</button>
-    <button class="button buttonred" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenCR</button>
+    <h3>Client Registry (OpenCR)</h2>
+    <p>Default user is root@intrahealth.org and password is intrahealth</p>
+    <button class="button" id='onefunc' onclick="OneFunc('docker', 'client', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('docker', 'client', 'destroy')">Remove</button>
+    <button class="button buttonyellow" onclick="window.open('https://localhost:3000/crux', '_blank')">Go to OpenCR</button>
+    <button class="button buttonorange" onclick="window.open('http://localhost:8080', '_blank')">Go
+        to HAPI FHIR </button>
     <hr>
 
-    <h2>Console</h2>
+    <h3>Console</h2>
 
     <div id="console"
-        style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+        style="font-size: 14px; background-color: #9fc4c6; width: 600px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
     </div>
 
     <h2>Debug</h2>
