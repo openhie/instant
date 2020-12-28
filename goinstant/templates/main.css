@@ -1,40 +1,130 @@
-:root {
-    --mdc-theme-secondary: rgb(59, 131, 66);
-    --mdc-theme-primary: rgb(33, 116, 146);
-    --custom-color: rgb(51, 51, 51);
+
+img.icon {
+  max-width: 25%;
+  max-height: 25%;
+  vertical-align: text-top;
 }
 
-.mdc-button--secondary {
-    --mdc-theme-primary: var(--mdc-theme-secondary);
+/* modified from: https: //www.w3schools.com/css/css3_buttons.asp */
+/* Green */
+.button {
+  background-color: rgb(59, 131, 66);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 2px 2px;
+  cursor: pointer;
+  border-radius: 8px;
 }
 
-.mdc-button--custom {
-    --mdc-theme-primary: var(--custom-color);
+/* Blue */
+.buttonblue {
+  background-color: rgb(33, 116, 146);
 }
+
+/* Red */
+.buttonred {
+  background-color: #f44336;
+}
+
+/* Gray */
+.buttongray {
+  background-color: #a8a2a2;
+  color: black;
+}
+
+/* Black */
+.buttonblack {
+  background-color: #555555;
+  color: white;
+}
+
+/* Orange */
+.buttonorange {
+  background-color: rgb(200, 80, 20);
+}
+
+/* Yellow */
+.buttonyellow {
+  background-color: rgb(234, 192, 6);
+  color: black;
+
+}
+
+
+
 
 html {
-    display: flex;
-    justify-content: center;
-    font-family: 'Roboto', sans-serif;
-    color: #121212;
-    background: hsl(0, 0%, 97);
+  vertical-align: text-top;
+  margin: auto;
+  width: 80%;
+  display: flex;
+  /* justify-content: center; */
+  font-family: 'Roboto', sans-serif;
+  color: #121212;
+  background: hsl(0, 0%, 97);
+
+}
+
+/* div.console {
+  font-size: 14px;
+  background-color: #9fc4c6;
+  width: 900px;
+  height: 200px;
+  padding: 10px;
+  margin: 10px;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+} */
+
+div {
+  word-wrap: normal;
 }
 
 body {
-    margin: 8vw;
+  margin: 8vw;
+  margin-top: 4vw;
 }
 
 h1,
 h2,
 h3 {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 hr {
-    border: none;
-    border-top: 1px solid #e6e6e6;
+  border: none;
+  border-top: 1px solid #e6e6e6;
+  /* Thick red border */
+
 }
 
-button+button {
-    margin-left: 12px;
+hr.foot {
+  border-top: 1px solid gray;
+}
+
+
+/* button+button {
+  margin-left: 12px;
+} */
+
+.tab {
+  margin-left: 48px;
+}
+
+.tab2 {
+  margin-left: 48px;
+}
+
+p.thick {
+  font-weight: bold;
+}
+
+body {
+  font-family: Arial;
 }

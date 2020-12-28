@@ -2,39 +2,59 @@
 
 <head>
     <title>Instant OpenHIE</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="main.js"></script>
+
 </head>
 
-<img src="https://ohie.org/wp-content/uploads/2014/10/logo-4-e1413301504185.png" style="float: left;" />
+<body>
 
-<br><br><br>
+    <img class="icon" src="logo.png" />
+    <p></p>
+    <button class="button"
+        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
+    <button class="button buttonblue" onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="button buttonblack" onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
+    <hr>
+    <h2>Step One: Choose Docker or Kubernetes...</h2>
+    <hr>
 
-<h1>Welcome to Instant OpenHIE!</h1>
+    <form name="platform">
 
-<hr>
+        <h3>
+            Docker Desktop is for running using Docker on your desktop. Install Docker before continuing. Admin
+            privileges are required.
+        </h3>
 
-<p>Here are some links to help get started.</p>
-<p>When done, go back to the app console and use 'Control + C' to interrupt.</p>
-<p>Then double-click again and choose 'Stop Instant OpenHIE'.</p>
+        <input type="button" class="button" value="Get Started with Docker"
+            onclick="window.location.replace('http://localhost:27517/docker.html')">
+        <button class="button buttonblack" id='debugdocker' onclick="DebugDocker()">Test Docker</button>
 
-<hr>
 
-<h3>OpenHIM Console and Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:9000', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('https://openhim.readthedocs.io/en/latest/', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/jembi/openhim-console', '_blank')">Code</button>
+        <br>
 
-<h3>Hapi FHIR Server</h3>
-<button class="mdc-button mdc-button--raised mdc-button--secondary"
-    onclick="window.open('http://localhost:3447/hapi-fhir-jpaserver', '_blank')">Open</button>
-<button class="mdc-button mdc-button--raised"
-    onclick="window.open('https://hapifhir.io/hapi-fhir/docs/', '_blank')">Docs</button>
-<button class="mdc-button mdc-button--raised mdc-button--custom"
-    onclick="window.open('https://github.com/jamesagnew/hapi-fhir', '_blank')">Code</button>
+        <h3>
+            Kubernetes requires access to a Kubernetes cluster on a server or one being installed on your computer, like
+            minikube or Docker for Desktop.
+        </h3>
+
+        <input type="button" class="button" value="Get Started with Kubernetes"
+            onclick="window.location.replace('http://localhost:27517/kubernetes.html')">
+        <button class="button buttonblack" id='debugkubernetes' onclick="DebugKubernetes()">Test Kubernetes</button>
+
+    </form>
+
+</body>
+
+<h2>Console</h2>
+
+<div id="console"
+    style="font-size: 14px; background-color: #9fc4c6; width: 900px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+</div>
+
+<div>
+
+</div>
+
 
 </html>

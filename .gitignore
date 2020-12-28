@@ -1,6 +1,10 @@
 # go-instant
 *-packr.go
+packrd
 goinstant/bin/goinstant*
+goinstant/data
+goinstant/hapi.properties
+goinstant/pkged.go
 
 # Logs
 logs
