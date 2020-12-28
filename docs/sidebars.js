@@ -22,7 +22,10 @@ module.exports = {
     ],
     'Existing Packages': [
       'packages/core',
-      'packages/health-workforce'
+      'packages/facility',
+      'packages/health-worker',
+      'packages/health-workforce',
+      'packages/client'
     ],
     'More Information': [
       'more-info/architecture'
