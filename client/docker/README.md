@@ -14,6 +14,6 @@ bash compose.sh down
 bash compose.sh destroy
 ```
 
-* Visit the UI at: [https://localhost:3000/crux](https://localhost:3000/crux)
+* Visit the UI at: [https://localhost:3003/crux](https://localhost:3003/crux)
     * **Default username**: root@intrahealth.org 
     * **Default password**: intrahealth

@@ -10,9 +10,10 @@ metadata:
   name: opencr
 spec:
   type: LoadBalancer
+  # change to 3003 from default to avoid port contention
   ports:
-    - name: "3000"
-      port: 3000
+    - name: "3003"
+      port: 3003
       targetPort: 3000
   selector:
     io.kompose.service: opencr

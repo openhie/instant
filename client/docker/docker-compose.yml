@@ -5,8 +5,9 @@ services:
   opencr:
     container_name: opencr
     image: intrahealth/opencr
+    # change to 3003 to avoid contention
     ports:
-      - "3000:3000"
+      - "3003:3000"
     depends_on:
       - fhir
       - es
