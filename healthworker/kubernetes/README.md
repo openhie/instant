@@ -2,27 +2,30 @@
 
 To start use the following:
 ```bash
-kubectl apply -k dev/
+kubectl apply -k main/
 # to remove
-kubectl delete -k dev/
+kubectl delete -k main/
 ```
 
 ## Troubleshooting
 
-[`kompose`](https://kompose.io) was used to create the resource manifests. There are two issues that this process generates. 
+[`kompose`](https://kompose.io) was used to create the resource manifests. There are two issues that this process generates.  One is that a port is not open for the service. 
 
-One is that a port is not open for the service. Make the following change.
+Another
+
+If rebuilding the Kompose-generated manifests, make the following changes:
 ```yaml
 spec:
   type: LoadBalancer
+  # change default port to avoid contention
   ports:
-  - name: "3000"
-    port: 3000
-    targetPort: 3000
+    - name: "3001"
+      port: 3001
+      targetPort: 3000
   selector:
-    io.kompose.service: facility-recon
+    io.kompose.service: ihris
 # status:
 #   loadBalancer: {}
 ```
 
-Another is that the redis-service is not created. This is easily copied from another place.
+Another issue is that the redis-service is not created. This is easily copied from another set of manifests.

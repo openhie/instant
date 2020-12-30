@@ -4,14 +4,15 @@
 To start use the following:
 
 ```bash
-kubectl apply -k dev/
+kubectl apply -k main/
 # to remove
-kubectl delete -k dev/
+kubectl delete -k main/
 ```
 
 ## Troubleshooting
 
 [`kompose`](https://kompose.io) was used to create the resource manifests. There is one issue that this process generates which means that a port is not open for the service. Make the following change.
+
 ```yaml
 spec:
   type: LoadBalancer

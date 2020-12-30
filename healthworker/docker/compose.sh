@@ -5,10 +5,14 @@ composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 if [ "$1" == "init" ]; then
 
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.hapi.yml up -d
+    echo "Waiting for HAPI to start"
+    sleep 60
     echo "Loading HL7 structure definitions..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.hapi.config.yml up -d
+    sleep 60
     echo "Loading custom structure definitions..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.ihris.config.yml up -d
+    sleep 60
     echo "Loading demo data..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.ihris.data.yml up -d
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.elastic.yml up -d
@@ -19,10 +23,14 @@ if [ "$1" == "init" ]; then
 elif [ "$1" == "up" ]; then
 
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.hapi.yml up -d
+    echo "Waiting for HAPI to start"
+    sleep 60
     echo "Loading HL7 structure definitions..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.hapi.config.yml up -d
+    sleep 60
     echo "Loading custom structure definitions..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.ihris.config.yml up -d
+    sleep 60
     echo "Loading demo data..."
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.ihris.data.yml up -d
     docker-compose -p healthworker -f "$composeFilePath"/docker-compose.elastic.yml up -d

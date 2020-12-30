@@ -37,10 +37,10 @@
     <hr>
 
     <h3>Health Worker Registry (iHRIS)</h2>
-    <p>Default user is admin@ihris.org and password is ihris</p>
+    <p>Default user is admin@ihris.org and password is ihris. The port is 3001, not the default (3000)</p>
     <button class="button" id='onefunc' onclick="OneFunc('docker', 'healthworker', 'up')">Launch</button>
     <button class="button buttonred" id='onefunc' onclick="OneFunc('docker', 'healthworker', 'destroy')">Remove</button>
-    <button class="button buttonblue" onclick="window.open('http://localhost:3000/', '_blank')">Go to iHRIS</button>
+    <button class="button buttonblue" onclick="window.open('http://localhost:3001/', '_blank')">Go to iHRIS</button>
     <button class="button buttonorange" onclick="window.open('http://localhost:8080', '_blank')">Go
         to HAPI FHIR </button>
     <hr>

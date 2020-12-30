@@ -12,8 +12,9 @@ services:
   ihris:
     container_name: ihris
     image: ihris/ihris
+    # defaault port contends with opencr and gofr, change to 3001
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - redis
     #  - fhir
