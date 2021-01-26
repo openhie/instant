@@ -99,6 +99,8 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
   })
 
   while (packagesWithDependencies.length) {
+    const currentPackagesLength = packagesWithDependencies.length
+
     for (let index = 0; index < packagesWithDependencies.length; index++) {
       const id = packagesWithDependencies[index]
       let containDependencies = true
@@ -113,6 +115,13 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
         orderedPackageIds.push(id)
         packagesWithDependencies.splice(index, 1)
       }
+    }
+    /*
+      If circular dependencies are present, the array of packages with dependencies will
+      not change after the loop above finishes
+    */
+    if (currentPackagesLength == packagesWithDependencies.length) {
+      throw Error('Error! Circular dependencies present')
     }
   }
   return orderedPackageIds
