@@ -83,7 +83,11 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
       !allPackages[id].metadata.dependencies ||
       !allPackages[id].metadata.dependencies.length
     ) {
-      orderedPackageIds.push(id)
+      if (id === 'core') {
+        orderedPackageIds.unshift(id)
+      } else {
+        orderedPackageIds.push(id)
+      }
     } else {
       allPackages[id].metadata.dependencies.forEach(dependency => {
         if (!Object.keys(allPackages).includes(dependency)) {
