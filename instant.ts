@@ -78,25 +78,44 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
   const orderedPackageIds = []
   const packagesWithDependencies = []
 
-  chosenPackageIds.forEach(id => {
-    if (
-      !allPackages[id].metadata.dependencies ||
-      !allPackages[id].metadata.dependencies.length
-    ) {
-      if (id === 'core') {
-        orderedPackageIds.unshift(id)
-      } else {
-        orderedPackageIds.push(id)
-      }
-    } else {
-      allPackages[id].metadata.dependencies.forEach(dependency => {
-        if (!Object.keys(allPackages).includes(dependency)) {
-          throw Error(`Dependency ${dependency} for package ${id} does not exist`)
+  function collectPackagesWithDependencies(chosenIds) {
+    let inexplicitDependencies = []
+
+    chosenIds.forEach(id => {
+      if (id && allPackages[id] && allPackages[id].metadata) {
+        if (
+          !allPackages[id].metadata.dependencies ||
+          !allPackages[id].metadata.dependencies.length
+        ) {
+          if (id === 'core') {
+            orderedPackageIds.unshift(id)
+          } else {
+            orderedPackageIds.push(id)
+          }
+        } else {
+          allPackages[id].metadata.dependencies.forEach(dependency => {
+            if (!Object.keys(allPackages).includes(dependency)) {
+              throw Error(`Dependency ${dependency} for package ${id} does not exist`)
+            }
+            if (!chosenIds.includes(dependency)) {
+              inexplicitDependencies.push(dependency)
+            }
+          })
+          packagesWithDependencies.push(id)
         }
-      })
-      packagesWithDependencies.push(id)
+      } else {
+        throw Error(`Package ${id} does not exist or the metadata is invalid`)
+      }
+    })
+
+    if (inexplicitDependencies.length) {
+      collectPackagesWithDependencies(inexplicitDependencies)
+    } else {
+      return
     }
-  })
+  }
+
+  collectPackagesWithDependencies(chosenPackageIds)
 
   while (packagesWithDependencies.length) {
     const currentPackagesLength = packagesWithDependencies.length
