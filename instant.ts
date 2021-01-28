@@ -202,6 +202,10 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
     // Order the packages such that the dependencies are instantiated first
     chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
 
+    if (['destroy', 'down'].includes(main.command)) {
+      chosenPackageIds.reverse()
+    }
+
     console.log(
       `Selected package IDs to operate on: ${chosenPackageIds.join(', ')}`
     )
