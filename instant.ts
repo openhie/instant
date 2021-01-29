@@ -75,85 +75,34 @@ async function runTests(path: string) {
 }
 
 const orderPackageIds = (allPackages, chosenPackageIds) => {
-  const orderedPackageIds = []
-  const packagesWithDependencies = []
+  function resolveDeps(id, currentStack) {
+    if (currentStack.includes(id)) throw Error(`Circular dependency present for id ${id}`)
+    currentStack.push(id)
 
-  function collectPackagesWithDependencies(chosenIds) {
-    let inexplicitDependencies = []
-
-    chosenIds.forEach(id => {
-      if (id && allPackages[id] && allPackages[id].metadata) {
-        if (
-          !allPackages[id].metadata.dependencies ||
-          !allPackages[id].metadata.dependencies.length
-        ) {
-          if (id === 'core') {
-            orderedPackageIds.unshift(id)
-          } else {
-            orderedPackageIds.push(id)
-          }
-        } else {
-          allPackages[id].metadata.dependencies.forEach(dependency => {
-            if (
-              !Object.keys(allPackages).includes(dependency) ||
-              !allPackages[dependency].metadata
-            ) throw Error(
-              `Dependency ${dependency} for package ${id} does not exist or the metadata is invalid`
-            )
-            if (
-              allPackages[dependency].metadata.dependencies &&
-              allPackages[dependency].metadata.dependencies.length &&
-              allPackages[dependency].metadata.dependencies.includes(id)
-            ) throw Error(
-              `Circular dependencies - ${id} and ${dependency}`
-            )
-
-            if (!chosenIds.includes(dependency)) {
-              inexplicitDependencies.push(dependency)
-            }
-          })
-          packagesWithDependencies.push(id)
-        }
-      } else {
-        throw Error(`Package ${id} does not exist or the metadata is invalid`)
-      }
-    })
-
-    if (inexplicitDependencies.length) {
-      collectPackagesWithDependencies(inexplicitDependencies)
+    if (allPackages[id] && allPackages[id].metadata) {
+      if (
+        !allPackages[id].metadata.dependencies ||
+        !allPackages[id].metadata.dependencies.length
+      ) return [id]
     } else {
-      return
+      throw Error(`Package ${id} does not exist or the metadata is invalid`)
     }
+
+    let orderedIds = []
+
+    allPackages[id].metadata.dependencies.forEach(dependency => {
+      const ids = resolveDeps(dependency, currentStack)
+      currentStack = [id]
+      orderedIds.push(...[...ids, id])
+    })
+    return orderedIds
   }
 
-  collectPackagesWithDependencies(chosenPackageIds)
-
-  while (packagesWithDependencies.length) {
-    const currentPackagesLength = packagesWithDependencies.length
-
-    for (let index = 0; index < packagesWithDependencies.length; index++) {
-      const id = packagesWithDependencies[index]
-      let containDependencies = true
-
-      allPackages[id].metadata.dependencies.forEach(dependency => {
-        if (!orderedPackageIds.includes(dependency)) {
-          containDependencies = false
-        }
-      })
-
-      if (containDependencies) {
-        orderedPackageIds.push(id)
-        packagesWithDependencies.splice(index, 1)
-      }
-    }
-    /*
-      If circular dependencies are present, the array of packages with dependencies will
-      not change after the loop above finishes
-    */
-    if (currentPackagesLength == packagesWithDependencies.length) {
-      throw Error('Error! Circular dependencies present')
-    }
-  }
+  let orderedPackageIds = []
+  chosenPackageIds.forEach(packageId => {
+    let packageIds = orderedPackageIds.concat(resolveDeps(packageId, []))
+    orderedPackageIds = packageIds.filter((id, index) => packageIds.indexOf(id) == index)
+  })
   return orderedPackageIds
 }
 
