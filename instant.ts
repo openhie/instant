@@ -94,9 +94,20 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
           }
         } else {
           allPackages[id].metadata.dependencies.forEach(dependency => {
-            if (!Object.keys(allPackages).includes(dependency)) {
-              throw Error(`Dependency ${dependency} for package ${id} does not exist`)
-            }
+            if (
+              !Object.keys(allPackages).includes(dependency) ||
+              !allPackages[dependency].metadata
+            ) throw Error(
+              `Dependency ${dependency} for package ${id} does not exist or the metadata is invalid`
+            )
+            if (
+              allPackages[dependency].metadata.dependencies &&
+              allPackages[dependency].metadata.dependencies.length &&
+              allPackages[dependency].metadata.dependencies.includes(id)
+            ) throw Error(
+              `Circular dependencies - ${id} and ${dependency}`
+            )
+
             if (!chosenIds.includes(dependency)) {
               inexplicitDependencies.push(dependency)
             }
