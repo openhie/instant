@@ -88,13 +88,14 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
       throw Error(`Package ${id} does not exist or the metadata is invalid`)
     }
 
-    let orderedIds = []
+    const orderedIds = []
+    const currentStackClone = currentStack.slice()
 
     allPackages[id].metadata.dependencies.forEach(dependency => {
-      const ids = resolveDeps(dependency, currentStack)
-      currentStack = [id]
-      orderedIds.push(...[...ids, id])
+      const ids = resolveDeps(dependency, currentStackClone)
+      orderedIds.push(...ids)
     })
+    orderedIds.push(id)
     return orderedIds
   }
 
