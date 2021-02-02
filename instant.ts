@@ -74,6 +74,39 @@ async function runTests(path: string) {
   }
 }
 
+const orderPackageIds = (allPackages, chosenPackageIds) => {
+  function resolveDeps(id, currentStack) {
+    if (currentStack.includes(id)) throw Error(`Circular dependency present for id ${id}`)
+    currentStack.push(id)
+
+    if (allPackages[id] && allPackages[id].metadata) {
+      if (
+        !allPackages[id].metadata.dependencies ||
+        !allPackages[id].metadata.dependencies.length
+      ) return [id]
+    } else {
+      throw Error(`Package ${id} does not exist or the metadata is invalid`)
+    }
+
+    const orderedIds = []
+    const currentStackClone = currentStack.slice()
+
+    allPackages[id].metadata.dependencies.forEach(dependency => {
+      const ids = resolveDeps(dependency, currentStackClone)
+      orderedIds.push(...ids)
+    })
+    orderedIds.push(id)
+    return orderedIds
+  }
+
+  let orderedPackageIds = []
+  chosenPackageIds.forEach(packageId => {
+    let packageIds = orderedPackageIds.concat(resolveDeps(packageId, []))
+    orderedPackageIds = packageIds.filter((id, index) => packageIds.indexOf(id) == index)
+  })
+  return orderedPackageIds
+}
+
 // Main script execution
 ;(async () => {
   const allPackages = getInstantOHIEPackages()
@@ -125,6 +158,13 @@ async function runTests(path: string) {
 
     if (chosenPackageIds.length < 1) {
       chosenPackageIds = Object.keys(allPackages)
+    }
+
+    // Order the packages such that the dependencies are instantiated first
+    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+
+    if (['destroy', 'down'].includes(main.command)) {
+      chosenPackageIds.reverse()
     }
 
     console.log(
@@ -184,6 +224,9 @@ async function runTests(path: string) {
     if (chosenPackageIds.length < 1) {
       chosenPackageIds = Object.keys(allPackages)
     }
+
+    // Order the packages such that the dependencies are instantiated first
+    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
 
     console.log(`Running tests for packages: ${chosenPackageIds.join(', ')}`)
     console.log(`Using host: ${testOptions.host}:${testOptions.port}`)
