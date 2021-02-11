@@ -115,4 +115,20 @@ The Instant OpenHIE executable will look for these scripts and ensure that they 
 
 ## How to execute your new package
 
-Mount your package into the openhie/instant container when it is run to start the packages. It will automatically detect packages folders in the `/instant` folder and will execute them as described above. For a package to be detected it must have an `instant.json` file in the root folder of the package.
+The following mechanism for adding a package is useful for package development.
+
+> The preferred method for adding custom packages to your Instant instance will be to add the package repo GitHub url to the config - however this **feature is still in development**.
+
+### Yarn (Dev)
+
+Copy your package into the root directory of this Instant OpenHIE project.
+
+Run as normal:
+
+```sh
+yarn instant init <your_package_name>
+```
+
+### Docker
+
+TODO: Add start up script and docs
