@@ -25,7 +25,7 @@ services:
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:v4.1.0
+    image: hapiproject/hapi:v5.2.1
     environment:
       - JAVA_OPTS='-Dhapi.properties=/instant/core/docker/hapi.properties'
     volumes:
