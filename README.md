@@ -42,7 +42,7 @@ Each command also takes a list of package IDs to operate on. If this is left out
 
 E.g only run `core` package: `yarn docker:instant init -t docker core`
 
-## Kubernetes
+### Kubernetes
 
 A kubernetes deployment can either be to AWS using [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or locally using [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) and `kubectl`.
 
@@ -79,3 +79,17 @@ yarn docker:instant destroy -t k8s
 Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
 
 E.g only run `core` package: `yarn docker:instant init -t k8s core`
+
+## Custom packages
+
+To add a custom package to your instant instance use the following flag
+
+`-c="/path/to/package"`
+
+For example, if you had downloaded the [who-covid19-surveillance-package](https://github.com/jembi/who-covid19-surveillance-package) repository onto your machine you could reference it as follows:
+
+```sh
+yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
+```
+
+> We hope to support package urls soon
