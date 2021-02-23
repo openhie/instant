@@ -42,7 +42,7 @@ Each command also takes a list of package IDs to operate on. If this is left out
 
 E.g only run `core` package: `yarn docker:instant init -t docker core`
 
-## Kubernetes
+### Kubernetes
 
 A kubernetes deployment can either be to AWS using [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or locally using [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) and `kubectl`.
 
@@ -79,3 +79,48 @@ yarn docker:instant destroy -t k8s
 Each command also takes a list of package IDs to operate on. If this is left out then all packages are run by default.
 
 E.g only run `core` package: `yarn docker:instant init -t k8s core`
+
+## Custom packages
+
+To add a custom package to your instant instance use the following flag
+
+`-c="/path/to/package"`
+
+For example, if you had downloaded the [who-covid19-surveillance-package](https://github.com/jembi/who-covid19-surveillance-package) repository onto your machine you could reference it as follows:
+
+```sh
+yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
+```
+
+> We hope to support package urls soon
+
+### Docker or Kubernetes without the Instant OpenHIE repo
+
+The Instant OpenHIE project is available as a Docker image therefore we do not need the whole GitHub repository to run the containers.
+
+For a minimum Instant OpenHIE set up, download [this deploy script from GitHub](https://raw.githubusercontent.com/openhie/instant/master/deploy.sh).
+Once downloaded make sure it's executable: `sudo chmod +x deploy.sh`
+
+Then, run the following command to add your custom package and initialise the system in docker.
+
+```sh
+./deploy init -t docker core <your_package_ids> -c="../path/to/your/package"
+```
+
+To remove the instant project, run the following:
+
+./deploy destroy -t docker core covid19surveillance
+
+> The custom package location is not needed for `up`, `down`, or `destroy` commands on an existing system.
+
+To initialise kubernetes, run the following:
+
+```sh
+./deploy init -t k8s core <your_package_ids> -c="../path/to/your/package"
+```
+
+Multiple custom packages can be chained together as follows:
+
+```sh
+./deploy init test1 test2 test3 -c="../test1" -c="../test2" -c="../test3"
+```
