@@ -84,58 +84,82 @@ exports.triggerSync = async () => {
 exports.ihrisMockServicePractitioner = async () => {
   const name = 'Practitioner'
 
-  await verifyResourceDoesNotExistInFHIR(name, testPractitioner.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR(
+    name,
+    testPractitioner.identifier[0].value
+  )
 
   // create new practitioner Dr Bob on ihris mock server
   const response = await createResource(name, testPractitioner)
 
-  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+  if (response.status != 201)
+    throw Error(`Failed to create ${name} for testing`)
 
-  console.log('\n Created Practitioner resource (Dr Bob) on mock ihris mock server')
+  console.log(
+    '\n Created Practitioner resource (Dr Bob) on mock ihris mock server'
+  )
 }
 
 exports.ihrisMockServicePractitionerRole = async () => {
   const name = 'PractitionerRole'
 
-  await verifyResourceDoesNotExistInFHIR('PractitionerRole', testPractitionerRole.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR(
+    'PractitionerRole',
+    testPractitionerRole.identifier[0].value
+  )
 
   // create new practitionerRole for Dr Bob on ihris mock server
   const response = await createResource(name, testPractitionerRole)
 
-  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+  if (response.status != 201)
+    throw Error(`Failed to create ${name} for testing`)
 
-  console.log('\n Created PractitionerRole resource (for Dr Bob) on mock ihris mock server')
+  console.log(
+    '\n Created PractitionerRole resource (for Dr Bob) on mock ihris mock server'
+  )
 }
 
 exports.gofrMockServiceLocation = async () => {
   const name = 'Location'
 
-  await verifyResourceDoesNotExistInFHIR('Location', testLocation.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR(
+    'Location',
+    testLocation.identifier[0].value
+  )
 
   // create new location on gofr mock server
   const response = await createResource(name, testLocation)
 
-  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+  if (response.status != 201)
+    throw Error(`Failed to create ${name} for testing`)
 
-  console.log('\n Created Location resource (GoodHealth Clinic) on mock gofr mock server')
+  console.log(
+    '\n Created Location resource (GoodHealth Clinic) on mock gofr mock server'
+  )
 }
 
 exports.gofrMockServiceOrganization = async () => {
   const name = 'Organization'
 
-  await verifyResourceDoesNotExistInFHIR('Organization', testOrganization.identifier[0].value)
+  await verifyResourceDoesNotExistInFHIR(
+    'Organization',
+    testOrganization.identifier[0].value
+  )
 
   // create new organization on gofr mock server
   const response = await createResource(name, testOrganization)
 
-  if (response.status != 201) throw Error(`Failed to create ${name} for testing`)
+  if (response.status != 201)
+    throw Error(`Failed to create ${name} for testing`)
 
-  console.log('\n Created Organization resource (Clinical Lab) on mock gofr mock server...')
+  console.log(
+    '\n Created Organization resource (Clinical Lab) on mock gofr mock server...'
+  )
 }
 
 const getResource = (resource, identifierValue) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=${identifierValue}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/${resource}?identifier:value=${identifierValue}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -147,7 +171,7 @@ const getResource = (resource, identifierValue) => {
 
 const removeResource = (resource, identifierValue) => {
   return axios({
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/${resource}?identifier:value=${identifierValue}`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/${resource}?identifier:value=${identifierValue}`,
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -160,8 +184,9 @@ const removeResource = (resource, identifierValue) => {
 const verifyResourceDoesNotExistInFHIR = async (resource, resourceId) => {
   const response = await getResource(resource, resourceId)
 
-  if (response.data.total > 0) throw Error(
-    `Test aborted! ${resource} resource (identifier-value: ${resourceId}) used in test already exists and will be removed from the FHIR server`
+  if (response.data.total > 0)
+    throw Error(
+      `Test aborted! ${resource} resource (identifier-value: ${resourceId}) used in test already exists and will be removed from the FHIR server`
     )
 }
 
@@ -173,7 +198,7 @@ const createResource = (resourceName, resource) => {
   })
 }
 
-const deleteResource = resourceName => {
+const deleteResource = (resourceName) => {
   return axios({
     url: `http://${MOCK_SERVER_HOST}:${MOCK_SERVER_PORT}/cleanup/${resourceName}`,
     method: 'DELETE'
@@ -190,21 +215,33 @@ exports.verifyPractitionerExistsAndCleanup = async () => {
     !(response.status === 200) ||
     !(response.data.total === 1) ||
     !(response.data.entry[0].resource.name[0].text === 'Bob Murray')
-    ) throw Error(`${resource} with identifier value ${identifierValue} does not exist in FHIR`)
+  )
+    throw Error(
+      `${resource} with identifier value ${identifierValue} does not exist in FHIR`
+    )
 
   // Remove resource from FHIR
-  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(
+    resource,
+    identifierValue
+  )
 
   if (
-    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
-    ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(
+      /Successfully deleted 1 resource/
+    )
+  )
+    throw `Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`
 
   // Remove the practitioner created on the ihris server
   const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
-  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200)
+    throw Error(`${resource} not removed from the mock-service`)
 
-  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
+  console.log(
+    `\n ${resource} resource existence on FHIR verified, and clean up done...`
+  )
 }
 
 exports.verifyPractitionerRoleExistsAndCleanup = async () => {
@@ -213,24 +250,33 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
 
   const response = await getResource(resource, identifierValue)
 
-  if (
-    !(response.status === 200) ||
-    !(response.data.total === 1)
-    ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist in FHIR`)
+  if (!(response.status === 200) || !(response.data.total === 1))
+    throw Error(
+      `${resource} with identifier-value ${identifierValue} does not exist in FHIR`
+    )
 
   // Remove resource from FHIR
-  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(
+    resource,
+    identifierValue
+  )
 
   if (
-    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
-    ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(
+      /Successfully deleted 1 resource/
+    )
+  )
+    throw `Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`
 
   // Remove the practitionerRole created on the ihris server
   const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
-  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200)
+    throw Error(`${resource} not removed from the mock-service`)
 
-  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
+  console.log(
+    `\n ${resource} resource existence on FHIR verified, and clean up done...`
+  )
 }
 
 exports.verifyLocationExistsAndCleanup = async () => {
@@ -243,21 +289,33 @@ exports.verifyLocationExistsAndCleanup = async () => {
     !(response.status === 200) ||
     !(response.data.total === 1) ||
     !(response.data.entry[0].resource.name === 'GoodHealth Clinic')
-    ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist`)
+  )
+    throw Error(
+      `${resource} with identifier-value ${identifierValue} does not exist`
+    )
 
   // Remove resource from FHIR
-  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(
+    resource,
+    identifierValue
+  )
 
   if (
-    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
-    ) throw(`Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(
+      /Successfully deleted 1 resource/
+    )
+  )
+    throw `Clean up failed, test ${resource} (identifier-value: ${identifierValue}) not removed from FHIR`
 
   // Remove the location created on the gofr server
   const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
-  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200)
+    throw Error(`${resource} not removed from the mock-service`)
 
-  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
+  console.log(
+    `\n ${resource} resource existence on FHIR verified, and clean up done...`
+  )
 }
 
 exports.verifyOrganizationExistsAndCleanup = async () => {
@@ -270,19 +328,31 @@ exports.verifyOrganizationExistsAndCleanup = async () => {
     !(response.status === 200) ||
     !(response.data.total === 1) ||
     !(response.data.entry[0].resource.name === 'Clinical Lab')
-    ) throw Error(`${resource} with identifier-value ${identifierValue} does not exist`)
+  )
+    throw Error(
+      `${resource} with identifier-value ${identifierValue} does not exist`
+    )
 
   // Remove resource from FHIR
-  const resultOfDeleteResourceFHIR = await removeResource(resource, identifierValue)
+  const resultOfDeleteResourceFHIR = await removeResource(
+    resource,
+    identifierValue
+  )
 
   if (
-    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(/Successfully deleted 1 resource/)
-    ) throw(`Clean up failed, test ${resource} (id: ${identifierValue}) not removed from FHIR`)
+    !JSON.stringify(resultOfDeleteResourceFHIR.data).match(
+      /Successfully deleted 1 resource/
+    )
+  )
+    throw `Clean up failed, test ${resource} (id: ${identifierValue}) not removed from FHIR`
 
   // Remove the organization created on the gofr server
   const resultOfDeleteResourceMockServer = await deleteResource(resource)
 
-  if (resultOfDeleteResourceMockServer.status != 200) throw Error(`${resource} not removed from the mock-service`)
+  if (resultOfDeleteResourceMockServer.status != 200)
+    throw Error(`${resource} not removed from the mock-service`)
 
-  console.log(`\n ${resource} resource existence on FHIR verified, and clean up done...`)
+  console.log(
+    `\n ${resource} resource existence on FHIR verified, and clean up done...`
+  )
 }

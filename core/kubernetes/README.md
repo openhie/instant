@@ -73,7 +73,7 @@ To clean up the remaining job and pods from a successful setup, run the followin
 ./importer/k8s.sh clean
 ```
 
-Once the config is done HAPI FHIR will be accessible on: <https://OPENHIM_CORE_HOSTNAME/hapi-fhir-jpaserver/fhir/>
+Once the config is done HAPI FHIR will be accessible on: <https://OPENHIM_CORE_HOSTNAME/fhir/>
 
 You may test that the OpenHIM is routing requests to HAPI FHIR by running:
 

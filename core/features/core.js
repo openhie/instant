@@ -20,7 +20,7 @@ let hapiFhirPatientID
 
 Given('a patient, Jane Doe, exists in the FHIR server', async function () {
   const checkPatientExistsOptions = {
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient?identifier:value=test`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
       `Patient record for Jane Doe does not exist. Creating Patient...`
     )
     const options = {
-      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient`,
+      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
 
 When('Alice searches for a patient', async function () {
   const checkPatientExistsOptions = {
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient?identifier:value=test`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ Then('Alice is able to get a result', function () {
 
 When('Malice searches for a patient', async function () {
   const checkPatientExistsOptions = {
-    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient?identifier:value=test`,
+    url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient?identifier:value=test`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ AfterAll(async function () {
   if (hapiFhirPatientID) {
     console.log(`Deleting FHIR test Patient record`)
     const deletePatientOptions = {
-      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/hapi-fhir-jpaserver/fhir/Patient/${hapiFhirPatientID}`,
+      url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient/${hapiFhirPatientID}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
