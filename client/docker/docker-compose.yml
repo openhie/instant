@@ -1,7 +1,6 @@
-version: '3'
+version: '3.3'
 
 services:
-
   opencr:
     container_name: opencr
     image: intrahealth/opencr:latest
@@ -32,14 +31,7 @@ services:
       - data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    # networks:
-    #   - opencr
-
 
 volumes:
   data01:
     driver: local
-
-# networks:
-#   opencr:
-#     driver: bridge

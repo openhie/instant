@@ -26,6 +26,4 @@ spec:
       targetPort: 3000
   selector:
     io.kompose.service: opencr
-# status:
-#   loadBalancer: {}
 ```
