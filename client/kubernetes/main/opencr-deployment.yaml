@@ -27,6 +27,10 @@ spec:
         - env:
             - name: NODE_ENV
               value: cicd
+            - name: HAPI_FHIR_URL
+              value: http://hapi-fhir:8080/fhir/metadata
+            - name: fhirServer__baseURL
+              value: http://hapi-fhir:8080/fhir
           image: intrahealth/opencr
           name: opencr
           ports:

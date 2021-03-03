@@ -19,10 +19,10 @@ Another is that there is potential for port contention, so the exposed port is r
 ```yaml
 spec:
   type: LoadBalancer
-  # change to 3003 from default to avoid port contention
+  # change to 3004 from default to avoid port contention
   ports:
-    - name: "3003"
-      port: 3003
+    - name: "3004"
+      port: 3004
       targetPort: 3000
   selector:
     io.kompose.service: opencr

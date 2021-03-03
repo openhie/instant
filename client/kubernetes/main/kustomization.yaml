@@ -10,9 +10,7 @@ resources:
   - data01-persistentvolumeclaim.yaml
   # deployments
   - es-deployment.yaml
-  - fhir-deployment.yaml
   - opencr-deployment.yaml
   # services
   - es-service.yaml
-  - fhir-service.yaml
   - opencr-service.yaml

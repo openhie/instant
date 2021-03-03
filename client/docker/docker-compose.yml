@@ -4,26 +4,17 @@ services:
 
   opencr:
     container_name: opencr
-    image: intrahealth/opencr
-    # change to 3003 to avoid contention
+    image: intrahealth/opencr:latest
+    # change to 3004 to avoid port contention
     ports:
-      - "3003:3000"
+      - "3004:3000"
     depends_on:
-      - fhir
       - es
     restart: always
     environment:
       - NODE_ENV=cicd
-    # networks: 
-    #   - opencr
-
-  fhir:
-    container_name: hapi-fhir
-    image: hapiproject/hapi:v5.1.0
-    ports:
-      - "8080:8080"
-    # networks:
-    #   - opencr
+      - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
+      - fhirServer__baseURL=http://hapi-fhir:8080/fhir
 
   es:
     container_name: es
