@@ -9,7 +9,7 @@ services:
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:v4.1.0
+    image: hapiproject/hapi:v5.2.1
     ports:
       - "3447:8080"
 

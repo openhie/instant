@@ -85,5 +85,5 @@ For testing this Core Component we will be making use of `curl` for sending our 
 Execute the below `curl` request to successfully route a request through the OpenHIM to query the HAPI FHIR server.
 
 ```bash
-curl http://localhost:5001/hapi-fhir-jpaserver/fhir/Patient
+curl http://localhost:5001/fhir/Patient
 ```

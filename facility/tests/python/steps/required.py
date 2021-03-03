@@ -5,7 +5,7 @@ import requests
 
 
 local = os.getenv('FHIR_SERVER',
-                  'http://localhost:8080/hapi-fhir-jpaserver/fhir/')
+                  'http://localhost:8080/fhir/')
 
 
 @given('fhir server returns a capability statement for practitioner')

@@ -3,6 +3,7 @@
 
 # cli client
 goinstant
+./deploy.sh
 
 # vscode config
 .vscode
