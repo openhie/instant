@@ -9,7 +9,7 @@ getExposedServices () {
 	trimmedMysqlUrl=$(sed 's/http:\/\///g' <<< "$mysqlUrl")
 	echo -e "The HAPI FHIR MySQL url:\n $trimmedMysqlUrl\n"
 
-	echo -e "HAPI FHIR server is accessible at:\n $(minikube service hapi-fhir-server-service --url)/hapi-fhir-jpaserver/fhir/"
+	echo -e "HAPI FHIR server is accessible at:\n $(minikube service hapi-fhir-server-service --url)/fhir/"
 }
 
 applyDevScripts () {

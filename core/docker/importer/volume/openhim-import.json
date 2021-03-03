@@ -76,7 +76,7 @@
       "rewriteUrlsConfig": [],
       "name": "FHIR Server",
       "description": "A FHIR server (HAPI FHIR)",
-      "urlPattern": "^/hapi-fhir-jpaserver/fhir/.*$",
+      "urlPattern": "^/fhir/.*$",
       "priority": 1,
       "matchContentRegex": null,
       "matchContentXpath": null,
