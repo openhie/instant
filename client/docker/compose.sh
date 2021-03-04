@@ -4,8 +4,11 @@ composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
+    docker create --name opencr-helper -v opencr-data:/config busybox
+    docker cp "$composeFilePath"/volume/. opencr-helper:/config/
+    docker rm opencr-helper
 
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
 
 elif [ "$1" == "up" ]; then
 

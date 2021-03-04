@@ -14,6 +14,8 @@ services:
       - NODE_ENV=cicd
       - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
       - fhirServer__baseURL=http://hapi-fhir:8080/fhir
+    volumes:
+      - opencr-data:/src/server/config
 
   es:
     container_name: es
@@ -33,5 +35,7 @@ services:
       - 9200:9200
 
 volumes:
+  opencr-data:
+    external: true
   elasticsearch-data:
     driver: local
