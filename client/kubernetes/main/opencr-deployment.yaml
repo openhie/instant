@@ -36,5 +36,12 @@ spec:
           ports:
             - containerPort: 3000
           resources: {}
+          volumeMounts:
+            - mountPath: /src/server/config
+              name: opencr-data
       restartPolicy: Always
+      volumes:
+        - name: opencr-data
+          configMap:
+            claimName: opencr-data
 status: {}
