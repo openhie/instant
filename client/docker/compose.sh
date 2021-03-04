@@ -8,7 +8,7 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/. opencr-helper:/config/
     docker rm opencr-helper
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 
 elif [ "$1" == "up" ]; then
 
