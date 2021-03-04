@@ -41,10 +41,10 @@ spec:
           resources: {}
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
-              name: data01
+              name: elasticsearch-data
       restartPolicy: Always
       volumes:
-        - name: data01
+        - name: elasticsearch-data
           persistentVolumeClaim:
-            claimName: data01
+            claimName: elasticsearch-data
 status: {}
