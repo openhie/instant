@@ -28,10 +28,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
 volumes:
-  data01:
+  elasticsearch-data:
     driver: local

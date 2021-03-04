@@ -7,7 +7,7 @@ configMapGenerator:
 #       - ./openhim/volume/openhim-core/development.json
 resources:
   # volumes
-  - data01-persistentvolumeclaim.yaml
+  - elasticsearch-data-persistentvolumeclaim.yaml
   # deployments
   - es-deployment.yaml
   - opencr-deployment.yaml
