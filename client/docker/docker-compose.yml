@@ -11,7 +11,7 @@ services:
       - es
     restart: always
     environment:
-      - NODE_ENV=cicd
+      - NODE_ENV=instant
       - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
       - fhirServer__baseURL=http://hapi-fhir:8080/fhir
     volumes:
