@@ -23,6 +23,8 @@ elif [ "$1" == "destroy" ]; then
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml down -v
 
+    docker volume rm opencr-data
+
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
