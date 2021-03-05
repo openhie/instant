@@ -33,7 +33,7 @@
           "host": "opencr",
           "port": 3000,
           "path": "/fhir",
-          "pathTransform": "",
+          "pathTransform": "s/client/fhir/g",
           "primary": true,
           "username": "",
           "password": ""
@@ -43,7 +43,7 @@
       "responseBody": true,
       "rewriteUrlsConfig": [],
       "name": "Client Registry",
-      "urlPattern": "^/client$",
+      "urlPattern": "^/client.*$",
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
