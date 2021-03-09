@@ -32,7 +32,7 @@
           "secured": false,
           "host": "opencr",
           "port": 3000,
-          "path": "/fhir",
+          "path": "",
           "pathTransform": "s/client/fhir/g",
           "primary": true,
           "username": "",
