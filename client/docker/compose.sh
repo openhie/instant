@@ -22,7 +22,7 @@ elif [ "$1" == "destroy" ]; then
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml down -v
 
-    docker volume rm opencr-data
+    docker volume rm opencr-data instant_elasticsearch-data
 
 else
     echo "Valid options are: init, up, down, or destroy"
