@@ -16,12 +16,11 @@ elif [ "$1" == "up" ]; then
 
 elif [ "$1" == "down" ]; then
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml stop
-
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
 
 elif [ "$1" == "destroy" ]; then
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml down -v
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml down -v
 
     docker volume rm opencr-data
 
