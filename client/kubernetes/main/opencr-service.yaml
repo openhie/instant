@@ -7,15 +7,15 @@ metadata:
   creationTimestamp: null
   labels:
     io.kompose.service: opencr
+    package: client
   name: opencr
 spec:
   type: LoadBalancer
   # change to 3004 from default to avoid port contention
   ports:
-    - name: "3004"
+    - name: opencr-3004
       port: 3004
       targetPort: 3000
   selector:
     io.kompose.service: opencr
-# status:
-#   loadBalancer: {}
+

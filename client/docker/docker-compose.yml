@@ -3,7 +3,7 @@ version: '3.3'
 services:
   opencr:
     container_name: opencr
-    image: intrahealth/opencr:latest
+    image: intrahealth/opencr:9628aa9
     # change to 3004 to avoid port contention
     ports:
       - "3004:3000"
@@ -11,9 +11,11 @@ services:
       - es
     restart: always
     environment:
-      - NODE_ENV=cicd
+      - NODE_ENV=instant
       - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
       - fhirServer__baseURL=http://hapi-fhir:8080/fhir
+    volumes:
+      - opencr-data:/src/server/config
 
   es:
     container_name: es
@@ -33,5 +35,7 @@ services:
       - 9200:9200
 
 volumes:
+  opencr-data:
+    external: true
   elasticsearch-data:
     driver: local
