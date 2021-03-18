@@ -49,7 +49,9 @@
     "CRBaseURI": "http://openclientregistry.org/fhir",
     "internalid": {
       "uri": [
-        "https://instantopenhie.org"
+        "https://instantopenhie.org/client1",
+        "https://instantopenhie.org/client2",
+        "https://instantopenhie.org/client3"
       ],
       "displayName": "Internal ID"
     },
