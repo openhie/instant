@@ -1,7 +1,4 @@
 configMapGenerator:
-  - name: core-hapi-fhir-server-configmap
-    files:
-      - ./hapi-fhir/volume/hapi.properties
   - name: core-openhim-core-configmap
     files:
       - ./openhim/volume/openhim-core/development.json
@@ -9,7 +6,6 @@ configMapGenerator:
 resources:
   # volumes
   - ./hapi-fhir/hapi-fhir-mysql-volume-claim.yaml
-  - ./hapi-fhir/hapi-fhir-server-volume-claim.yaml
   # deployments
   - ./hapi-fhir/hapi-fhir-mysql-deployment.yaml
   - ./hapi-fhir/hapi-fhir-server-deployment.yaml
