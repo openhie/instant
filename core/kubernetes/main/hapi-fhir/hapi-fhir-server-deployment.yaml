@@ -24,14 +24,16 @@ spec:
         - name: hapi-fhir-server
           image: hapiproject/hapi:v5.2.1
           env:
-            - name: JAVA_OPTS
-              value: "'-Dhapi.properties=/usr/local/tomcat/conf/hapi.properties'"
-          volumeMounts:
-            - name: core-hapi-fhir-server-volume
-              mountPath: /usr/local/tomcat/conf/hapi.properties
-              subPath: hapi.properties
+            - name: spring.datasource.url
+              value: jdbc:mysql://hapi-fhir-mysql-service:3306/hapi
+            - name: spring.datasource.username
+              value: admin
+            - name: spring.datasource.password
+              value: instant101
+            - name: spring.datasource.driverClassName
+              value: com.mysql.jdbc.Driver
+            - name: spring.jpa.properties.hibernate.dialect
+              value: org.hibernate.dialect.MySQL5InnoDBDialect
+            - name: hapi.fhir.allow_external_references
+              value: 'true'
       restartPolicy: Always
-      volumes:
-        - name: core-hapi-fhir-server-volume
-          configMap:
-            name: core-hapi-fhir-server-configmap
