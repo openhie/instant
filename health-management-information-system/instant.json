@@ -1,0 +1,8 @@
+{
+  "id": "hmis",
+  "name": "hmsi",
+  "description": "",
+  "type": "infrastructure",
+  "version": "v1.0.0",
+  "dependencies": []
+}
