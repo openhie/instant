@@ -1,8 +1,5 @@
 version: '3.3'
 
-volumes:
-  dhis-volume:
-
 services:
   dhis-postgres:
     container_name: dhis-postgres
@@ -14,14 +11,21 @@ services:
       POSTGRES_USER: dhis
       POSTGRES_PASSWORD: dhis
     volumes:
-      - dhis-volume:/var/lib/postgresql/data
+      - hmis-db-data:/var/lib/postgresql/data
 
   dhis-web:
     container_name: dhis-web
-    image: dhis2/core:2.35.3
+    image: dhis2/core:2.34.0
     volumes:
-      - ./config/dhis.conf:/DHIS2_home/dhis.conf
+      - hmis-app-data:/DHIS2_home
     environment:
       - WAIT_FOR_DB_CONTAINER=dhis-postgres:5432 -t 0
     ports:
       - "8081:8080"
+    depends_on:
+      - dhis-postgres
+
+volumes:
+  hmis-app-data:
+    external: true
+  hmis-db-data:
