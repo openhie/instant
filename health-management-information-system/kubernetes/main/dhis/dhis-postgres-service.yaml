@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dhis-postgres
+  labels:
+    package: dhis
+spec:
+  type: LoadBalancer
+  selector:
+    component: dhis-postgres
+  ports:
+    - name: dhis-port-5432
+      port: 5432
+      targetPort: 5432
