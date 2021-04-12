@@ -18,7 +18,8 @@ module.exports = {
     ],
     'How-to': [
       'how-to/creating-packages',
-      'how-to/setup-kubernetes-in-cloud'
+      'how-to/setup-kubernetes-in-cloud',
+      'how-to/configure-openhim-mapping-mediator'
     ],
     'Existing Packages': [
       'packages/core',
