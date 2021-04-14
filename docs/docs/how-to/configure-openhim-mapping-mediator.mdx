@@ -64,7 +64,7 @@ The previous example will set up a docker container that will run a custom Node.
 
 Next, add the following files under a new volume subdirectory of the docker importer directory (`docker/importer/volume`). Add the following files for the volume directory:
 
-- `example-endpoint.json` - the example endpoint configuration to be imported. For more details on endpoint configs, visit [here](https://jembi.github.io/openhim-mediator-mapping/docs/gettingStarted/endpoints).
+- `example-endpoint.json` - the example endpoint configuration file to be imported. For more details on endpoint configs, visit the [OpenHIM Mapping Mediator Endpoint Docs](https://jembi.github.io/openhim-mediator-mapping/docs/gettingStarted/endpoints).
 - `endpoint.js` - a Node.js script that is capable of importing the `example-endpoint.json` contents into a Mapping Mediator instance.
 
 Next, update the contents of your docker `docker/compose.sh` script to include the importer docker-compose file. The file could look like the following when updated:
