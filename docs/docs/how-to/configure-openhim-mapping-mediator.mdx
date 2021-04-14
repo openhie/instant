@@ -1,0 +1,223 @@
+---
+id: configure-openhim-mapping-mediator
+title: How to configure OpenHIM Mapping Mediator
+sidebar_label: Configure OpenHIM Mapping Mediator
+keywords:
+  - Instant OpenHIE
+  - How to
+  - Creating packages
+  - OpenHIM
+  - OpenHIM Mapping Mediator
+description: How to configure OpenHIM Mapping Mediator
+---
+
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
+[OpenHIM mediators](http://openhim.org/docs/user-guide/mediators) are HTTP services that are registered and tracked by the OpenHIM Core. As such, a mediator is not unique in the way it is set up for use in an Instant OpenHIE package. The only requirement is that it be packaged as a Docker image.
+
+The [OpenHIM Mapping Mediator](https://jembi.github.io/openhim-mediator-mapping), however, is a bit more sophisticated than the average OpenHIM mediator as it is generic and designed for re-use. This mediator usually requires an endpoint configuration(s) to be imported once the mediator is up and running. The endpoint config payload can be sent as a POST request to the `/endpoints` path of the mediator. For more information on the Mapping Mediator endpoints, read [here](https://jembi.github.io/openhim-mediator-mapping/docs/gettingStarted/endpoints).
+
+> Note: This guide assumes that you have an existing custom package and that the OpenHIM Mapping Mediator is already set up but has not been configured with endpoints.
+
+## Importing Endpoints
+
+### Docker
+
+To import the mediator endpoint config in an Instant OpenHIE package we use the Instant OpenHIE Config Importer docker image. In your package source code repository, under the `docker` directory, create an `importer` directory. Your directory structure should now look like this:
+
+```text
+example-package/
+├── docker/
+│   ├── importer/
+└── ...
+```
+
+Under the importer subdirectory of the docker directory, add a file named `docker-compose.config.yml` with the following contents:
+
+```yaml
+version: '3.3'
+
+services:
+  # container for executing config import scripts for setting up initial config
+  example-endpoint-config-importer:
+    container_name: example-endpoint-config-importer
+    image: jembi/instantohie-config-importer:latest
+    restart: on-failure
+    environment:
+      MEDIATOR_HOSTNAME: 'example-mediator'
+      MEDIATOR_API_PORT: 3003
+    volumes:
+      - type: volume
+        source: instant
+        target: /instant
+    # This command will only attempt to import the covid19immunization-mediator config when the uptime endpoint responds with 200
+    command: sh -c "wait-on -t 60000 http-get://example-mediator:3003/uptime && sleep 1 && node /instant/example-package/docker/importer/volume/endpoint.js"
+
+volumes:
+  instant:
+    external: true
+```
+
+The previous example will set up a docker container that will run a custom Node.js script that can send the endpoint config to a running instance of the mediator. The `command` for running this container waits for the mediator to be up and running before the import script (endpoint.js) is started.
+
+Next, add the following files under a new volume subdirectory of the docker importer directory (`docker/importer/volume`). Add the following files for the volume directory:
+
+- `example-endpoint.json` - the example endpoint configuration file to be imported. For more details on endpoint configs, visit the [OpenHIM Mapping Mediator Endpoint Docs](https://jembi.github.io/openhim-mediator-mapping/docs/gettingStarted/endpoints).
+- `endpoint.js` - a Node.js script that is capable of importing the `example-endpoint.json` contents into a Mapping Mediator instance.
+
+Finally, update the contents of your docker `docker/compose.sh` script to include the importer docker-compose file. The file could look like the following when updated:
+
+```sh
+#!/bin/bash
+
+sleep 10
+
+composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+if [ "$1" == "init" ]; then
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
+elif [ "$1" == "up" ]; then
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml up -d
+elif [ "$1" == "down" ]; then
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
+elif [ "$1" == "destroy" ]; then
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml down
+else
+    echo "Valid options are: init, up, down, or destroy"
+fi
+```
+
+The directory structure should now look like the following:
+
+```text
+example-package/
+├── docker/
+│   ├── importer/
+│       ├── volume/
+│           ├── endpoint.js
+│           ├── example-endpoint.json
+│       ├── docker-compose.config.yml
+│   ├── compose.sh
+│   ├── ...
+├── ...
+```
+
+With all of the docker setup in place, it is now time to import the endpoint in Kubernetes.
+
+## Kubernetes
+
+For Kubernetes, create an importer directory under the `kubernetes` directory. Under the importer directory, add the following files and directories:
+
+- `example-endpoint-importer-job.yaml` - similar to the `docker-compose.config.yml` of the docker scripts, this file will create a Kubernetes [job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) that will be responsible for running the `endpoint.js` script.
+- `k8s.sh` - to configure, start, and stop the Kubernetes importer jobs.
+- `kustomization.yaml` - a tool for customizing Kubernetes configurations. More kubernetes information [here](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/).
+- `volume/` - this directory will be the same as its docker counterpart. You can copy the docker version and all its contents to this Kubernetes destination.
+
+The package directory structure should now look like the following:
+
+```text
+example-package/
+├── docker/
+│   ├── importer/
+│       ├── volume/
+│           ├── endpoint.js
+│           ├── example-endpoint.json
+│       ├── docker-compose.config.yml
+│   ├── compose.sh
+│   ├── ...
+├── kubernetes/
+│   ├── importer/
+│       ├── volume/
+│           ├── endpoint.js
+│           ├── example-endpoint.json
+│   ├── example-endpoint-importer-job.yaml
+│   ├── k8s.sh
+│   ├── kustomization.yaml
+│   ├── ...
+├── ...
+```
+
+Add the following contents to the `example-endpoint-importer-job.yaml` file:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: example-endpoint-importer-job
+  labels:
+    app.kubernetes.io/name: endpoint-importer
+    app.kubernetes.io/instance: example-mapper-endpoint-importer-1
+    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/component: endpoint-importer
+    package: examplePackage
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      initContainers:
+        - name: example-check-mapper-status
+          image: busybox:1.28
+          command: ['sh', '-c', 'until telnet mapper-service 3003; do echo Mapping mediator not running yet; sleep 10; done;']
+      containers:
+        - name: example-endpoint-importer
+          image: jembi/instantohie-config-importer:latest
+          args:
+            - sh
+            - -c
+            - wait-on -t 60000 http-get://example-mapper-service:3003/uptime && node endpoint.js
+          env:
+            - name: MEDIATOR_HOST_NAME
+              value: 'example-mapper-service'
+            - name: MEDIATOR_API_PORT
+              value: '3003'
+          volumeMounts:
+            - mountPath: /importer
+              name: example-endpoint-importer
+      restartPolicy: OnFailure
+      volumes:
+        - name: example-endpoint-importer
+          configMap:
+            name: example-endpoint-importer-configmap
+```
+
+Just like the docker-compose.config.yml, this script will run a `jembi/instantohie-config-importer` container as a Kubernetes job. The script will wait for the OpenHIM Mapping Mediator service/pod to be ready before it executes the `endpoint.js` script.
+
+Add the following code to the `kustomization.yml` file:
+
+```yaml
+configMapGenerator:
+  - name: example-endpoint-importer-configmap
+    files:
+      - ./volume/endpoint.js
+resources:
+  - ./example-endpoint-importer-job.yaml
+```
+
+This config generates a Kubernetes `configMap` for the `example-endpoint-importer` job based on the contents of the `example-endpoint-importer-job.yaml` Kubernetes file.
+
+Finally, update the `k8s.sh` file with the following script:
+
+```sh
+#!/bin/bash
+
+k8sImporterRootFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+if [ "$1" == "up" ]; then
+    kubectl apply -k $k8sImporterRootFilePath
+elif [ "$1" == "clean" ]; then
+    kubectl delete -k $k8sImporterRootFilePath
+    kubectl delete jobs --all
+else
+    echo "Valid options are: up, or clean"
+fi
+```
+
+With everything set up, you should now be able to start Instant OpenHIE with your custom package and the OpenHIM Mapping Mediator should be running and successfully configured.
+
+## Useful Links
+
+* <a href="https://openhie.github.io/instant/" target="_blank">Instant OpenHIE docs</a>
+* <a href="http://openhim.org/" target="_blank">OpenHIM</a>
+* <a href="https://jembi.github.io/openhim-mediator-mapping/" target="_blank">OpenHIM Mapping Mediator</a>
