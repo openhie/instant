@@ -30,7 +30,7 @@
   "devDependencies": {
     "axios": "^0.19.2",
     "chai": "^4.2.0",
-    "cucumber": "^6.0.5",
+    "@cucumber/cucumber": "^7.0.0",
     "prettier": "^2.0.5"
   }
 }
