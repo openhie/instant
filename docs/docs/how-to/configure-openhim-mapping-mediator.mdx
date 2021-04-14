@@ -62,7 +62,7 @@ volumes:
 
 The previous example will set up a docker container that will run a custom Node.js script that can send the endpoint config to a running instance of the mediator. The `command` for running this container waits for the mediator to be up and running before the import script (endpoint.js) is started.
 
-Now, add the following files under a new volume subdirectory of the docker importer directory (`docker/importer/volume`). Add the following files for the volume directory:
+Next, add the following files under a new volume subdirectory of the docker importer directory (`docker/importer/volume`). Add the following files for the volume directory:
 
 - `example-endpoint.json` - the example endpoint configuration to be imported. For more details on endpoint configs, visit [here](https://jembi.github.io/openhim-mediator-mapping/docs/gettingStarted/endpoints).
 - `endpoint.js` - a Node.js script that is capable of importing the `example-endpoint.json` contents into a Mapping Mediator instance.
