@@ -112,7 +112,7 @@ For Kubernetes, create an importer directory under the `kubernetes` directory. U
 
 - `example-endpoint-importer-job.yaml` - similar to the `docker-compose.config.yml` of the docker scripts, this file will create a Kubernetes [job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) that will be responsible for running the `endpoint.js` script.
 - `k8s.sh` - to configure, start, and stop the Kubernetes importer jobs.
-- `kustomization.yaml` - a tool for customizing Kubernetes configurations. More information [here](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
+- `kustomization.yaml` - a tool for customizing Kubernetes configurations. More kubernetes information [here](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/).
 - `volume/` - this directory will be the same as its docker counterpart. You can copy the docker version and all its contents to this Kubernetes destination.
 
 The package directory structure should now look like the following:
