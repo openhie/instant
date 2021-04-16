@@ -72,7 +72,11 @@ To access DHIS
 
 ### In Kubernetes
 
-Use the host ip or DNS, and the port `8081`
+Use the host ip or DNS, and the port `8081`. If the deployment has been done to a [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) cluster, get the external ip and port for the `dhis-web` service by running the following command
+
+```sh
+kubectl get services
+```
 
 The credentials for logging in are
 
