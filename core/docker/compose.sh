@@ -15,7 +15,7 @@ elif [ "$1" == "up" ]; then
     # Wait for mongo replica set to be set up
     sleep 20
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 elif [ "$1" == "down" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
 elif [ "$1" == "destroy" ]; then
