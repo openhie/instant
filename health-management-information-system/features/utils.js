@@ -96,8 +96,9 @@ exports.verifyPatientExists = async () => {
       Authorization: `Basic ${authHeader}`
     },
     params: {
-      ouMode: 'ALL',
-      program: programId,
+      ouMode: 'DESCENDANTS',
+      ou: ORG_UNIT,
+      programId: programId,
       filter: `VuoMp8yYPYz:EQ:${patientId}`
     }
   })
