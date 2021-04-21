@@ -81,7 +81,7 @@ exports.deletePatient = async () => {
       }
   })
 
-  if (result.status !== 200 && !result.data.response.importCount.deleted) {
+  if (result.status !== 200 || !result.data.response.importCount.deleted) {
     throw Error('Clean up failed - patient')
   }
 }
