@@ -15,7 +15,7 @@ services:
 
   dhis-web:
     container_name: dhis-web
-    image: dhis2/core:2.34.0
+    image: dhis2/core:2.35.3
     volumes:
       - hmis-app-data:/DHIS2_home
     environment:
