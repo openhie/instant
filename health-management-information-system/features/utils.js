@@ -151,7 +151,6 @@ exports.createPatient = async () => {
     data: JSON.stringify(data)
   })
 
-
   if (result.status != 200) {
     throw Error('Creation of patient failed')
   }
