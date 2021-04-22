@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path"
-	"path/filepath"
 	"runtime"
 )
 
@@ -24,10 +21,13 @@ func debugKubernetes() {
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 			consoleSender(server, "The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
+			println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 
 		} else {
 			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
 			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
+			println("\nkubectl cluster manager is installed, you're ready to use kubernetes")
+			println("\nThe current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
 
 	case "windows":
@@ -81,30 +81,30 @@ func debugKubernetes() {
 	consoleSender(server, kubeconfig)
 }
 
-func configServerKubernetes() {
+// func configServerKubernetes() {
 
-	path, _ := os.Getwd()
-	// if err != nil {
-	// }
+// 	path, _ := os.Getwd()
+// 	// if err != nil {
+// 	// }
 
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	files, err := ioutil.ReadDir(path)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	// fmt.Println(files)
+// 	// fmt.Println(files)
 
-	for _, file := range files {
-		fmt.Println(file.Name())
-		consoleSender(server, file.Name())
-	}
+// 	for _, file := range files {
+// 		fmt.Println(file.Name())
+// 		consoleSender(server, file.Name())
+// 	}
 
-	for _, file := range files {
-		if file.Mode().IsRegular() {
-			if filepath.Ext(file.Name()) == ".go" {
-				fmt.Println("found some:", file.Name())
-			}
-		}
-	}
+// 	for _, file := range files {
+// 		if file.Mode().IsRegular() {
+// 			if filepath.Ext(file.Name()) == ".go" {
+// 				fmt.Println("found some:", file.Name())
+// 			}
+// 		}
+// 	}
 
-}
+// }
