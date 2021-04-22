@@ -28,9 +28,9 @@
     "eks:cluster:destroy": "eksctl delete cluster -n instant-openhie -r af-south-1 -w"
   },
   "devDependencies": {
-    "axios": "^0.19.2",
+    "@cucumber/cucumber": "^7.0.0",
+    "axios": "^0.21.1",
     "chai": "^4.2.0",
-    "cucumber": "^6.0.5",
     "prettier": "^2.0.5"
   }
 }

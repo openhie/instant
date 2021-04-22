@@ -2,7 +2,7 @@
 
 const axios = require('axios')
 
-const { AfterAll, Given, Then, When } = require('cucumber')
+const { AfterAll, Given, Then, When } = require('@cucumber/cucumber')
 const { expect } = require('chai')
 
 const OPENHIM_PROTOCOL = process.env.OPENHIM_PROTOCOL || 'http'

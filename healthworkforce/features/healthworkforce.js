@@ -1,6 +1,6 @@
 'use strict'
 
-const { Given, When, Then, setDefaultTimeout } = require('cucumber')
+const { Given, When, Then, setDefaultTimeout } = require('@cucumber/cucumber')
 
 // Set timeout for the steps. The default timeout of 5000 is not enough as the process take a while
 setDefaultTimeout(30000)
