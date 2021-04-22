@@ -124,3 +124,21 @@ Multiple custom packages can be chained together as follows:
 ```sh
 ./deploy init test1 test2 test3 -c="../test1" -c="../test2" -c="../test3"
 ```
+
+### Running tests on running packages
+
+The [Cucumber](https://cucumber.io/) framework is used for testing the instantiated packages.
+
+For docker instances, update the `.env.local` file with the instances' host urls and ports, and then run
+
+```sh
+yarn test
+```
+
+For kubernetes instances, update the `.env.remote` file with the instances' host urls and ports, and then run
+
+```sh
+yarn test:remote
+```
+
+> The commands above will try to run tests for all packages which will result in errors if a package is not up and running. Logic for specifying the package to test will be added soon. For now you can specify the package by changing the path in the package.json test script.
