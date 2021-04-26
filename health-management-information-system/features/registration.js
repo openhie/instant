@@ -3,18 +3,12 @@
 const {Given, When, Then, setDefaultTimeout} = require('@cucumber/cucumber')
 
 const {
-  importMetaData,
-  createPatient,
-  verifyPatientExists,
-  deletePatient
+  verifyDhis2Running,
+  getSystemInfo,
 } = require('./utils')
 
-setDefaultTimeout(20000)
+setDefaultTimeout(10000)
 
-Given('that dhis is set up and the metadata import has been done', importMetaData)
+Given('that dhis is set up', verifyDhis2Running)
 
-When('a patient is created', createPatient)
-
-Then('the patient should exist in DHIS', verifyPatientExists)
-
-Then('the patient should then be deleted', deletePatient)
+Then('DHIS2 should respond to an authenticated API request', getSystemInfo)
