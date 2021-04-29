@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: openhim-console
-          image: jembi/openhim-console:1.13
+          image: jembi/openhim-console:1.14
           ports:
             - containerPort: 80
           volumeMounts:
