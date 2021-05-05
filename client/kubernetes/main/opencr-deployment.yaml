@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose -f docker-compose.cicd.yml convert
-    kompose.version: 1.22.0 (HEAD)
+    kompose.cmd: kompose convert -f /home/ryan/git/instant/client/docker/docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
   creationTimestamp: null
   labels:
     io.kompose.service: opencr
@@ -13,35 +13,47 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: opencr
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose -f docker-compose.cicd.yml convert
-        kompose.version: 1.22.0 (HEAD)
+        kompose.cmd: kompose convert -f /home/ryan/git/instant/client/docker/docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
       creationTimestamp: null
       labels:
         io.kompose.service: opencr
     spec:
+      initContainers:
+        - name: setup-opencr-config
+          image: busybox:1.28
+          command: ['sh', '-c', 'cp -r /tmp/opencr-configmap/. /opencr-config']
+          volumeMounts:
+            - mountPath: /tmp/opencr-configmap
+              name: opencr-configmap
+            - mountPath: /opencr-config
+              name: config
       containers:
         - env:
-            - name: NODE_ENV
-              value: cicd
             - name: HAPI_FHIR_URL
-              value: http://hapi-fhir:8080/fhir/metadata
+              value: http://hapi-fhir-server-service:8080/fhir/metadata
+            - name: NODE_ENV
+              value: instant
             - name: fhirServer__baseURL
-              value: http://hapi-fhir:8080/fhir
-          image: intrahealth/opencr
+              value: http://hapi-fhir-server-service:8080/fhir
+          image: intrahealth/opencr:6195bd8
           name: opencr
           ports:
             - containerPort: 3000
           resources: {}
           volumeMounts:
             - mountPath: /src/server/config
-              name: opencr-data
+              name: config
       restartPolicy: Always
       volumes:
-        - name: opencr-data
+        - name: opencr-configmap
           configMap:
-            claimName: opencr-data
+            name: opencr-configmap
+        - name: config
+          emptyDir: {}
 status: {}

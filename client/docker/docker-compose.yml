@@ -3,7 +3,7 @@ version: '3.3'
 services:
   opencr:
     container_name: opencr
-    image: intrahealth/opencr:9628aa9
+    image: intrahealth/opencr:6195bd8
     # change to 3004 to avoid port contention
     ports:
       - "3004:3000"

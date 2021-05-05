@@ -1,13 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: openhim-config-importer-job
+  name: client-openhim-config-importer-job
   labels:
-    app.kubernetes.io/name: openhim-config-importer
-    app.kubernetes.io/instance: openhim-config-importer-1
+    app.kubernetes.io/name: client-openhim-config-importer
+    app.kubernetes.io/instance: client-openhim-config-importer-1
     app.kubernetes.io/version: '0.1'
-    app.kubernetes.io/component: config-importer
-    package: core
+    app.kubernetes.io/component: client-config-importer
+    package: client
 spec:
   backoffLimit: 3
   template:
@@ -15,9 +15,9 @@ spec:
       initContainers:
         - name: check-openhim-core-status
           image: busybox:1.28
-          command: ['sh', '-c', 'until telnet openhim-core-service 8082; do echo OpenHIM Core API not running yet; sleep 10; done;']
+          command: ['sh', '-c', 'until telnet openhim-core-service 8082; do echo OpenHIM Core API not running yet; sleep 1; done;']
       containers:
-        - name: openhim-config-importer
+        - name: client-openhim-config-importer
           image: jembi/instantohie-config-importer
           args:
             - sh
@@ -29,16 +29,16 @@ spec:
             - name: OPENHIM_API_HOSTNAME
               value: openhim-core-service
             - name: OPENHIM_API_PASSWORD
-              value: openhim-password
+              value: instant101
             - name: OPENHIM_API_PORT
               value: '8082'
             - name: OPENHIM_API_USERNAME
               value: root@openhim.org
           volumeMounts:
             - mountPath: /importer
-              name: openhim-config-importer-config
+              name: client-openhim-config-importer-config
       restartPolicy: OnFailure
       volumes:
-        - name: openhim-config-importer-config
+        - name: client-openhim-config-importer-config
           configMap:
-            name: openhim-config-importer-configmap
+            name: client-openhim-config-importer-configmap
