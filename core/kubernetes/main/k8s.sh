@@ -149,6 +149,7 @@ elif [ "$1" == "destroy" ]; then
     kubectl delete -k $k8sMainRootFilePath
     kubectl delete -k $k8sMainRootFilePath/openhim
     bash "$k8sMainRootFilePath"/../importer/k8s.sh clean
+    kubectl delete pvc -l package=core
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
