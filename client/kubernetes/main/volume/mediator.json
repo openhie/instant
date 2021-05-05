@@ -7,7 +7,7 @@
     "fhirServer": {
       "username": "hapi",
       "password": "hapi",
-      "baseURL": "http://hapi-fhir:8080/fhir"
+      "baseURL": "http://hapi-fhir-server-service:8080/fhir"
     },
     "elastic": {
       "server": "http://es:9200",

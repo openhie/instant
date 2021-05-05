@@ -11,14 +11,14 @@
     "api": {
       "username": "root@openhim.org",
       "password": "instant101",
-      "apiURL": "https://openhim-core:8080",
+      "apiURL": "https://openhim-core-service:8082",
       "trustSelfSigned": true,
       "urn": ""
     },
     "register": true
   },
   "fhirServer": {
-    "baseURL": "http://hapi-fhir:8080/fhir",
+    "baseURL": "http://hapi-fhir-server-service:8080/fhir",
     "username": "hapi",
     "password": "hapi"
   },
@@ -41,7 +41,7 @@
   },
   "clients": [
     {
-      "id": "Instant client",
+      "id": "test",
       "displayName": "Instant OpenHIE OpenHIM"
     }
   ],

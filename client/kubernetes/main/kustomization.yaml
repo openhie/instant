@@ -1,10 +1,9 @@
 configMapGenerator:
-#   - name: core-hapi-fhir-server-configmap
-#     files:
-#       - ./hapi-fhir/volume/hapi.properties
-#   - name: core-openhim-core-configmap
-#     files:
-#       - ./openhim/volume/openhim-core/development.json
+  - name: opencr-configmap
+    files:
+      - ./volume/config_instant.json
+      - ./volume/decisionRules.json
+      - ./volume/mediator.json
 resources:
   # volumes
   - elasticsearch-data-persistentvolumeclaim.yaml
