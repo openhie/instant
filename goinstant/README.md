@@ -1,21 +1,33 @@
 # goinstant
 
-This is a Go desktop app and is provided as a native binary for the AMD64 architecture on Windows, macOS, and Linux.
+This is a Go CLI app and is provided as a native binary for the AMD64 architecture on Windows, macOS, and Linux.
 
 > Warning: This app is not meant to be used for container and cluster management in production or with sensitive data. It is meant for demos, training sessions, and by developers. In production and with sensitive data, administrators should use the purpose-built tools like the Docker and Kubernetes CLIs to manage resources directly and according to best practices which are outside the scope of this app.
 
-## How it Works
+## Usage
 
-> The prototype of goinstant was CLI only and that is now disabled. If a CLI is desired, it it suggested to use the yarn commands provided for running from the command line. The yarn CLI will be maintained.
+Download the latest release for your OS.
 
-The desktop is rendered using web pages.
+On Unix-like operating systems, you must add execute permissions, ie. `chmod +x goinstant-linux`.
 
-* Static assets are bundled into the executable.
-* Web pages are served by Go HTTP server.
-* Calls from JS go to the Go API, which in turn calls Go functions. While Go apps can easily render and serve pages directly, this separation of concerns exists so that a contributor may add a different Web framework like React or Vue, and build a new frontend while the API remains in Go.
-* Go functions generally invoke the shell on the user's OS. There are a few exceptions. 
-* On init and after accepting the disclaimer, this repo is cloned to the system. (This is done with a git-compatible library, git doesn't need to be installed.)
-* The console uses server-side events. These are one-way events sent to the client, not bidirectional like websockets. There is a function which can be called `consoleSender` to send events to the console.
+Without arguments, the CLI defaults to interactive mode. The CLI can also be used non-interactively as so:
+```
+Commands: 
+	help 		this menu
+	docker		usage: docker <package> <state> e.g. docker core init
+	kubernetes	usage: k8s/kubernetes <package> <state>, e.g. k8s core init
+	utils		usage: utils ig load <url> <fhirserver>, ig examples <url> <fhirserver>
+```
+
+
+## FHIR NPM protobuf
+
+If changing the proto, it must be regenerated. Otherwise, regenerating the proto is not necessary.
+```sh
+protoc --go_out=fhirnpmproto --go_opt=paths=source_relative --proto_path=fhirnpmproto indexjson.proto
+```
+
+
 
 ## Security
 
@@ -28,21 +40,18 @@ Therefore, this app is not meant to be used for container and cluster management
 ### Dev prerequisites
 
 * Install go, [see here](https://golang.org/doc/install). For Ubuntu you might want to use the go snap package, [see here](https://snapcraft.io/install/go/ubuntu).
-* Install packr2: **Outside** of the goinstant folder (so that it doesn't get installed as a module) run: `go get -u github.com/gobuffalo/packr/v2/packr2`
 * Add go binaries to you system $PATH, on ubuntu: Add `export PATH=$PATH:$HOME/go/bin` to the end of your ~/.bashrc file. To use this change immediately source it: `source ~/.bashrc`
-* Install dependencies, run this from the goinstant folder: `go get`
+* Install dependencies, run this from the goinstant folder: `go mod tidy`
 
 ### Running
 
-Static assets and templates are built using pkger. For development, run the app using `pkger && go run *.go`. `pkger` must be run if you change the static assets.
+For development, run the app using `go run *.go`.
 
 ### Building
 
 To build releases, create a tag and upload the binaries. A convenience bash script is included to build binaries.
 
 > Note that ARM builds are not yet supported in Go 1.15, but such builds can be supported in future for Linux and macOS.
-
-Note: this script won't work if you have a `goinstant/data/` folder that gets created when when starting up the docker-compose files through the go app. Delete this first: `sudo rm -r goinstant/data`
 
 ```sh
 bash ./buildreleases.sh

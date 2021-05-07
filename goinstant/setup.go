@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -36,6 +37,7 @@ func setup() {
 			Progress: os.Stdout,
 		})
 		if err != nil {
+			fmt.Println("error")
 		}
 		consoleSender(server, "successfully cloned")
 	} else {
@@ -52,6 +54,7 @@ func setup() {
 
 		_, err := git.PlainClone(dir, false, options)
 		if err != nil {
+			fmt.Println("error")
 		}
 	}
 	consoleSender(server, "git repo is ready")

@@ -35,7 +35,8 @@ func selectSetup() {
 
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
-		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Quit"},
+		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Utils", "Quit"},
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -64,8 +65,11 @@ func selectSetup() {
 	// 	configServerKubernetes()
 	// 	selectPackageClusterRemote()
 
+	case "Utils":
+		selectUtil()
+
 	case "Quit":
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 }
@@ -93,16 +97,84 @@ func selectSetup() {
 // 	case "Clean up Docker":
 // 		fmt.Println("This feature needs more work, sorry.")
 // 	case "Quit":
-// 		os.Exit(1)
+// 		os.Exit(0)
 // 	}
 
 // }
+
+func selectUtil() {
+	prompt := promptui.Select{
+		Label: "Choose a utility",
+		Items: []string{"Push IG Package to FHIR Server", "Push IG Examples to FHIR Server", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+	switch result {
+	case "Push IG Package to FHIR Server":
+
+		fmt.Println("Enter URL for the published package")
+		// prompt for url
+		prompt := promptui.Prompt{
+			Label: "URL",
+		}
+
+		result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+
+		fmt.Printf("URL to IG %q\n", result)
+
+		// do stuff
+		loadIGpackage(result)
+		selectUtil()
+
+	case "Push IG Examples to FHIR Server":
+		fmt.Println("Enter URL for the published package")
+
+		// prompt for url
+		prompt := promptui.Prompt{
+			Label: "URL",
+		}
+
+		result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+
+		fmt.Printf("URL to IG %q\n", result)
+
+		// do stuff
+		selectUtil()
+
+	case "Quit":
+		os.Exit(0)
+
+	case "Back":
+		selectPackageDocker()
+
+	}
+
+}
 
 func selectPackageDocker() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
 		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Developer Mode", "Quit", "Back"},
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -116,44 +188,45 @@ func selectPackageDocker() {
 
 	switch result {
 	case "Launch Core (Required, Start Here)":
-		println("...Setting up Core Package")
+		fmt.Println("...Setting up Core Package")
 		SomeStuffDirect("docker", "core", "init")
 		SomeStuffDirect("docker", "core", "up")
-		println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
-		println("HAPI FHIR base URL: http://localhost:3447/")
+		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
+		// now working
+		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
 		selectPackageDocker()
 
 		// fmt.Print("Press 'Enter' to continue...")
 		// bufio.NewReader(os.Stdin).ReadBytes('\n')
 
 	case "Launch Facility Registry":
-		println("...Setting up Facility Registry Package")
+		fmt.Println("...Setting up Facility Registry Package")
 		SomeStuffDirect("docker", "facility", "up")
 		selectPackageDocker()
 
 	case "Launch Workforce":
-		println("...Setting up Workforce Package")
+		fmt.Println("...Setting up Workforce Package")
 		SomeStuffDirect("docker", "healthworker", "up")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Core":
-		println("Stopping and Cleaning Up Core...")
+		fmt.Println("Stopping and Cleaning Up Core...")
 		SomeStuffDirect("docker", "core", "destroy")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Facility Registry":
-		println("Stopping and Cleaning Up Facility Registry...")
+		fmt.Println("Stopping and Cleaning Up Facility Registry...")
 		SomeStuffDirect("docker", "facility", "destroy")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Workforce":
-		println("Stopping and Cleaning Up Workforce...")
+		fmt.Println("Stopping and Cleaning Up Workforce...")
 		SomeStuffDirect("docker", "healthworker", "destroy")
 		selectPackageDocker()
 
 	case "Stop All Services and Cleanup Docker":
 		// composeDownCore()
-		println("Stopping and Cleaning Up Everything...")
+		fmt.Println("Stopping and Cleaning Up Everything...")
 		SomeStuffDirect("docker", "core", "destroy")
 		SomeStuffDirect("docker", "facility", "destroy")
 		SomeStuffDirect("docker", "healthworker", "destroy")
@@ -164,7 +237,7 @@ func selectPackageDocker() {
 		// selectPackageDocker()
 
 	case "Quit":
-		os.Exit(1)
+		os.Exit(0)
 
 	case "Back":
 		selectSetup()
@@ -177,6 +250,7 @@ func selectPackageCluster() {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
 		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Developer Mode", "Quit", "Back"},
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -190,39 +264,39 @@ func selectPackageCluster() {
 
 	switch result {
 	case "Launch Core (Required, Start Here)":
-		println("...Setting up Core Package")
+		fmt.Println("...Setting up Core Package")
 		SomeStuffDirect("k8s", "core", "init")
 		SomeStuffDirect("k8s", "core", "up")
 		selectPackageCluster()
 
 	case "Launch Facility Registry":
-		println("...Setting up Facility Registry Package")
+		fmt.Println("...Setting up Facility Registry Package")
 		SomeStuffDirect("k8s", "facility", "up")
 		selectPackageCluster()
 
 	case "Launch Workforce":
-		println("...Setting up Workforce Package")
+		fmt.Println("...Setting up Workforce Package")
 		SomeStuffDirect("k8s", "healthworker", "up")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Core":
-		println("Stopping and Cleaning Up Core...")
+		fmt.Println("Stopping and Cleaning Up Core...")
 		SomeStuffDirect("k8s", "core", "destroy")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Facility Registry":
-		println("Stopping and Cleaning Up Facility Registry...")
+		fmt.Println("Stopping and Cleaning Up Facility Registry...")
 		SomeStuffDirect("k8s", "facility", "destroy")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Workforce":
-		println("Stopping and Cleaning Up Workforce...")
+		fmt.Println("Stopping and Cleaning Up Workforce...")
 		SomeStuffDirect("k8s", "healthworker", "destroy")
 		selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
 		// composeDownCore()
-		println("Stopping and Cleaning Up Everything...")
+		fmt.Println("Stopping and Cleaning Up Everything...")
 		SomeStuffDirect("k8s", "core", "destroy")
 		SomeStuffDirect("k8s", "facility", "destroy")
 		SomeStuffDirect("k8s", "healthworker", "destroy")
@@ -233,7 +307,7 @@ func selectPackageCluster() {
 		// selectPackageCluster()
 
 	case "Quit":
-		os.Exit(1)
+		os.Exit(0)
 
 	case "Back":
 		selectSetup()
@@ -265,7 +339,7 @@ func selectPackageCluster() {
 // 	case "Core + Facility + Workforce":
 // 		fmt.Println("Core + Facility + Workforce")
 // 	case "Quit":
-// 		os.Exit(1)
+// 		os.Exit(0)
 // 	}
 
 // }
@@ -294,7 +368,7 @@ func selectPackageCluster() {
 // 	case "Core + Facility + Workforce":
 // 		fmt.Println("Core + Facility + Workforce")
 // 	case "Quit":
-// 		os.Exit(1)
+// 		os.Exit(0)
 // 	}
 
 // }
@@ -324,7 +398,7 @@ func selectPackageDockerDev() {
 	case "Facility + Workforce (w/o Core)":
 		fmt.Println("Facility + Workforce (w/o Core)")
 	case "Quit":
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 }
@@ -379,7 +453,7 @@ func selectPackageDockerDev() {
 // 	case "Help":
 // 		help()
 // 	case "Quit":
-// 		os.Exit(1)
+// 		os.Exit(0)
 // 	}
 
 // }

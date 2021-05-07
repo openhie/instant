@@ -6,55 +6,53 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/manifoldco/promptui"
 )
 
 // existDisclaimer detects if the accept_disclaimer file exists in the $HOME/.instant folder.
 // If it exists, then the user has accepted and it returns 'success', otherwise 'fail'.
-func existDisclaimer() string {
-	home, _ := os.UserHomeDir()
-	// must use filepath.join not path.join for windows compat
-	dotfiles := filepath.Join(home, ".instant")
-	fileName := filepath.Join(dotfiles, "accept_disclaimer")
-	status := "success"
-	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		status = "fail"
-	}
-	return status
-}
+// func existDisclaimer() string {
+// 	home, _ := os.UserHomeDir()
+// 	// must use filepath.join not path.join for windows compat
+// 	dotfiles := filepath.Join(home, ".instant")
+// 	fileName := filepath.Join(dotfiles, "accept_disclaimer")
+// 	status := "success"
+// 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+// 		status = "fail"
+// 	}
+// 	return status
+// }
 
-func cliDisclaimer() {
-	status := existDisclaimer()
-	if status == "fail" {
-		pkgerPrint("/templates/disclaimer.txt", "yellow")
-		prompt := promptui.Select{
-			Label: "Do you agree to use this application?",
-			Items: []string{"Yes", "No", "Quit"},
-		}
+// func cliDisclaimer() {
+// 	status := existDisclaimer()
+// 	if status == "fail" {
+// 		pkgerPrint("/templates/disclaimer.txt", "yellow")
+// 		prompt := promptui.Select{
+// 			Label: "Do you agree to use this application?",
+// 			Items: []string{"Yes", "No", "Quit"},
+// 		}
 
-		_, result, err := prompt.Run()
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-			return
-		}
-		fmt.Printf("You chose %q\n", result)
+// 		_, result, err := prompt.Run()
+// 		if err != nil {
+// 			fmt.Printf("Prompt failed %v\n", err)
+// 			return
+// 		}
+// 		fmt.Printf("You chose %q\n", result)
 
-		switch result {
-		case "Yes":
-			makeDisclaimer()
-			setup()
-			selectSetup()
-		case "No":
-			fmt.Println("Understood. Exiting.")
-			os.Exit(1)
-		case "Quit":
-			os.Exit(1)
-		}
-	} else {
-		selectSetup()
-	}
-}
+// 		switch result {
+// 		case "Yes":
+// 			makeDisclaimer()
+// 			setup()
+// 			selectSetup()
+// 		case "No":
+// 			fmt.Println("Understood. Exiting.")
+// 			os.Exit(0)
+// 		case "Quit":
+// 			os.Exit(0)
+// 		}
+// 	} else {
+// 		selectSetup()
+// 	}
+// }
 
 func makeDisclaimer() string {
 	home, _ := os.UserHomeDir()

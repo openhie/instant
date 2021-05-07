@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -21,13 +22,13 @@ func debugKubernetes() {
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 			consoleSender(server, "The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
-			println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
+			fmt.Println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 
 		} else {
 			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
 			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
-			println("\nkubectl cluster manager is installed, you're ready to use kubernetes")
-			println("\nThe current kubernetes cluster active will be used. Change now if you wish to use another.")
+			fmt.Println("\nkubectl cluster manager is installed, you're ready to use kubernetes")
+			fmt.Println("\nThe current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
 
 	case "windows":

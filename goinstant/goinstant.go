@@ -4,17 +4,15 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 	"github.com/markbates/pkger"
-	"github.com/openhie/instant/goinstant/cmd"
 	"github.com/r3labs/sse"
 )
 
 var server *sse.Server
 
 func main() {
-
-	// version := "1.0.0-beta"
 
 	router := mux.NewRouter()
 	server = sse.New()
@@ -29,19 +27,16 @@ func main() {
 	// })
 
 	pkgerPrint("/templates/banner.txt", "green")
-	// color.Green.Println("Version:", version)
-	// color.Green.Println("Site: http://localhost:27517")
-	// color.Red.Println("Remember to clean up after your work or the app will continue to run in the background and have an adverse impact on performance.")
-
-	// cmd.Execute()
+	color.Cyan("Version: 1.02b")
+	// color.Green("Site: http://localhost:27517")
+	color.Blue("Remember to stop applications or they will continue to run and have an adverse impact on performance.")
 
 	// mainMenu()
 	if len(os.Args) > 1 {
-		cmd.Execute()
+		CLI()
 	} else {
 		selectSetup()
 	}
-
 	// c := existDisclaimer()
 	// switch c {
 	// case "fail":
