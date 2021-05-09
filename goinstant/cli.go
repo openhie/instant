@@ -22,6 +22,8 @@ Commands:
 	utils		usage: utils ig load <url> <fhirserver>, ig examples <url> <fhirserver> 
 	`)
 
+	// case "utils":
+
 	case "default":
 		fmt.Println("default")
 	}

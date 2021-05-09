@@ -19,16 +19,6 @@ Commands:
 	utils		usage: utils ig load <url> <fhirserver>, ig examples <url> <fhirserver>
 ```
 
-
-## FHIR NPM protobuf
-
-If changing the proto, it must be regenerated. Otherwise, regenerating the proto is not necessary.
-```sh
-protoc --go_out=fhirnpmproto --go_opt=paths=source_relative --proto_path=fhirnpmproto indexjson.proto
-```
-
-
-
 ## Security
 
 This desktop app is meant as a prototype and may change. This app resides in userspace but it invokes the command line for containers and clusters. The apps it invokes, Docker and Kubernetes CLI, launch and manage containers and may have admin/root privileges.

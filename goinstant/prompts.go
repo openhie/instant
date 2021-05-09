@@ -133,10 +133,11 @@ func selectUtil() {
 			return
 		}
 
-		fmt.Printf("URL to IG %q\n", result)
-
+		// fmt.Printf("URL to IG %q\n", result)
 		// do stuff
-		loadIGpackage(result)
+		x := selectFHIR()
+		fmt.Println("FHIR Server target:", x)
+		loadIGpackage(x, result)
 		selectUtil()
 
 	case "Push IG Examples to FHIR Server":
@@ -157,6 +158,7 @@ func selectUtil() {
 		fmt.Printf("URL to IG %q\n", result)
 
 		// do stuff
+		fmt.Println("Not yet implemented")
 		selectUtil()
 
 	case "Quit":
@@ -457,3 +459,55 @@ func selectPackageDockerDev() {
 // 	}
 
 // }
+
+func selectFHIR() (result_url string) {
+
+	prompt := promptui.Select{
+		Label: "Select or enter URL for a FHIR Server",
+		Items: []string{"Docker Default", "Kubernetes Default", "Use Public HAPI Server", "Enter a Server URL", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+	}
+
+	fmt.Printf("You choose %q\n", result)
+	switch result {
+
+	case "Docker Default":
+		result_url := "http://localhost:8080/fhir"
+		return result_url
+
+	case "Kubernetes Default":
+		result_url := "http://localhost:8080/fhir"
+		return result_url
+
+	case "Use Public HAPI Server":
+		result_url := "http://hapi.fhir.org/baseR4"
+		return result_url
+
+	case "Enter a Server URL":
+		prompt := promptui.Prompt{
+			Label: "URL",
+		}
+		result_url, err := prompt.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		// TODO: validate URL
+		return result_url
+
+	case "Quit":
+		os.Exit(0)
+		return ""
+
+	case "Back":
+		selectUtil()
+		return ""
+
+	}
+	return result_url
+
+}
