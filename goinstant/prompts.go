@@ -105,7 +105,7 @@ func selectSetup() {
 func selectUtil() {
 	prompt := promptui.Select{
 		Label: "Choose a utility",
-		Items: []string{"Push IG Package to FHIR Server", "Push IG Examples to FHIR Server", "Quit", "Back"},
+		Items: []string{"Push IG Package to FHIR Server", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -118,7 +118,7 @@ func selectUtil() {
 
 	fmt.Printf("You choose %q\n", result)
 	switch result {
-	case "Push IG Package to FHIR Server":
+	case "Push IG Package to FHIR Server (Experimental)":
 
 		fmt.Println("Enter URL for the published package")
 		// prompt for url
@@ -126,7 +126,7 @@ func selectUtil() {
 			Label: "URL",
 		}
 
-		result, err := prompt.Run()
+		ig_url, err := prompt.Run()
 
 		if err != nil {
 			fmt.Printf("Prompt failed %v\n", err)
@@ -135,31 +135,35 @@ func selectUtil() {
 
 		// fmt.Printf("URL to IG %q\n", result)
 		// do stuff
-		x := selectFHIR()
-		fmt.Println("FHIR Server target:", x)
-		loadIGpackage(x, result)
+		fhir_server := selectFHIR()
+		fmt.Println("FHIR Server target:", fhir_server)
+		loadIGpackage(ig_url, fhir_server)
 		selectUtil()
 
-	case "Push IG Examples to FHIR Server":
-		fmt.Println("Enter URL for the published package")
+	// case "Push IG Examples to FHIR Server (Incomplete)":
+	// 	fmt.Println("Enter URL for the published package")
 
-		// prompt for url
-		prompt := promptui.Prompt{
-			Label: "URL",
-		}
+	// 	// prompt for url
+	// 	prompt := promptui.Prompt{
+	// 		Label: "URL",
+	// 	}
 
-		result, err := prompt.Run()
+	// 	result, err := prompt.Run()
 
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-			return
-		}
+	// 	if err != nil {
+	// 		fmt.Printf("Prompt failed %v\n", err)
+	// 		return
+	// 	}
 
-		fmt.Printf("URL to IG %q\n", result)
+	// 	fmt.Printf("URL to IG %q\n", result)
 
-		// do stuff
-		fmt.Println("Not yet implemented")
-		selectUtil()
+	// do stuff
+	// x := selectFHIR()
+	// fmt.Println("FHIR Server target:", x)
+	// loadIGexamples(x, result)
+	// selectUtil()
+	// fmt.Println("Not yet implemented")
+	// selectUtil()
 
 	case "Quit":
 		os.Exit(0)

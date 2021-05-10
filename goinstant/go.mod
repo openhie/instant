@@ -13,6 +13,7 @@ require (
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/gobuffalo/here v0.6.2 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.1
+	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/mux v1.8.0
 	github.com/karrick/godirwalk v1.16.1 // indirect
@@ -30,9 +31,8 @@ require (
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
 	golang.org/x/term v0.0.0-20210406210042-72f3dc4e9b72 // indirect
-	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
-	google.golang.org/grpc v1.21.1 // indirect
-	google.golang.org/protobuf v1.26.0
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
 	gotest.tools/v3 v3.0.3 // indirect
