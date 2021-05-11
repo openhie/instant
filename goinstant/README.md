@@ -11,12 +11,12 @@ Download the latest release for your OS.
 On Unix-like operating systems, you must add execute permissions, ie. `chmod +x goinstant-linux`.
 
 Without arguments, the CLI defaults to interactive mode. The CLI can also be used non-interactively as so:
-```
+```txt
 Commands: 
 	help 		this menu
-	docker		usage: docker <package> <state> e.g. docker core init
-	kubernetes	usage: k8s/kubernetes <package> <state>, e.g. k8s core init
-	utils		usage: utils ig load <url> <fhirserver>, ig examples <url> <fhirserver>
+	docker		manage package in docker, usage: docker <package> <state> e.g. docker core init
+	kubernetes	manage package in kubernetes, usage: k8s/kubernetes <package> <state>, e.g. k8s core init
+	install		install fhir npm package on fhir server, usage: install <ig_url> <fhir_server>, e.g. install https://intrahealth.github.io/simple-hiv-ig/ http://hapi.fhir.org/baseR4
 ```
 
 ## Security
