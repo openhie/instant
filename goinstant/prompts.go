@@ -35,7 +35,7 @@ func selectSetup() {
 
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
-		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Utils", "Quit"},
+		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
 		Size:  12,
 	}
 
@@ -59,13 +59,7 @@ func selectSetup() {
 		// configServerKubernetes()
 		selectPackageCluster()
 
-	// case "Use Cluster on Remote Server":
-	// 	fmt.Println("Great, but this feature isn't built yet.")
-	// 	debugKubernetes()
-	// 	configServerKubernetes()
-	// 	selectPackageClusterRemote()
-
-	case "Utils":
+	case "Install FHIR package":
 		selectUtil()
 
 	case "Quit":
@@ -103,83 +97,30 @@ func selectSetup() {
 // }
 
 func selectUtil() {
-	prompt := promptui.Select{
-		Label: "Choose a utility",
-		Items: []string{"Push IG Package to FHIR Server", "Quit", "Back"},
-		Size:  12,
+	fmt.Println("Enter URL for the published package")
+	// prompt for url
+	prompt := promptui.Prompt{
+		Label: "URL",
 	}
 
-	_, result, err := prompt.Run()
+	ig_url, err := prompt.Run()
 
 	if err != nil {
 		fmt.Printf("Prompt failed %v\n", err)
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
-	switch result {
-	case "Push IG Package to FHIR Server (Experimental)":
-
-		fmt.Println("Enter URL for the published package")
-		// prompt for url
-		prompt := promptui.Prompt{
-			Label: "URL",
-		}
-
-		ig_url, err := prompt.Run()
-
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-			return
-		}
-
-		// fmt.Printf("URL to IG %q\n", result)
-		// do stuff
-		fhir_server := selectFHIR()
-		fmt.Println("FHIR Server target:", fhir_server)
-		loadIGpackage(ig_url, fhir_server)
-		selectUtil()
-
-	// case "Push IG Examples to FHIR Server (Incomplete)":
-	// 	fmt.Println("Enter URL for the published package")
-
-	// 	// prompt for url
-	// 	prompt := promptui.Prompt{
-	// 		Label: "URL",
-	// 	}
-
-	// 	result, err := prompt.Run()
-
-	// 	if err != nil {
-	// 		fmt.Printf("Prompt failed %v\n", err)
-	// 		return
-	// 	}
-
-	// 	fmt.Printf("URL to IG %q\n", result)
-
-	// do stuff
-	// x := selectFHIR()
-	// fmt.Println("FHIR Server target:", x)
-	// loadIGexamples(x, result)
-	// selectUtil()
-	// fmt.Println("Not yet implemented")
-	// selectUtil()
-
-	case "Quit":
-		os.Exit(0)
-
-	case "Back":
-		selectPackageDocker()
-
-	}
-
+	fhir_server := selectFHIR()
+	fmt.Println("FHIR Server target:", fhir_server)
+	loadIGpackage(ig_url, fhir_server)
+	selectSetup()
 }
 
 func selectPackageDocker() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Developer Mode", "Quit", "Back"},
+		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -238,9 +179,9 @@ func selectPackageDocker() {
 		SomeStuffDirect("docker", "healthworker", "destroy")
 		selectPackageDocker()
 
-	case "Developer Mode":
-		selectPackageDockerDev()
-		// selectPackageDocker()
+	// case "Developer Mode":
+	// selectPackageDockerDev()
+	// selectPackageDocker()
 
 	case "Quit":
 		os.Exit(0)
@@ -255,7 +196,7 @@ func selectPackageCluster() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Developer Mode", "Quit", "Back"},
+		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -308,9 +249,9 @@ func selectPackageCluster() {
 		SomeStuffDirect("k8s", "healthworker", "destroy")
 		selectPackageCluster()
 
-	case "Developer Mode":
-		selectPackageDockerDev()
-		// selectPackageCluster()
+	// case "Developer Mode":
+	// 	selectPackageDockerDev()
+	// 	// selectPackageCluster()
 
 	case "Quit":
 		os.Exit(0)
@@ -321,11 +262,11 @@ func selectPackageCluster() {
 
 }
 
-// func selectPackageClusterLocal() {
+// func selectPackageDockerDev() {
 
 // 	prompt := promptui.Select{
 // 		Label: "Great, now choose a package",
-// 		Items: []string{"Core", "Core + Facility", "Core + Facility + Workforce", "Quit"},
+// 		Items: []string{"Core (dev.yml)", "Facility (w/o Core)", "Facility + Workforce (w/o Core)", "Quit"},
 // 	}
 
 // 	_, result, err := prompt.Run()
@@ -338,126 +279,13 @@ func selectPackageCluster() {
 // 	fmt.Printf("You choose %q\n", result)
 
 // 	switch result {
-// 	case "Core":
-// 		fmt.Println("Core")
-// 	case "Core + Facility":
-// 		fmt.Println("Core + Facility")
-// 	case "Core + Facility + Workforce":
-// 		fmt.Println("Core + Facility + Workforce")
-// 	case "Quit":
-// 		os.Exit(0)
-// 	}
-
-// }
-
-// func selectPackageClusterRemote() {
-
-// 	prompt := promptui.Select{
-// 		Label: "Great, now choose a package",
-// 		Items: []string{"Core", "Core + Facility", "Core + Facility + Workforce", "Quit"},
-// 	}
-
-// 	_, result, err := prompt.Run()
-
-// 	if err != nil {
-// 		fmt.Printf("Prompt failed %v\n", err)
-// 		return
-// 	}
-
-// 	fmt.Printf("You choose %q\n", result)
-
-// 	switch result {
-// 	case "Core":
-// 		fmt.Println("Core")
-// 	case "Core + Facility":
-// 		fmt.Println("Core + Facility")
-// 	case "Core + Facility + Workforce":
-// 		fmt.Println("Core + Facility + Workforce")
-// 	case "Quit":
-// 		os.Exit(0)
-// 	}
-
-// }
-
-func selectPackageDockerDev() {
-
-	prompt := promptui.Select{
-		Label: "Great, now choose a package",
-		Items: []string{"Core (dev.yml)", "Facility (w/o Core)", "Facility + Workforce (w/o Core)", "Quit"},
-	}
-
-	_, result, err := prompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-
-	fmt.Printf("You choose %q\n", result)
-
-	switch result {
-	case "Core (dev.yml)":
-		fmt.Println("Core (dev.yml)")
-		// composeUpCore()
-	case "Facility (w/o Core)":
-		fmt.Println("Facility (w/o Core)")
-	case "Facility + Workforce (w/o Core)":
-		fmt.Println("Facility + Workforce (w/o Core)")
-	case "Quit":
-		os.Exit(0)
-	}
-
-}
-
-// old start menu system
-// func mainMenu() {
-
-// 	prompt := promptui.Select{
-// 		Label: "Developer Mode",
-// 		Items: []string{"Setup", "Select Packages", "Start Instant OpenHIE", "Stop Instant OpenHIE", "Debug", "Help", "Quit"},
-// 	}
-
-// 	_, result, err := prompt.Run()
-// 	if err != nil {
-// 		fmt.Printf("Prompt failed %v\n", err)
-// 		return
-// 	}
-// 	fmt.Printf("You chose %q\n", result)
-
-// 	stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
-
-// 	switch result {
-// 	case "Setup":
-// 		setup()
-// 		selectSetup()
-// 	case "Select Packages":
-// 		fmt.Println("in-progress")
-// 	case "Start Instant OpenHIE":
-
-// 		// http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-// 		// 	fmt.Fprintln(w, "Hello, you hit foo!")
-// 		// })
-
-// 		// dir := http.FileServer(pkger.Dir("/templates"))
-// 		// // use in goroutine to return control
-// 		// go http.ListenAndServe(":27517", dir)
-// 		// go openBrowser("http://localhost:27517")
-
-// 		debugDocker()
-// 		stuff := composeGet(stack)
-// 		composeUp(stuff)
-
-// 		// color.Green.Println("A browser will open http://localhost:27517")
-// 		// color.Red.Println("Enter 'control c' key combination to stop the utility.")
-// 		// color.Println("Then stop containers by running 'goinstant' again and choosing 'Stop OpenHIE")
-
-// 	case "Stop Instant OpenHIE":
-// 		stuff := composeGet(stack)
-// 		composeDown(stuff)
-// 	case "Debug":
-// 		debugDocker()
-// 	case "Help":
-// 		help()
+// 	case "Core (dev.yml)":
+// 		fmt.Println("Core (dev.yml)")
+// 		// composeUpCore()
+// 	case "Facility (w/o Core)":
+// 		fmt.Println("Facility (w/o Core)")
+// 	case "Facility + Workforce (w/o Core)":
+// 		fmt.Println("Facility + Workforce (w/o Core)")
 // 	case "Quit":
 // 		os.Exit(0)
 // 	}
