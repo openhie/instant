@@ -289,7 +289,8 @@ func selectFHIR() (result_url string, params *Params) {
 	case "Kubernetes Default":
 		result_url := "http://localhost:8080/fhir"
 		params := &Params{}
-		params.TypeAuth = "None"
+		params.TypeAuth = "Custom"
+		params.Token = "test"
 		return result_url, params
 
 	case "Use Public HAPI Server":
