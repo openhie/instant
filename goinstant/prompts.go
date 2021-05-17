@@ -110,9 +110,9 @@ func selectUtil() {
 		return
 	}
 
-	fhir_server := selectFHIR()
+	fhir_server, params := selectFHIR()
 	fmt.Println("FHIR Server target:", fhir_server)
-	loadIGpackage(ig_url, fhir_server)
+	loadIGpackage(ig_url, fhir_server, params)
 	selectSetup()
 }
 
@@ -262,37 +262,7 @@ func selectPackageCluster() {
 
 }
 
-// func selectPackageDockerDev() {
-
-// 	prompt := promptui.Select{
-// 		Label: "Great, now choose a package",
-// 		Items: []string{"Core (dev.yml)", "Facility (w/o Core)", "Facility + Workforce (w/o Core)", "Quit"},
-// 	}
-
-// 	_, result, err := prompt.Run()
-
-// 	if err != nil {
-// 		fmt.Printf("Prompt failed %v\n", err)
-// 		return
-// 	}
-
-// 	fmt.Printf("You choose %q\n", result)
-
-// 	switch result {
-// 	case "Core (dev.yml)":
-// 		fmt.Println("Core (dev.yml)")
-// 		// composeUpCore()
-// 	case "Facility (w/o Core)":
-// 		fmt.Println("Facility (w/o Core)")
-// 	case "Facility + Workforce (w/o Core)":
-// 		fmt.Println("Facility + Workforce (w/o Core)")
-// 	case "Quit":
-// 		os.Exit(0)
-// 	}
-
-// }
-
-func selectFHIR() (result_url string) {
+func selectFHIR() (result_url string, params *Params) {
 
 	prompt := promptui.Select{
 		Label: "Select or enter URL for a FHIR Server",
@@ -306,19 +276,27 @@ func selectFHIR() (result_url string) {
 	}
 
 	fmt.Printf("You choose %q\n", result)
+
 	switch result {
 
 	case "Docker Default":
 		result_url := "http://localhost:8080/fhir"
-		return result_url
+		params := &Params{}
+		params.TypeAuth = "Custom"
+		params.Token = "test"
+		return result_url, params
 
 	case "Kubernetes Default":
 		result_url := "http://localhost:8080/fhir"
-		return result_url
+		params := &Params{}
+		params.TypeAuth = "None"
+		return result_url, params
 
 	case "Use Public HAPI Server":
 		result_url := "http://hapi.fhir.org/baseR4"
-		return result_url
+		params := &Params{}
+		params.TypeAuth = "None"
+		return result_url, params
 
 	case "Enter a Server URL":
 		prompt := promptui.Prompt{
@@ -329,17 +307,116 @@ func selectFHIR() (result_url string) {
 			fmt.Printf("Prompt failed %v\n", err)
 		}
 		// TODO: validate URL
-		return result_url
+		// params.TypeAuth =
+		params := selectParams()
+		return result_url, params
 
 	case "Quit":
 		os.Exit(0)
-		return ""
+		params := &Params{}
+		return "", params
 
 	case "Back":
 		selectUtil()
-		return ""
+		params := &Params{}
+		return "", params
 
 	}
-	return result_url
+	return result_url, params
+
+}
+
+type Params struct {
+	// none, token, basic, custom
+	TypeAuth  string
+	Token     string
+	BasicUser string
+	BasicPass string
+}
+
+func selectParams() *Params {
+
+	a := &Params{}
+
+	prompt := promptui.Select{
+		Label: "Choose authentication type",
+		Items: []string{"None", "Basic", "Token", "Custom", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+	}
+
+	fmt.Printf("You choose %q\n", result)
+	switch result {
+
+	case "None":
+		a.TypeAuth = "None"
+		return a
+
+	case "Basic":
+		a.TypeAuth = "Basic"
+
+		// basic user
+		prompt_basic_user := promptui.Prompt{
+			Label: "Basic User",
+		}
+		result_basic_user, err := prompt_basic_user.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.BasicUser = result_basic_user
+
+		// basic pass
+		prompt_basic_pass := promptui.Prompt{
+			Label: "Basic Password",
+		}
+		result_basic_pass, err := prompt_basic_pass.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.BasicPass = result_basic_pass
+
+		return a
+
+	case "Token":
+		a.TypeAuth = "Token"
+
+		// bearer token
+		prompt_token := promptui.Prompt{
+			Label: "Bearer Token",
+		}
+		result_token, err := prompt_token.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.Token = result_token
+		return a
+
+	case "Custom":
+		a.TypeAuth = "Custom"
+
+		// custom token
+		prompt_ctoken := promptui.Prompt{
+			Label: "Custom Token",
+		}
+		result_ctoken, err := prompt_ctoken.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.Token = result_ctoken
+		return a
+
+	case "Quit":
+		os.Exit(0)
+		return a
+
+	case "Back":
+		selectUtil()
+		return a
+	}
+	return a
 
 }
