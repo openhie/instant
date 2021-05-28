@@ -25,6 +25,7 @@ module.exports = {
     'Existing Packages': [
       'packages/core',
       'packages/facility',
+      'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
       'packages/client'
