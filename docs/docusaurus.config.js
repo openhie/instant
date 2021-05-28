@@ -18,7 +18,7 @@ module.exports = {
         alt: 'Instant OpenHIE Logo',
         src: 'img/IOHIE-icon-medium.png'
       },
-      links: [
+      items: [
         { to: 'docs/introduction/vision', label: 'Docs', position: 'left' },
         {
           href: 'https://github.com/openhie/instant',
