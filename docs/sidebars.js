@@ -19,11 +19,13 @@ module.exports = {
     'How-to': [
       'how-to/creating-packages',
       'how-to/setup-kubernetes-in-cloud',
-      'how-to/configure-openhim-mapping-mediator'
+      'how-to/configure-openhim-mapping-mediator',
+      'how-to/configure-dhis2'
     ],
     'Existing Packages': [
       'packages/core',
       'packages/facility',
+      'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
       'packages/client'
