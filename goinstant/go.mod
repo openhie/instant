@@ -12,11 +12,9 @@ require (
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/gobuffalo/here v0.6.2 // indirect
-	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/mux v1.8.0
-	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/markbates/pkger v0.17.1
@@ -28,9 +26,9 @@ require (
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc // indirect
 	golang.org/x/net v0.0.0-20210420072503-d25e30425868
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
 	golang.org/x/term v0.0.0-20210406210042-72f3dc4e9b72 // indirect
+	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -10,27 +10,6 @@ import (
 	"github.com/markbates/pkger"
 )
 
-func pkgerPrint(text string, scolor string) {
-
-	f, err := pkger.Open(text)
-	if err != nil {
-		panic(err)
-	}
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-	s := string(b)
-
-	if scolor == "green" {
-		color.Green.Println(s)
-	}
-
-	if scolor == "yellow" {
-		color.Yellow.Println(s)
-	}
-}
-
 func selectSetup() {
 
 	prompt := promptui.Select{
@@ -67,34 +46,6 @@ func selectSetup() {
 	}
 
 }
-
-// func selectDocker() {
-
-// 	prompt := promptui.Select{
-// 		Label: "Setup",
-// 		Items: []string{"Check Docker again", "Clean up Docker", "Quit"},
-// 	}
-
-// 	_, result, err := prompt.Run()
-
-// 	if err != nil {
-// 		fmt.Printf("Prompt failed %v\n", err)
-// 		return
-// 	}
-
-// 	fmt.Printf("You choose %q\n", result)
-
-// 	switch result {
-// 	case "Check Docker again":
-// 		debugDocker()
-// 		selectPackageDocker()
-// 	case "Clean up Docker":
-// 		fmt.Println("This feature needs more work, sorry.")
-// 	case "Quit":
-// 		os.Exit(0)
-// 	}
-
-// }
 
 func selectUtil() {
 	fmt.Println("Enter URL for the published package")
