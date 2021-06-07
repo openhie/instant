@@ -11,7 +11,7 @@ import (
 
 func debugKubernetes() {
 
-	consoleSender(server, "...checking your cluster setup")
+	fmt.Println("...checking your cluster setup")
 
 	switch runtime.GOOS {
 	case "linux", "darwin":
@@ -21,12 +21,9 @@ func debugKubernetes() {
 		err := cmd.Run()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
-			consoleSender(server, "The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 			fmt.Println("The kubectl cluster manager is not installed.\nUsing a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 
 		} else {
-			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
-			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
 			fmt.Println("\nkubectl cluster manager is installed, you're ready to use kubernetes")
 			fmt.Println("\nThe current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
@@ -37,14 +34,14 @@ func debugKubernetes() {
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			// fmt.Println("Error: ", err)
-			consoleSender(server, "The kubectl cluster manager is not installed.")
-			consoleSender(server, "Using a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
+			fmt.Println("The kubectl cluster manager is not installed.")
+			fmt.Println("Using a local cluster requires that Docker for Desktop for Windows or Mac or minikube be installed. Please install one of those.")
 		} else {
-			consoleSender(server, "kubectl cluster manager is installed, you're ready to use kubernetes")
-			consoleSender(server, "The current kubernetes cluster active will be used. Change now if you wish to use another.")
+			fmt.Println("kubectl cluster manager is installed, you're ready to use kubernetes")
+			fmt.Println("The current kubernetes cluster active will be used. Change now if you wish to use another.")
 		}
 	default:
-		consoleSender(server, "What operating system is this?")
+		fmt.Println("What operating system is this?")
 	}
 
 	// switch runtime.GOOS {
@@ -78,8 +75,8 @@ func debugKubernetes() {
 	// TODO: choose kubernetes cluster to use
 	home, _ := os.UserHomeDir()
 	kubeconfig := path.Join(home, ".kube/config")
-	consoleSender(server, "...using cluster config file at:")
-	consoleSender(server, kubeconfig)
+	fmt.Println("...using cluster config file at:")
+	fmt.Println(kubeconfig)
 }
 
 // func configServerKubernetes() {
@@ -97,7 +94,6 @@ func debugKubernetes() {
 
 // 	for _, file := range files {
 // 		fmt.Println(file.Name())
-// 		consoleSender(server, file.Name())
 // 	}
 
 // 	for _, file := range files {

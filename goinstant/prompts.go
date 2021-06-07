@@ -2,12 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
-	"github.com/gookit/color"
 	"github.com/manifoldco/promptui"
-	"github.com/markbates/pkger"
 )
 
 func selectSetup() {

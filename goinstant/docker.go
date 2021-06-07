@@ -15,16 +15,13 @@ import (
 
 func debugDocker() {
 
-	consoleSender(server, "...checking your Docker setup")
-	fmt.Println("...checking your Docker setup")
+	fmt.Printf("...checking your Docker setup")
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		consoleSender(server, "Can't get current working directory... this is not a great error.")
 		fmt.Println("Can't get current working directory... this is not a great error.")
 		// panic(err)
 	} else {
-		consoleSender(server, cwd)
 		fmt.Println(cwd)
 	}
 
@@ -36,7 +33,6 @@ func debugDocker() {
 
 	info, err := cli.Info(context.Background())
 	if err != nil {
-		consoleSender(server, "Unable to get Docker context. Please ensure that Docker is downloaded and running")
 		fmt.Println("Unable to get Docker context. Please ensure that Docker is downloaded and running")
 		panic(err)
 	} else {
@@ -44,8 +40,6 @@ func debugDocker() {
 		str1 := "bytes memory is allocated\n"
 		str2 := strconv.FormatInt(info.MemTotal, 10)
 		result := str2 + str1
-		consoleSender(server, result)
-		consoleSender(server, "Docker setup looks good\n")
 		fmt.Println(result)
 		fmt.Println("Docker setup looks good")
 	}
@@ -57,7 +51,6 @@ func debugDocker() {
 func listDocker() {
 
 	fmt.Println("Listing containers...")
-	consoleSender(server, "Listing running containers...")
 
 	// ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
@@ -67,7 +60,6 @@ func listDocker() {
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
-		consoleSender(server, "Unable to list Docker containers. Please ensure that Docker is downloaded and running")
 		fmt.Println("Unable to list Docker containers. Please ensure that Docker is downloaded and running")
 		// return
 	}
@@ -77,7 +69,6 @@ func listDocker() {
 	} else {
 		for _, container := range containers {
 			items := fmt.Sprintf("ContainerID: %s Status: %s Image: %s Names: %s", container.ID[:10], container.State, container.Image, container.Names)
-			consoleSender(server, items)
 			fmt.Println(items)
 		}
 		fmt.Println("\nContainers are already running.\nCleanup running containers in the Docker dashboard before continuing.")
@@ -86,14 +77,10 @@ func listDocker() {
 }
 
 func SomeStuffDirect(runner string, pk string, state string) {
-	consoleSender(server, "Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	// runner := runner
 	// pk := pk
 	// state := state
-	consoleSender(server, "Runner requested: "+runner)
-	consoleSender(server, "Package requested: "+pk)
-	consoleSender(server, "State requested: "+state)
 	fmt.Println("Runner requested: " + runner)
 	fmt.Println("Package requested: " + pk)
 	fmt.Println("State requested: " + state)
@@ -116,7 +103,6 @@ func SomeStuffDirect(runner string, pk string, state string) {
 	go func() {
 		for scanner.Scan() {
 			fmt.Printf("\t > %s\n", scanner.Text())
-			consoleSender(server, scanner.Text())
 		}
 	}()
 
@@ -136,18 +122,11 @@ func SomeStuffDirect(runner string, pk string, state string) {
 
 // SomeStuff HTTP API-only
 func SomeStuff(r *http.Request) {
-	consoleSender(server, "Note: Initial setup takes 1-5 minutes. wait for the DONE message")
+	fmt.Printf("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	runner := r.URL.Query().Get("runner")
 	pk := r.URL.Query().Get("package")
 	state := r.URL.Query().Get("state")
-	consoleSender(server, "Runner requested: "+runner)
-	consoleSender(server, "Package requested: "+pk)
-	consoleSender(server, "State requested: "+state)
 	home, _ := os.UserHomeDir()
-
-	// args := []string{runner, "ever", "you", "like"}
-	// cmd := exec.Command(app, args...)
-	// consoleSender(server, args[0])
 
 	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", state, "-t", runner, pk)
 	// create a pipe for the output of the script
@@ -161,7 +140,6 @@ func SomeStuff(r *http.Request) {
 	go func() {
 		for scanner.Scan() {
 			fmt.Printf("\t > %s\n", scanner.Text())
-			consoleSender(server, scanner.Text())
 		}
 	}()
 

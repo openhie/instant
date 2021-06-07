@@ -1,61 +1,52 @@
 package main
 
-import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+// func setup() {
 
-	"github.com/go-git/go-git/v5"
-)
+// 	fmt.Println("getting ready")
 
-func setup() {
+// 	home, _ := os.UserHomeDir()
+// 	dotfiles := filepath.Join(home, ".instant")
+// 	fmt.Println("...checking for config folder")
 
-	consoleSender(server, "getting ready")
+// 	// check for dotfolder, create if it doesn't exist
+// 	if _, err := os.Stat(dotfiles); os.IsNotExist(err) {
+// 		fmt.Println("config folder does not exist, creating it")
+// 		os.Mkdir(dotfiles, 0700)
+// 		fmt.Println("created")
+// 	} else {
+// 		fmt.Println("config folder exists")
+// 	}
 
-	home, _ := os.UserHomeDir()
-	dotfiles := filepath.Join(home, ".instant")
-	consoleSender(server, "...checking for config folder")
+// 	// check repo and clone or pull
+// 	fmt.Println("...cloning or pulling latest code from repo")
 
-	// check for dotfolder, create if it doesn't exist
-	if _, err := os.Stat(dotfiles); os.IsNotExist(err) {
-		consoleSender(server, "config folder does not exist, creating it")
-		os.Mkdir(dotfiles, 0700)
-		consoleSender(server, "created")
-	} else {
-		consoleSender(server, "config folder exists")
-	}
+// 	repo := filepath.Join(dotfiles, "instant")
+// 	if _, err := os.Stat(repo); os.IsNotExist(err) {
+// 		fmt.Println("...repo folder does not exist, cloning it")
+// 		_, err := git.PlainClone(repo, false, &git.CloneOptions{
+// 			URL:      "https://github.com/openhie/instant",
+// 			Progress: os.Stdout,
+// 		})
+// 		if err != nil {
+// 			fmt.Println("error")
+// 		}
+// 		fmt.Println("successfully cloned")
+// 	} else {
+// 		fmt.Println("...repo folder exists, pulling changes")
+// 		const (
+// 			repoURL = "https://github.com/openhie/instant.git"
+// 		)
 
-	// check repo and clone or pull
-	consoleSender(server, "...cloning or pulling latest code from repo")
+// 		dir, _ := ioutil.TempDir("", "temp_dir")
 
-	repo := filepath.Join(dotfiles, "instant")
-	if _, err := os.Stat(repo); os.IsNotExist(err) {
-		consoleSender(server, "...repo folder does not exist, cloning it")
-		_, err := git.PlainClone(repo, false, &git.CloneOptions{
-			URL:      "https://github.com/openhie/instant",
-			Progress: os.Stdout,
-		})
-		if err != nil {
-			fmt.Println("error")
-		}
-		consoleSender(server, "successfully cloned")
-	} else {
-		consoleSender(server, "...repo folder exists, pulling changes")
-		const (
-			repoURL = "https://github.com/openhie/instant.git"
-		)
+// 		options := &git.CloneOptions{
+// 			URL: repoURL,
+// 		}
 
-		dir, _ := ioutil.TempDir("", "temp_dir")
-
-		options := &git.CloneOptions{
-			URL: repoURL,
-		}
-
-		_, err := git.PlainClone(dir, false, options)
-		if err != nil {
-			fmt.Println("error")
-		}
-	}
-	consoleSender(server, "git repo is ready")
-}
+// 		_, err := git.PlainClone(dir, false, options)
+// 		if err != nil {
+// 			fmt.Println("error")
+// 		}
+// 	}
+// 	fmt.Println("git repo is ready")
+// }

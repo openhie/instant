@@ -5,22 +5,13 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/gorilla/mux"
-	"github.com/r3labs/sse"
 )
-
-var server *sse.Server
 
 //go:embed banner.txt
 var f embed.FS
 
 func main() {
 
-	router := mux.NewRouter()
-	server = sse.New()
-	server.AutoReplay = true
-	server.CreateStream("messages")
-	addHandler(router)
 	data, _ := f.ReadFile("banner.txt")
 	color.Green(string(data))
 
