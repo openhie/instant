@@ -88,53 +88,64 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 
 			stuff := []string{"NamingSystem", "CodeSystem", "ValueSet", "OperationDefinition", "StructureDefinition", "ConceptMap", "SearchParameter", "Subscription", "CapabilityStatement"}
 			color.Set(color.FgBlue)
-			fmt.Printf("Loading %s\n", stuff)
+			fmt.Printf("Loading primary conformance resources %s\n", stuff)
 			color.Unset()
 			for _, y := range stuff {
 				for _, x := range msg.Filesrep {
-					if x.ResourceType == y && x.Filename != "ig-r4.json" {
-						getpushJSON(fhir_server, url_entry, x.Filename, x.ResourceType, x.Id, params)
+					if x.ResourceType == y {
+						getpushJSON(fhir_server, url_entry, x.Filename, x.ResourceType, false, x.Id, params)
 					}
 				}
 			}
 
-			stuff2 := []string{"Patient", "Practitioner", "Organization", "Location", "Library", "Measure", "MeasureReport", "Questionnaire", "QuestionnaireResponse", "Procedure", "ImplementationGuide"}
+			stuff2 := []string{"Patient", "Practitioner", "Organization", "Location", "Library", "Measure", "MeasureReport", "Questionnaire", "QuestionnaireResponse", "Procedure"}
 			color.Set(color.FgBlue)
-			fmt.Printf("Loading %s\n", stuff2)
+			fmt.Printf("Loading other singular resources %s\n", stuff2)
 			color.Unset()
 			for _, b := range stuff2 {
 				for _, a := range msg.Filesrep {
-					if a.ResourceType == b && a.Filename != "ig-r4.json" {
-						getpushJSON(fhir_server, url_entry, a.Filename, a.ResourceType, a.Id, params)
+					if a.ResourceType == b {
+						getpushJSON(fhir_server, url_entry, a.Filename, a.ResourceType, false, a.Id, params)
 					}
 				}
 			}
 
-			color.Blue("2nd pass: Load resources again (except ig-r4.json) to address customized dependencies in IGs.")
+			color.Blue("2nd pass: Load resources again (except ig-r4.json or bundles) to address customized dependencies in IGs.")
 			for _, dog := range msg.Filesrep {
-				// get and push ths stuff
-				// if dog.Filename != "ig-r4.json" {
-				// 	getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, dog.Id)
-				// getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, dog.Id)
-				// if dog.Filename != "ig-r4.json" && dog.ResourceType != "ImplementationGuide" {
-				if dog.Filename != "ig-r4.json" {
-					getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, dog.Id, params)
+				if dog.ResourceType != "Bundle" && dog.ResourceType != "ImplementationGuide" {
+					getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, false, dog.Id, params)
 				}
 			}
+
+			color.Blue("3rd pass - Explicit Bundles (not Structure Definitions)")
+			for _, cat := range msg.Filesrep {
+				if cat.ResourceType == "Bundle" && cat.Type == "transaction" {
+					getpushJSON(fhir_server, url_entry, cat.Filename, cat.ResourceType, true, cat.Id, params)
+				}
+			}
+
+			color.Blue("3rd pass - Implementation Guide")
+			for _, mouse := range msg.Filesrep {
+				if mouse.Filename != "ig-r4.json" && mouse.ResourceType == "ImplementationGuide" {
+					getpushJSON(fhir_server, url_entry, mouse.Filename, mouse.ResourceType, false, mouse.Id, params)
+				}
+			}
+
 			color.Green("If there are still errors, you may choose to run the tool again.")
 		}
 	}
 }
 
-func getpushJSON(fhir_server string, ig string, filename string, resourcetype string, id string, params *Params) {
+func getpushJSON(fhir_server string, ig string, filename string, resourcetype string, bundle bool, id string, params *Params) {
 
 	trimmed := strings.Replace(ig, "index.html", "", -1)
 	u, err := url.Parse(trimmed)
 	if err != nil {
-		fmt.Println("invalid url")
+		fmt.Println("invalid url, must end in index.html or be a directory")
 	}
 	// clean url
 	u.Path = path.Join(u.Path, filename)
+
 	client := resty.New()
 	// client.SetDebug(true)
 	resp, _ := client.R().Get(u.String())
@@ -143,103 +154,152 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 	if err != nil {
 		fmt.Println("invalid url")
 	}
-	p.Path = path.Join(p.Path, resourcetype, id)
+
+	if !(bundle) {
+		p.Path = path.Join(p.Path, resourcetype, id)
+	}
 
 	switch params.TypeAuth {
 	// TODO: On some IGs this panics: "panic: runtime error: invalid memory address or nil pointer dereference"
 	case "None":
-		put, err := client.R().SetBody(resp.Body()).
-			SetHeader("Content-Type", "application/fhir+json").
-			Put(p.String())
-		if err != nil {
-			fmt.Println("error with put, is it the fhir url?")
-			fmt.Println(ig, filename, resourcetype, id)
+
+		if bundle {
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").Post(p.String())
+			if err != nil {
+				fmt.Println("error with post, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
+
+		} else {
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").Put(p.String())
+			if err != nil {
+				fmt.Println("error with put, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
+
 		}
 
-		if put.StatusCode() != 200 && put.StatusCode() != 201 {
-			color.Set(color.FgYellow)
-			fmt.Println(put.RawResponse.Status) // this causes the panic
-			fmt.Println(u.String())
-			// color.Yellow(put.Status())
-			fmt.Println(put.String())
-			fmt.Println("")
-			color.Unset()
-		} else {
-			color.Set(color.FgGreen)
-			fmt.Println(put.RawResponse.Status, filename)
-			color.Unset()
-		}
 	case "Basic":
-		put, err := client.R().SetBody(resp.Body()).
-			SetHeader("Content-Type", "application/fhir+json").
-			SetBasicAuth(params.BasicUser, params.BasicPass).
-			Put(p.String())
-		if err != nil {
-			fmt.Println("error with put, is it the fhir url?")
-			fmt.Println(ig, filename, resourcetype, id)
-		}
+		if bundle {
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetBasicAuth(params.BasicUser, params.BasicPass).Post(p.String())
+			if err != nil {
+				fmt.Println("error with post, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
 
-		if put.StatusCode() != 200 && put.StatusCode() != 201 {
-			color.Set(color.FgYellow)
-			fmt.Println(put.RawResponse.Status) // this causes the panic
-			fmt.Println(u.String())
-			// color.Yellow(put.Status())
-			fmt.Println(put.String())
-			fmt.Println("")
-			color.Unset()
 		} else {
-			color.Set(color.FgGreen)
-			fmt.Println(put.RawResponse.Status, filename)
-			color.Unset()
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetBasicAuth(params.BasicUser, params.BasicPass).Put(p.String())
+			if err != nil {
+				fmt.Println("error with put, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
+
 		}
 	case "Token":
-		put, err := client.R().SetBody(resp.Body()).
-			SetHeader("Content-Type", "application/fhir+json").
-			SetAuthToken(params.Token).
-			Put(p.String())
-		if err != nil {
-			fmt.Println("error with put, is it the fhir url?")
-			fmt.Println(ig, filename, resourcetype, id)
-		}
+		if bundle {
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetAuthToken(params.Token).Post(p.String())
+			if err != nil {
+				fmt.Println("error with post, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
 
-		if put.StatusCode() != 200 && put.StatusCode() != 201 {
-			color.Set(color.FgYellow)
-			fmt.Println(put.RawResponse.Status) // this causes the panic
-			fmt.Println(u.String())
-			// color.Yellow(put.Status())
-			fmt.Println(put.String())
-			fmt.Println("")
-			color.Unset()
 		} else {
-			color.Set(color.FgGreen)
-			fmt.Println(put.RawResponse.Status, filename)
-			color.Unset()
-		}
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetAuthToken(params.Token).Put(p.String())
+			if err != nil {
+				fmt.Println("error with put, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
 
+		}
 	case "Custom":
 		custom := "Custom" + " " + params.Token
-		put, err := client.R().SetBody(resp.Body()).
-			SetHeader("Content-Type", "application/fhir+json").
-			SetHeader("Authorization", custom).
-			Put(p.String())
-		if err != nil {
-			fmt.Println("error with put, is it the fhir url?")
-			fmt.Println(ig, filename, resourcetype, id)
-		}
+		if bundle {
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetHeader("Authorization", custom).Put(p.String())
+			if err != nil {
+				fmt.Println("error with post, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
 
-		if put.StatusCode() != 200 && put.StatusCode() != 201 {
-			color.Set(color.FgYellow)
-			fmt.Println(put.RawResponse.Status) // this causes the panic
-			fmt.Println(u.String())
-			// color.Yellow(put.Status())
-			fmt.Println(put.String())
-			fmt.Println("")
-			color.Unset()
 		} else {
-			color.Set(color.FgGreen)
-			fmt.Println(put.RawResponse.Status, filename)
-			color.Unset()
+			put, err := client.R().SetBody(resp.Body()).
+				SetHeader("Content-Type", "application/fhir+json").
+				SetHeader("Authorization", custom).Put(p.String())
+			if err != nil {
+				fmt.Println("error with put, is it the fhir url?")
+				fmt.Println(ig, filename, resourcetype, id)
+			}
+
+			code := put.StatusCode()
+			status := put.RawResponse.Status
+			url := u.String()
+			file := put.String()
+			printStatus(code, status, url, file, filename)
 		}
+	}
+
+}
+
+func printStatus(code int, status string, url string, file, filename string) {
+
+	if code != 200 && code != 201 {
+		color.Set(color.FgYellow)
+		fmt.Println(status) // this causes the panic
+		fmt.Println(url)
+		// color.Yellow(put.Status())
+		fmt.Println(file)
+		fmt.Println("")
+		color.Unset()
+	} else {
+		color.Set(color.FgGreen)
+		fmt.Println(status, filename)
+		color.Unset()
 	}
 
 }
