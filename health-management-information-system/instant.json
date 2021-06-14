@@ -1,0 +1,7 @@
+{
+  "id": "hmis",
+  "name": "health-management-information-system",
+  "description": "Installs and starts up an instance of DHIS2",
+  "type": "infrastructure",
+  "version": "v1.0.0"
+}

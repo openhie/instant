@@ -1,0 +1,13 @@
+configMapGenerator:
+  - name: dhis-web-volume-configmap
+    files:
+      - ./dhis/volume/dhis.conf
+
+resources:
+  # postgres
+  - ./dhis/dhis-postgres-volume-claim.yaml
+  - ./dhis/dhis-postgres-deployment.yaml
+  - ./dhis/dhis-postgres-service.yaml
+  # dhis web
+  - ./dhis/dhis-web-deployment.yaml
+  - ./dhis/dhis-web-service.yaml

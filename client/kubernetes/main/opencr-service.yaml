@@ -2,20 +2,19 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: kompose -f docker-compose.cicd.yml convert
-    kompose.version: 1.22.0 (HEAD)
+    kompose.cmd: kompose convert -f instant/client/docker/docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
   creationTimestamp: null
   labels:
     io.kompose.service: opencr
-    package: client
   name: opencr
 spec:
   type: LoadBalancer
-  # change to 3004 from default to avoid port contention
   ports:
-    - name: opencr-3004
+    - name: "3004"
       port: 3004
       targetPort: 3000
   selector:
     io.kompose.service: opencr
-
+status:
+  loadBalancer: {}

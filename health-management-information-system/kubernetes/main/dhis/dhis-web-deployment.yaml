@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dhis-web
+  labels:
+    package: dhis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: dhis-web
+  template:
+    metadata:
+      labels:
+        component: dhis-web
+    spec:
+      initContainers:
+      - name: prepopulate-dhis-web-volume
+        image: busybox
+        command: ['sh', '-c', 'cp /config/dhis.conf /DHIS2_home']
+        volumeMounts:
+          - name: dhis-config-map
+            mountPath: /config
+          - name: dhis-web-volume
+            mountPath: /DHIS2_home
+      containers:
+        - name: dhis-web
+          image: dhis2/core:2.35.3
+          ports:
+            - containerPort: 8080
+          env:
+            - name: WAIT_FOR_DB_CONTAINER
+              value: dhis-postgres:5432 -t 0
+          volumeMounts:
+            - name: dhis-web-volume
+              mountPath: /DHIS2_home
+      restartPolicy: Always
+      volumes:
+        - name: dhis-web-volume
+          emptyDir: {}
+        - name: dhis-config-map
+          configMap:
+            name: dhis-web-volume-configmap

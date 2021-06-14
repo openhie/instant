@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose -f docker-compose.cicd.yml convert
-    kompose.version: 1.22.0 (HEAD)
+    kompose.cmd: kompose convert -f instant/client/docker/docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
   creationTimestamp: null
   labels:
     io.kompose.service: es
@@ -18,12 +18,15 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose -f docker-compose.cicd.yml convert
-        kompose.version: 1.22.0 (HEAD)
+        kompose.cmd: kompose convert -f instant/client/docker/docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
       creationTimestamp: null
       labels:
         io.kompose.service: es
     spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
         - env:
             - name: ES_JAVA_OPTS

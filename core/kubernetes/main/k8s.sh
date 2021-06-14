@@ -144,8 +144,12 @@ elif [ "$1" == "down" ]; then
     kubectl delete deployment hapi-fhir-server-deployment
     kubectl delete deployment hapi-fhir-mysql-deployment
 elif [ "$1" == "destroy" ]; then
-    kubectl delete deployment,service,statefulset,pvc,pv,job -l package=core
-    kubectl delete configmap --all
+    kubectl delete -f $k8sMainRootFilePath/mongo/mongo-volume.yaml
+    kubectl delete -f $k8sMainRootFilePath/mongo/mongo-service.yaml -f $k8sMainRootFilePath/mongo/mongo-replica.yaml
+    kubectl delete -k $k8sMainRootFilePath
+    kubectl delete -k $k8sMainRootFilePath/openhim
+    bash "$k8sMainRootFilePath"/../importer/k8s.sh clean
+    kubectl delete pvc -l package=core
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
