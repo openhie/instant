@@ -10,6 +10,8 @@ keywords:
 description: The client registry package of the Instant OpenHIE
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 :::info
@@ -20,12 +22,151 @@ The Instant OpenHIE architecture, codebase, and documentation are under active d
 This package is still under development
 :::
 
+The Client Registry Package is a key component of Instant OpenHIE.
+Our reference technology is the [Open Client Registry (OpenCR)](https://www.openclientregistry.org) service which has two dependencies:
+
+- [HAPI FHIR](https://hapifhir.io/) (this is the Core package FHIR Server instance)
+- [Elastic Search](https://www.elastic.co/)
+
 ## Package functionality
 
-This package sets up [OpenCR](https://www.openclientregistry.org) which acts as a client registry. Other solutions may be added in future to function as client registries.
-
-OpenCR provides a unique identifier for patients (clients) that links to all other already matched records from all submitting systems. Please see the [documentation](https://intrahealth.github.io/client-registry/user/introduction/) for more about client registries and OpenCR.
+OpenCR provides a unique identifier for patients (clients) that links to all other already matched records from all submitting systems.
+Please see the [documentation](https://intrahealth.github.io/client-registry/user/introduction/) for more about client registries and OpenCR.
 
 ## Deployment strategy
 
-TODO
+OpenCR was already dockerised so we were able to re-use those images for our work in the client package.
+
+We supplied a Docker Compose file for the setup and configuration of this application.
+
+1. **Main** `docker-compose.yml` file - sets up the base applications
+
+For Kubernetes, we created deployment and service resource files for each component of each application.
+The setup is orchestrated by a `kustomization.yml` file for easy deployment.
+
+
+## Client Registry Package Dev guide
+
+For testing purposes, this package can be run independently. Below are some notes of how to do this.
+The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started.mdx).
+
+Select a deployment target below and follow the getting started steps in setting up this package.
+
+<Tabs
+  defaultValue="dockerCompose"
+  values={[
+    { label: 'Docker Compose', value: 'dockerCompose' },
+    { label: 'Kubernetes', value: 'kubernetes' }
+  ]
+}>
+<TabItem value="dockerCompose">
+
+Before proceeding, ensure that you are in the root Instant OpenHIE directory.
+
+From the working directory, execute the follow:
+
+```bash
+yarn docker:instant init -t docker client
+```
+
+This command will start up the `core` package depedency first. Then it will create all the Client pacakge services and print out their logs in the terminal.
+
+#### View running Docker resources
+
+Execute the below commands to see the running Docker containers and the state that they are in.
+
+To display all containers:
+
+```sh
+docker ps -a
+```
+
+To stop the containers, use the command:
+
+```bash
+yarn docker:instant down -t docker client
+```
+
+To completely remove all project components, use the following option:
+
+```bash
+yarn docker:instant destroy -t docker client
+```
+
+
+</TabItem>
+<TabItem value="kubernetes">
+
+> If you are working with multiple cluster hosting clients you may need to switch cluster context for your deployment. See the below commands:
+
+```sh
+kubectl config get-contexts
+kubectl config use-context <context-name>
+```
+
+#### Minikube (local)
+
+For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
+Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+
+Once installed, we can start the minikube service by executing the below command:
+
+```sh
+minikube start --cpus 4 --memory 8192
+```
+
+This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
+
+> Add more CPUs and Memory if you have spare capacity, especially if you plan on adding more packages later.
+
+#### Getting Started
+
+Useful Links:
+
+- [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
+
+Before proceeding, ensure that you are in the root Instant OpenHIE directory.
+From the working directory, execute the following:
+
+```bash
+yarn docker:instant init -t k8s client
+```
+
+The OpenCR console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
+
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `Client Package` component (i.e. OpenCR).
+
+> On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
+
+#### View running Kubernetes resources
+
+Execute the below commands to see the running Kubernetes resources and the state that they are in.
+
+To display all resource: (Some new resources are not listed here)
+
+```sh
+kubectl get all --all-namespaces
+```
+
+To tear down this deployment, use the opposing command:
+
+```bash
+yarn docker:instant down -t k8s client
+```
+
+To completely remove all project components, use the following option:
+
+```bash
+yarn docker:instant destroy -t k8s client
+```
+
+---
+</TabItem>
+</Tabs>
+
+## OpenCR config
+
+Configuring OpenCR can be done via a config file or environment variables.
+In the Instant OpenHIE context, a config file seems to be the easiest method.
+This involves adding a new config file into the *OpenCR config directory of the container's volume*.
+Then restart the OpenCR instance for the new config to take effect.
