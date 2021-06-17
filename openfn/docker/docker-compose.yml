@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  openfn:
+    image: openfn/microservice:v0.3.3
+    container_name: openfn_him_hapi
+    environment:
+      HOST_URL: localhost
+      PORT: 4001
+      ENDPOINT_STYLE: async
