@@ -6,9 +6,6 @@ services:
     container_name: mongo-1
     ports:
       - "27017:27017"
-    command:
-        - --replSet
-        - mongo-set
 
   fhir:
     container_name: hapi-fhir
