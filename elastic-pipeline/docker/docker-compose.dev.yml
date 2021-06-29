@@ -1,0 +1,7 @@
+version: '3.3'
+
+services:
+  logstash:
+    volumes:
+      - ./pipeline:/usr/share/logstash/pipeline/
+      - ./pipelines.yml:/usr/share/logstash/config/pipelines.yml

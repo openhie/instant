@@ -1,0 +1,3 @@
+- pipeline.id: fhir-raw
+  path.config: "/usr/share/logstash/pipeline/fhir-extractor.logstash.conf"
+  queue.type: persisted

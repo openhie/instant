@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elastic-openhim-config-importer-job
+  labels:
+    app.kubernetes.io/name: elastic-openhim-config-importer
+    app.kubernetes.io/instance: elastic-openhim-config-importer-1
+    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/component: config-importer
+    package: elastic
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      initContainers:
+        - name: check-openhim-core-status
+          image: busybox:1.28
+          command: ['sh', '-c', 'until telnet openhim-core-service 8082; do echo OpenHIM Core API not running yet; sleep 10; done;']
+      containers:
+        - name: elastic-openhim-config-importer
+          image: jembi/instantohie-config-importer
+          args:
+            - sh
+            - -c
+            - wait-on -t 60000 https-get://openhim-core-service:8082/heartbeat && node openhimConfig.js
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: '0'
+            - name: OPENHIM_API_HOSTNAME
+              value: openhim-core-service
+            - name: OPENHIM_API_PASSWORD
+              value: instant101
+            - name: OPENHIM_API_PORT
+              value: '8082'
+            - name: OPENHIM_API_USERNAME
+              value: root@openhim.org
+          volumeMounts:
+            - mountPath: /importer
+              name: elastic-openhim-config-importer-config
+      restartPolicy: OnFailure
+      volumes:
+        - name: elastic-openhim-config-importer-config
+          configMap:
+            name: elastic-openhim-config-importer-configmap

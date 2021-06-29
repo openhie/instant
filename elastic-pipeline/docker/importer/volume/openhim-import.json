@@ -1,0 +1,54 @@
+{
+  "Channels": [
+    {
+      "methods": [],
+      "type": "polling",
+      "allow": [],
+      "whitelist": [],
+      "authType": "public",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "FHIR Extractor",
+          "secured": false,
+          "host": "fhir-extractor",
+          "port": 3000,
+          "path": "/fhir-extract",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "Poll FHIR Extractor",
+      "pollingSchedule": "10 seconds",
+      "urlPattern": "^/fhir-extractor$",
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "607026dc7008390013ecec42",
+        "name": "Super User"
+      },
+      "alerts": []
+    }
+  ]
+}

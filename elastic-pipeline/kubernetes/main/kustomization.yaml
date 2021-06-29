@@ -1,0 +1,19 @@
+configMapGenerator:
+  - name: logstash-config-configmap
+    files:
+      - ./logstash-config/jvm.options
+      - ./logstash-config/log4j2.properties
+      - ./logstash-config/logstash.yml
+      - ./logstash-config/pipelines.yml
+  - name: logstash-pipeline-configmap
+    files:
+      - ./logstash-pipeline/fhir-extractor.logstash.conf
+
+resources:
+  # deployments
+  - fhir-extractor-deployment.yaml
+  - logstash-deployment.yaml
+
+  # services
+  - fhir-extractor-service.yaml
+  - logstash-service.yaml

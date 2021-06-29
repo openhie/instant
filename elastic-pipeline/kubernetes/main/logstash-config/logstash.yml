@@ -1,0 +1,5 @@
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: ["http://es-analytics:9200"]
+config.reload.automatic: true
+xpack.monitoring.elasticsearch.username: "elastic"
+xpack.monitoring.elasticsearch.password: "dev_password_only"
