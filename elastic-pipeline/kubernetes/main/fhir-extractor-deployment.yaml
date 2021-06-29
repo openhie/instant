@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f packages/data-pipeline/docker/docker-compose.yml -o packages/data-pipeline/kubernetes/main/
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: fhir-extractor
+  name: fhir-extractor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: fhir-extractor
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f packages/data-pipeline/docker/docker-compose.yml -o packages/data-pipeline/kubernetes/main/
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: fhir-extractor
+    spec:
+      containers:
+        - env:
+            - name: GET_URL
+              value: http://hapi-fhir-server-service:8080/fhir
+            - name: POST_URL
+              value: http://logstash:5055/fhir
+          image: jembi/fhir-extractor:latest
+          name: fhir-extractor
+          resources: {}
+      restartPolicy: Always
+status: {}

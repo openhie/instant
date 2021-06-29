@@ -3,7 +3,7 @@ version: '3.3'
 services:
   core:
     container_name: openhim-core
-    image: jembi/openhim-core:5
+    image: jembi/openhim-core:7
     environment:
       - mongo_url=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
       - mongo_atnaUrl=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set

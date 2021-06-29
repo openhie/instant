@@ -1,0 +1,13 @@
+resources:
+  # volumes
+  - es-data-persistentvolumeclaim.yaml
+
+  # deployments
+  - es-analytics-deployment.yaml
+  - kibana-deployment.yaml
+  - jsreport-deployment.yaml
+
+  # services
+  - es-analytics-service.yaml
+  - kibana-service.yaml
+  - jsreport-service.yaml

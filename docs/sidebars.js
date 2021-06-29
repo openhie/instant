@@ -28,7 +28,8 @@ module.exports = {
       'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
-      'packages/client'
+      'packages/client',
+      'packages/elastic'
     ],
     'More Information': [
       'more-info/architecture'
