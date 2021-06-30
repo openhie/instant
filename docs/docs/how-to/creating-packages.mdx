@@ -18,7 +18,7 @@ Packages are a way of allowing a group of applications to be setup and configure
 1. `docker-compose.*.yml` files to setup and configure the necessary applications in Docker Compose
 2. Deployment and service resource files (and any other necessary resource files) to setup and configure the necessary applications in Kubernetes
 3. A `instant.json` file that holds metadata about the package
-4. Bash scripts that accept a particular set of commands (up, down or destroy) and execute these Docker Compose and Kubernetes infrastructure files and any other necessary processing and configuration to perform the required command.
+4. Bash scripts that accept a particular set of commands (init, up, down, and destroy) and execute these Docker Compose and Kubernetes infrastructure files and any other necessary processing and configuration to perform the required command.
 
 ## Docker Compose files
 
@@ -126,7 +126,7 @@ Copy your package into the root directory of this Instant OpenHIE project.
 Run as normal:
 
 ```sh
-yarn instant init <your_package_name>
+yarn docker:instant init <your_package_name>
 ```
 
 ### Docker or Kubernetes without the Instant OpenHIE repo
