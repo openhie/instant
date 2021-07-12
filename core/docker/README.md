@@ -52,13 +52,13 @@ Additional `docker-compose` files are available for extra environment configurat
 The below command specifies the three `docker-compose` files that need to be executed for the development configuration
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.config.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f importer/docker-compose.config.yml up -d
 ```
 
 The below command specifies the two `docker-compose` files that need to be executed for a production-like configuration
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.config.yml up -d
+docker-compose -f docker-compose.yml -f importer/docker-compose.config.yml up -d
 ```
 
 ## Accessing the services
