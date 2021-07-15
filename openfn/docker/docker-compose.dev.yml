@@ -1,0 +1,6 @@
+version: '3.3'
+
+services:
+  openfn:
+    ports:
+      - '4001:4001'
