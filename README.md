@@ -64,6 +64,8 @@ To tear down the deployments, use the following command:
 yarn docker:instant down -t k8s
 ```
 
+> The ports of the services will change when the services are brought back up.
+
 To start up the services after a tear down, use the following command:
 
 ```bash
