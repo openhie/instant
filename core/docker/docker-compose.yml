@@ -22,6 +22,8 @@ services:
     image: jembi/openhim-console:1.14
     ports:
         - "9000:80"
+    depends_on:
+      - core
 
   fhir:
     container_name: hapi-fhir
