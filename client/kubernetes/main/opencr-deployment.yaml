@@ -41,7 +41,7 @@ spec:
               value: instant
             - name: fhirServer__baseURL
               value: http://hapi-fhir-server-service:8080/fhir
-          image: intrahealth/opencr:6195bd8
+          image: intrahealth/opencr:ef90a5a
           name: opencr
           ports:
             - containerPort: 3000
