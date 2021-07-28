@@ -134,13 +134,13 @@ The [Cucumber](https://cucumber.io/) framework is used for testing the instantia
 For docker instances, update the `.env.local` file with the instances' host urls and ports, and then run
 
 ```sh
-yarn test
+yarn test <PACKAGE_IDs>
 ```
 
 For kubernetes instances, update the `.env.remote` file with the instances' host urls and ports, and then run
 
 ```sh
-yarn test:remote
+yarn test:remote <PACKAGE_IDs>
 ```
 
-> The commands above will try to run tests for all packages which will result in errors if a package is not up and running. Logic for specifying the package to test will be added soon. For now you can specify the package by changing the path in the package.json test script.
+> The `PACKAGE_IDs` is a string of the package ids separated by space.
