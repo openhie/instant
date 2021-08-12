@@ -20,7 +20,7 @@ spec:
           command: ['sh', '-c', 'until telnet mongo-service 27017; do echo Mongo not running yet; sleep 10; done;']
       containers:
         - name: openhim-core
-          image: jembi/openhim-core:5
+          image: jembi/openhim-core:7
           ports:
             - containerPort: 8080
             - containerPort: 5000
