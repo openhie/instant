@@ -3,8 +3,8 @@
 const axios = require('axios')
 const { Then } = require('@cucumber/cucumber')
 
-const PROTOCOL = process.env.PROTOCOL || 'http'
-const HOSTNAME = process.env.HOSTNAME || 'localhost'
+const ANALYTICS_PROTOCOL = process.env.ANALYTICS_PROTOCOL || 'http'
+const ANALYTICS_HOSTNAME = process.env.ANALYTICS_HOSTNAME || 'localhost'
 const KIBANA_API_PORT =
   process.env.KIBANA_API_PORT || '5601'
 const ES_ANALYTICS_API_PORT =
@@ -13,7 +13,7 @@ const JS_REPORT_API_PORT =
   process.env.JS_REPORT_API_PORT || '5488'
 
 const sendRequest = port => axios({
-    url: `${PROTOCOL}://${HOSTNAME}:${port}`
+  url: `${ANALYTICS_PROTOCOL}://${ANALYTICS_HOSTNAME}:${port}`
 })
 
 Then('the JS Report service should be up and running', async () => {
