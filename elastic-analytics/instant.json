@@ -1,0 +1,8 @@
+{
+  "id": "elastic-analytics",
+  "name": "Data Analytics using the elastic stack",
+  "description": "",
+  "type": "infrastructure",
+  "version": "v0.1.0",
+  "dependencies": []
+}

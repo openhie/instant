@@ -1,0 +1,59 @@
+---
+id: configure-dhis2
+title: How to configure the HMIS (DHIS2)
+sidebar_label: Configure HMIS (DHIS2)
+keywords:
+  - Instant OpenHIE
+  - How to
+  - Creating packages
+  - Health Management Information System
+  - DHIS2
+description: How to configure DHIS2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
+We have implemented **District Health Information System v2** (DHIS2) as the Health Management Information System (HMIS) in the Instant OpenHIE.
+DHIS2 was chosen due to its high level of community support and usage. It is possible to implement a different HMIS software in place of DHIS2.
+
+The default Instant OpenHIE DHIS2 instance is completely blank and can be setup locally using `Docker-Compose` or setup in the cloud using `Kubernetes`.
+
+To automate configuring DHIS2 for your use case, you will need to create a custom Instant OpenHIE package.
+The [WHO Covid19 Surveillance Package](https://github.com/jembi/who-covid19-surveillance-package) is an example of this kind of custom HMIS configuration.
+
+Below, we cover how you would go about configuring DHIS2 for your use case.
+
+<Tabs
+  defaultValue="dockerCompose"
+  values={[
+    { label: 'Docker Compose', value: 'dockerCompose' },
+    { label: 'Kubernetes', value: 'kubernetes' }
+  ]
+}>
+<TabItem value="dockerCompose">
+
+To configure the DHIS2 instance in Docker we recommend using the [`jembi/instantohie-config-importer`](https://hub.docker.com/repository/docker/jembi/instantohie-config-importer) docker image.
+This image allows you to run a custom script with configured volumes to get data into your app containers.
+You can implement this container in the config docker-compose script as seen in [this example](https://github.com/jembi/who-covid19-surveillance-package/blob/master/docker/importer/docker-compose.config.yml#L64-L73).
+
+In the case of DHIS, our container would use a script like the one [here](https://github.com/jembi/who-covid19-surveillance-package/blob/master/docker/importer/volume/dhis2/metadata.js).
+This script would import your DHIS2 metadata config from a zipped file in the same volume.
+
+</TabItem>
+<TabItem value="kubernetes">
+
+To configure the DHIS2 instance in Kubernetes, you will need to set up a job to import the data once the DHIS2 pod is running properly.
+See [this job snippet](https://github.com/jembi/who-covid19-surveillance-package/blob/master/kubernetes/importer/dhis2-metadata-config-importer-job.yaml) for our implementation method.
+The import job will use the [`jembi/instantohie-config-importer`](https://hub.docker.com/repository/docker/jembi/instantohie-config-importer) docker image to import the config.
+
+The import script can be found [here](https://github.com/jembi/who-covid19-surveillance-package/blob/master/kubernetes/importer/volume/dhis2/metadata.js).
+Your metadata config zip file should be placed in the same directory as the script.
+
+</TabItem>
+</Tabs>

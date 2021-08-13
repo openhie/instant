@@ -1,0 +1,8 @@
+{
+  "id": "elastic-pipeline",
+  "name": "Data pipeline package using the elastic stack",
+  "description": "",
+  "type": "use-case",
+  "version": "v0.1.0",
+  "dependencies": ["elastic-analytics", "core"]
+}

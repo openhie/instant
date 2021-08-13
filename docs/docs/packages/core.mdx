@@ -17,7 +17,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
 :::
 
-The Instant OpenHIE Core Package is the common base of the Instant OpenHIE system and it provides fundamental components that other package may build off of.
+The Instant OpenHIE Core Package is the common base of the Instant OpenHIE system and it provides fundamental components that other packages may build off of.
 
 This package consists of two components that support all other packages, these are:
 
@@ -56,7 +56,7 @@ Accessing the services created by this package:
 The OpenHIM was already dockerised so we were able to re-use those images for our work in the core package.
 HAPI FHIR didn't have official dockerfiles available, however, several community contributed options existed. We chose to use what seemed like the most robust option.
 
-We supplied Docker Compose files for the setup and configuration of these application. We chose to split the `docker-compose.*.yml` files into three concerns:
+We supplied Docker Compose files for the setup and configuration of these applications. We chose to split the `docker-compose.*.yml` files into three concerns:
 
 1. **Main** `docker-compose.yml` file - sets up the base applications
 1. **Config** `docker-compose.config.yml` file - configures the OpenHIM with a channel route to HAPI FHIR
@@ -72,7 +72,7 @@ It also has a `wait-on` module installed to allow it to wait on certain ports be
 
 ## Core Package Dev guide
 
-For testing purposes, this package can be run independently. The below are some notes of how to do this.
+For testing purposes, this package can be run independently. Below are some notes of how to do this.
 The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started.mdx).
 
 Select a deployment target below and follow the getting started steps in setting up this package.

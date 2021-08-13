@@ -6,27 +6,21 @@ services:
     container_name: mongo-1
     volumes:
       - 'openhim-mongo1:/data/db'
-    command:
-        - --replSet
-        - mongo-set
+    command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
 
   mongo-2:
     image: mongo:4.2
     container_name: mongo-2
     volumes:
       - 'openhim-mongo2:/data/db'
-    command:
-        - --replSet
-        - mongo-set
+    command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
 
   mongo-3:
     image: mongo:4.2
     container_name: mongo-3
     volumes:
       - 'openhim-mongo3:/data/db'
-    command:
-        - --replSet
-        - mongo-set
+    command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
 
 volumes:
   openhim-mongo1:

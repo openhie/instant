@@ -1,0 +1,168 @@
+---
+id: hmis
+title: Health Management Information System (HMIS) Package
+sidebar_label: Health Management Information System
+keywords:
+  - Instant OpenHIE
+  - HMIS
+  - Package
+  - DHIS2
+description: The Health Management Information System package of the Instant OpenHIE
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change.
+While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
+The Instant OpenHIE HMIS Package an indepedent architectural base that other packages can build off of.
+
+This package has two parts to it:
+
+- [District Health Information System 2 (DHIS2)](https://dhis2.org/)
+- [PostgreSQL](https://www.postgresql.org/) - the database for DHIS2
+
+## Package functionality
+
+This package sets up containers that support the DHIS2. The DHIS2 instance is completely blank with default user access.
+DHIS2 is accessible on port 8081.
+
+The configuration of DHIS2 is completely up to the implementer.
+An example of a custom package that has configured DHIS2 for its usecase is the [WHO Covid19 surveillance package](https://github.com/jembi/who-covid19-surveillance-package).
+
+> DHIS2 does not appear to be easily "un-configured" therefore perfect your configuration strategy locally before trying to configure your live environments.
+
+## Deployment strategy
+
+DHIS2 was already dockerised so we were able to re-use those images for our work in the core package.
+
+We supplied a Docker Compose file for the setup and configuration of this application.
+
+1. **Main** `docker-compose.yml` file - sets up the base applications
+
+For Kubernetes, we created deployment and service resource files for each component of each application.
+The setup is orchestrated by a `kustomization.yml` file for easy deployment.
+
+
+## HMIS Package Dev guide
+
+For testing purposes, this package can be run independently. Below are some notes of how to do this.
+The recommended way to run Instant OpenHIE is described [here](../introduction/getting-started.mdx).
+
+Select a deployment target below and follow the getting started steps in setting up this package.
+
+<Tabs
+  defaultValue="dockerCompose"
+  values={[
+    { label: 'Docker Compose', value: 'dockerCompose' },
+    { label: 'Kubernetes', value: 'kubernetes' }
+  ]
+}>
+<TabItem value="dockerCompose">
+
+Before proceeding, ensure that you are in the root Instant OpenHIE directory.
+
+From the working directory, execute the follow:
+
+```bash
+yarn docker:instant init -t docker hmis
+```
+
+This will create all the services and print out their logs in the terminal.
+
+#### View running Docker resources
+
+Execute the below commands to see the running Docker containers and the state that they are in.
+
+To display all containers:
+
+```sh
+docker ps -a
+```
+
+To stop the containers, use the command:
+
+```bash
+yarn docker:instant down -t docker hmis
+```
+
+To completely remove all project components, use the following option:
+
+```bash
+yarn docker:instant destroy -t docker hmis
+```
+
+
+</TabItem>
+<TabItem value="kubernetes">
+
+> If you are working with multiple cluster hosting clients you may need to switch cluster context for your deployment. See the below commands:
+
+```sh
+kubectl config get-contexts
+kubectl config use-context <context-name>
+```
+
+#### Minikube (local)
+
+For the Kubernetes deployment to work as expected, we need to ensure we have `minikube` installed on our local machine running the deployment.
+Follow these steps to [install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+
+Once installed, we can start the minikube service by executing the below command:
+
+```sh
+minikube start --cpus 4 --memory 8192
+```
+
+This also updates the VM settings to make use of 4 CPU's and 8GB of RAM, instead of the default 2 CPU's and 4GB of RAM
+
+> Add more CPUs and Memory if you have spare capacity, especially if you plan on adding more packages later.
+
+#### Getting Started
+
+Useful Links:
+
+- [Kubectl Cheat Sheet](https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet)
+
+Before proceeding, ensure that you are in the root Instant OpenHIE directory.
+From the working directory, execute the following:
+
+```bash
+yarn docker:instant init -t k8s hmis
+```
+
+The DHIS2 console url will be displayed in the terminal output when the script completes. The Url may take a few minutes to become active as the pod may not be fully initialized yet.
+
+This bash script will apply the kubernetes `kustomization.yaml` file which controls the `HMIS Package` component (i.e. DHIS2).
+
+> On first run, the setup may take up to 10 minutes as the Docker images for each component will need to be pulled. This won't happen on future runs.
+
+#### View running Kubernetes resources
+
+Execute the below commands to see the running Kubernetes resources and the state that they are in.
+
+To display all resource: (Some new resources are not listed here)
+
+```sh
+kubectl get all --all-namespaces
+```
+
+To tear down this deployment, use the opposing command:
+
+```bash
+yarn docker:instant down -t k8s hmis
+```
+
+To completely remove all project components, use the following option:
+
+```bash
+yarn docker:instant destroy -t k8s hmis
+```
+
+---
+</TabItem>
+</Tabs>

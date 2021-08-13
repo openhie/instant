@@ -1,0 +1,47 @@
+---
+id: elastic
+title: Elastic Packages
+sidebar_label: Elastic analytics
+keywords:
+  - Instant OpenHIE
+  - Elastic
+  - Package
+description: The elastic packages for Instant OpenHIE
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+:::info
+The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
+:::
+
+## Package functionality
+
+The `elastic-*` package family are infrastructure packages that provide components for the elastic stack for data analytics and other useful tools. There are two packages, namely, `elastic-analytics` and `elastic-pipeline`. The pipeline packages provides the tools to get data from HAPI FHIR into elasticsearch in the analytics package. The analytics package provides the tools for data analytics, visualisation and report generation.
+
+The `elastic-pipeline` package may be replaced by any other set pipeline tool if necessary. The `elastic-analytics` package has no dependency on it.
+
+### List of components
+
+`elastic-pipeline`:
+* fhir-extractor - a simple node.js service that queries the _history endpoint of HAPI FHIR and forwards the bundle to Logstash.
+* logstash - processes the FHIR bundle and breaks it does into individual resources and stores the raw resources in elasticsearch. It can also be configured to pre-process, join, flatten and enrich resources using it's json manipulation DSL. This makes reports easier to run where the raw FHIR resources are highly nested and relational thus difficult to report on.
+
+`elastic-analytics`:
+* elastic-search - acts as the data mart. All reporting data should go into it in a format favourable for reporting. aggregation queries to elasticsearch can be made to draw up reports.
+* kibana - a visualisation, data discovery and dashboarding tool that is part of the elastic stack
+* jsReport - a tool separate from the elastic stack which is useful for creating pixel perfect reports that are exportable to PDF and excel using HTML and CSS. It can be scripted to query elasticsearch as it's data source.
+
+### Accessing the components
+
+Only two of the component has accessible frontends. Security has been enabled by default on both of these with a default password:
+
+Kibana: <http://localhost:5601/>
+* Username: elastic
+* Password: dev_password_only
+
+jsReport: <http://localhost:5488/>
+* Username: admin
+* Password: dev_password_only

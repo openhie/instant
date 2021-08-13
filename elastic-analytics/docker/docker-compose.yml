@@ -1,0 +1,51 @@
+version: '3.3'
+
+services:
+  es-analytics:
+    container_name: es-analytics
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    environment:
+      node.name: es01
+      discovery.type: single-node
+      bootstrap.memory_lock: 'true'
+      xpack.security.enabled: 'true'
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.13.0
+    environment:
+      ELASTICSEARCH_URL: http://es-analytics:9200
+      ELASTICSEARCH_HOSTS: http://es-analytics:9200
+      ELASTICSEARCH_USERNAME: 'kibana_system'
+      ELASTICSEARCH_PASSWORD: ${ES_KIBANA_SYSTEM}
+    ports:
+      - 5601:5601
+
+  jsreport:
+    container_name: jsreport
+    image: jsreport/jsreport:2.11.0-full-patch1
+    environment:
+      allowLocalFilesAccess: 'true'
+      extensions_authentication_cookieSession_secret: ${JS_REPORT_SECRET}
+      extensions_authentication_admin_username: 'admin'
+      extensions_authentication_admin_password: ${JS_REPORT}
+    volumes:
+      - type: volume
+        source: instant
+        target: /instant
+    ports:
+      - 5488:5488
+
+volumes:
+  es-data:
+  instant:
+    external: true
