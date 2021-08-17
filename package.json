@@ -17,8 +17,10 @@
   },
   "scripts": {
     "instant": "ts-node instant.ts",
-    "test": "./test.sh local",
+    "test:local": "docker run --rm --name test-helper -v instant:/instant --network instant_default openhie/package-test local",
+    "test:local:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant --network instant_default openhie/package-test local",
     "test:remote": "./test.sh remote",
+    "test:container": "./test.sh",
     "docker:build": "docker build -t openhie/instant:latest .",
     "docker:instant": "./deploy.sh",
     "docker:instant:win": "docker volume rm instant & docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %USERPROFILE%\\.kube:/root/.kube/config:ro  --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
