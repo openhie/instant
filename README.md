@@ -131,16 +131,39 @@ Multiple custom packages can be chained together as follows:
 
 The [Cucumber](https://cucumber.io/) framework is used for testing the instantiated packages.
 
-For docker instances, update the `.env.local` file with the instances' host urls and ports, and then run
+#### Docker-Compose
+
+Run the following for the default tests:
 
 ```sh
-yarn test <PACKAGE_IDs>
+yarn test:local <PACKAGE_IDs>
 ```
 
-For kubernetes instances, update the `.env.remote` file with the instances' host urls and ports, and then run
+If you want to make changes to the tests, you can run your changes without rebuilding anyting by using the *dev* version of the command:
+
+> Remember to update the volume file path in the `package.json`
+
+```sh
+yarn test:local:dev <PACKAGE_IDs>
+```
+
+#### Kubernetes
+
+Update the `.env.remote` file with the instances' host urls and ports.
+Then update the file path in the [`package.json`](./package.json) file on line 22 in the scripts section.
+This file path needs to reference your `.env.remote` file to volume in your updates.
+Finally, run the following command for the default tests:
 
 ```sh
 yarn test:remote <PACKAGE_IDs>
+```
+
+If you want to make changes to the tests, you can run your changes without rebuilding anyting by using the *dev* version of the command:
+
+> Remember to update the volume file path in the `package.json`
+
+```sh
+yarn test:remote:dev <PACKAGE_IDs>
 ```
 
 > The `PACKAGE_IDs` is a string of the package ids separated by space.
