@@ -139,7 +139,7 @@ Run the following for the default tests:
 yarn test:local <PACKAGE_IDs>
 ```
 
-If you want to make changes to the tests, you can run your changes without rebuilding anyting by using the *dev* version of the command:
+If you want to make changes to the tests, you can run your changes without rebuilding anything by using the *dev* version of the command:
 
 > Remember to update the volume file path in the `package.json`
 
