@@ -36,7 +36,7 @@ Then('the ES analytics service should be up and running', async () => {
   console.log('\n\nChecking the status of the ES Analytics Service\n\n')
 
   try {
-    const result = await sendRequest(ES_ANALYTICS_API_PORT)
+    await sendRequest(ES_ANALYTICS_API_PORT)
 
     console.log('The ES Analytics service is up\n')
   } catch (error) {
@@ -52,7 +52,7 @@ Then('the Kibana shpuld be up and running', async () => {
   console.log('\n\nChecking the status of the Kibana Service\n\n')
 
   try {
-    const result = await sendRequest(KIBANA_API_PORT)
+    await sendRequest(KIBANA_API_PORT)
 
     console.log('The Kibana service is up\n')
   } catch (error) {
