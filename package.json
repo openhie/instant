@@ -17,8 +17,11 @@
   },
   "scripts": {
     "instant": "ts-node instant.ts",
-    "test": "env-cmd -f .env.local cucumber-js -f progress-bar ./*/features/",
-    "test:remote": "env-cmd -f .env.remote cucumber-js -f progress-bar ./*/features/",
+    "test:local": "docker run --rm --name test-helper -v instant:/instant --network instant_default openhie/package-test local",
+    "test:local:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant --network instant_default openhie/package-test local",
+    "test:remote": "docker run --rm --name test-helper --network host -v instant:/instant -v </absolute/path/to/instant/.env.remote>:/instant/.env.remote openhie/package-test remote",
+    "test:remote:dev": "docker run --rm --name test-helper --network host -v </absolute/path/to/instant>:/instant openhie/package-test remote",
+    "test:container": "./test.sh",
     "docker:build": "docker build -t openhie/instant:latest .",
     "docker:instant": "./deploy.sh",
     "docker:instant:win": "docker volume rm instant & docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %USERPROFILE%\\.kube:/root/.kube/config:ro  --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",

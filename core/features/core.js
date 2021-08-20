@@ -33,7 +33,7 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
 
   if (checkPatientExistsResponse.data.total === 0) {
     console.log(
-      `Patient record for Jane Doe does not exist. Creating Patient...`
+      `\nPatient record for Jane Doe does not exist. Creating Patient`
     )
     const options = {
       url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient`,
@@ -64,7 +64,7 @@ Given('a patient, Jane Doe, exists in the FHIR server', async function () {
 
     hapiFhirPatientID = createPatientResponse.data.id
   } else if (checkPatientExistsResponse.data.total === 1) {
-    console.log(`Patient record for Jane Doe already exists...`)
+    console.log(`\nPatient record for Jane Doe already exists`)
 
     expect(
       checkPatientExistsResponse.data.entry[0].resource.name[0].given
@@ -106,7 +106,7 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
   }
 
   if (createClient) {
-    console.log(`The test Harness Client does not exist. Creating Client...`)
+    console.log(`\nThe test Harness Client does not exist. Creating Client`)
     const options = {
       url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients`,
       method: 'POST',
@@ -125,7 +125,7 @@ Given('an authorised client, Alice, exists in the OpenHIM', async function () {
     const response = await axios(options)
     expect(response.status).to.eql(201)
   } else {
-    console.log(`The Test Harness Client (Alice) already exists...`)
+    console.log(`\nThe Test Harness Client (Alice) already exists`)
   }
 })
 
@@ -175,7 +175,7 @@ Then('Malice is NOT able to get a result', function () {
 
 AfterAll(async function () {
   if (hapiFhirPatientID) {
-    console.log(`Deleting FHIR test Patient record`)
+    console.log(`\nDeleting FHIR test Patient record`)
     const deletePatientOptions = {
       url: `${OPENHIM_PROTOCOL}://${OPENHIM_API_HOSTNAME}:${OPENHIM_TRANSACTION_API_PORT}/fhir/Patient/${hapiFhirPatientID}`,
       method: 'DELETE',
@@ -212,7 +212,7 @@ AfterAll(async function () {
   }
 
   if (clientObjectId) {
-    console.log(`Deleting OpenHIM test Client record`)
+    console.log(`\nDeleting OpenHIM test Client record`)
     const deleteClientOptions = {
       url: `https://${OPENHIM_API_HOSTNAME}:${OPENHIM_MEDIATOR_API_PORT}/clients/${clientObjectId}`,
       method: 'DELETE',
