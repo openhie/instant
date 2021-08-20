@@ -141,11 +141,22 @@ yarn test:local <PACKAGE_IDs>
 
 If you want to make changes to the tests, you can run your changes without rebuilding anything by using the *dev* version of the command:
 
-> Remember to update the volume file path in the `package.json`
+> Remember to update the **volume file path** in the `package.json`
 
 ```sh
 yarn test:local:dev <PACKAGE_IDs>
 ```
+
+To run custom package tests in your local environment, no changes need to be made to your setup as the existing `instant` volume contains the custom package in the appropriate directory.
+However, if you want to make changes to the custom package tests you will need to add a new volume reference to the npm test script.
+For example, to experiment with the [WHO Covid19 Surveillance Package](https://github.com/jembi/who-covid19-surveillance-package) tests we will need to add the local file path of the package to the test command.
+Line 21 of our package.json should look something like this (substituting in your specific file path):
+
+```json
+    "test:local:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant -v </absolute/path/to/who-covid19-surveillance-package>:/instant/who-covid19-surveillance-package --network instant_default openhie/package-test local",
+```
+
+This will allow us to make changes to the Covid19 Surveillance tests without having to rebuild the containers between runs.
 
 #### Kubernetes
 
@@ -160,10 +171,21 @@ yarn test:remote <PACKAGE_IDs>
 
 If you want to make changes to the tests, you can run your changes without rebuilding anything by using the *dev* version of the command:
 
-> Remember to update the volume file path in the `package.json`
+> Remember to update the **volume file path** in the `package.json`
 
 ```sh
 yarn test:remote:dev <PACKAGE_IDs>
 ```
 
 > The `PACKAGE_IDs` is a string of the package ids separated by space.
+
+To run custom package tests in the remote environment, no changes need to be made to your setup as the existing `instant` volume contains the custom package in the appropriate directory.
+However, if you want to make changes to the custom package tests you will need to add a new volume reference to the npm test script.
+For example, to experiment with the [WHO Covid19 Surveillance Package](https://github.com/jembi/who-covid19-surveillance-package) tests we will need to add the local file path of the package to the test command.
+Line 23 of our package.json should look something like this (substituting in your specific file path):
+
+```json
+    "test:remote:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant -v </absolute/path/to/who-covid19-surveillance-package>:/instant/who-covid19-surveillance-package --network host openhie/package-test remote",
+```
+
+This will allow us to make changes to the Covid19 Surveillance tests without having to rebuild the pods between runs.
