@@ -1,6 +1,6 @@
 version: '3.3'
 
 services:
-  mapper:
+  mcsd-mediator:
     ports:
       - "3003:3003"

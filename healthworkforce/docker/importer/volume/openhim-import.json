@@ -19,8 +19,10 @@
   "Clients": [],
   "Channels": [
     {
-      "methods": [],
-      "type": "polling",
+      "methods": [
+        "GET"
+      ],
+      "type": "http",
       "allow": [],
       "whitelist": [],
       "authType": "public",
@@ -41,7 +43,7 @@
           "forwardAuthHeader": false,
           "name": "mcsd route",
           "secured": false,
-          "host": "mapper",
+          "host": "mcsd-mediator",
           "port": 3003,
           "path": "/mcsd",
           "pathTransform": "",
@@ -55,7 +57,6 @@
       "rewriteUrlsConfig": [],
       "name": "mCSD mediator",
       "description": "Triggers the retrieving of data and the mapping of that data into a FHIR bundle, which will then be sent to a FHIR metadata store ",
-      "pollingSchedule": "0 * * * *",
       "urlPattern": "^/mcsd-trigger$",
       "matchContentRegex": null,
       "matchContentXpath": null,

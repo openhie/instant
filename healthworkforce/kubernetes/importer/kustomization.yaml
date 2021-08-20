@@ -1,5 +1,5 @@
 configMapGenerator:
-  - name: mapper-config-importer-configmap
+  - name: mcsd-mediator-openhim-config-importer-configmap
     files:
       - ./volume/openhim-import.json
       - ./volume/openhimConfig.js
