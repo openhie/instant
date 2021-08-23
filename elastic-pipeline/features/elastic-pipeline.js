@@ -18,29 +18,26 @@ const sendRequest = (hostname, port) => axios({
 Then('the logstash service should be up and running', async () => {
   console.log('\n\nChecking the status of the Logstash Service\n\n')
 
-  try {
-    await sendRequest(LOGSTASH_HOSTNAME, LOGSTASH_API_PORT)
+  const result = await sendRequest(LOGSTASH_HOSTNAME, LOGSTASH_API_PORT)
 
-    console.log('The Logstash service is up\n')
-  } catch (error) {
-    if (error.response.status != 500) {
-      console.log('The Logstash service is up\n') 
-    } else {
-      throw error
-    }
-  }
+  console.log(`The Logstash service is up and responded with status - ${result.status}\n`)
 })
 
+/*
+ The following test only checks whether the service is up and running.
+ A request is send to the service and a positive result is one in which the
+ http response status is not 500.
+*/
 Then('the fhir extractor service should be up and running', async () => {
   console.log('\n\nChecking the status of the Fhir Extractor Service\n\n')
 
   try {
-    await sendRequest(FHIR_EXTRACTOR_HOSTNAME ,FHIR_EXTRACTOR_API_PORT)
+    const result = await sendRequest(FHIR_EXTRACTOR_HOSTNAME ,FHIR_EXTRACTOR_API_PORT)
 
-    console.log('The Fhir Extractor service is up\n')
+    console.log(`The Fhir Extractor service is up and responded with a status - ${result.status}\n`)
   } catch (error) {
     if (error.response.status != 500) {
-      console.log('The Fhir Extractor service is up\n') 
+      console.log(`The Fhir Extractor service is up and responded with a status - ${error.response.status}\n`)
     } else {
       throw error
     }
