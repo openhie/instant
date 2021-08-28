@@ -131,16 +131,61 @@ Multiple custom packages can be chained together as follows:
 
 The [Cucumber](https://cucumber.io/) framework is used for testing the instantiated packages.
 
-For docker instances, update the `.env.local` file with the instances' host urls and ports, and then run
+#### Docker-Compose
+
+Run the following for the default tests:
 
 ```sh
-yarn test
+yarn test:local <PACKAGE_IDs>
 ```
 
-For kubernetes instances, update the `.env.remote` file with the instances' host urls and ports, and then run
+If you want to make changes to the tests, you can run your changes without rebuilding anything by using the *dev* version of the command:
+
+> Remember to update the **volume file path** in the `package.json`
 
 ```sh
-yarn test:remote
+yarn test:local:dev <PACKAGE_IDs>
 ```
 
-> The commands above will try to run tests for all packages which will result in errors if a package is not up and running. Logic for specifying the package to test will be added soon. For now you can specify the package by changing the path in the package.json test script.
+To run custom package tests in your local environment, no changes need to be made to your setup as the existing `instant` volume contains the custom package in the appropriate directory.
+However, if you want to make changes to the custom package tests you will need to add a new volume reference to the npm test script.
+For example, to experiment with the [WHO Covid19 Surveillance Package](https://github.com/jembi/who-covid19-surveillance-package) tests we will need to add the local file path of the package to the test command.
+Line 21 of our package.json should look something like this (substituting in your specific file path):
+
+```json
+    "test:local:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant -v </absolute/path/to/who-covid19-surveillance-package>:/instant/who-covid19-surveillance-package --network instant_default openhie/package-test local",
+```
+
+This will allow us to make changes to the Covid19 Surveillance tests without having to rebuild the containers between runs.
+
+#### Kubernetes
+
+Update the `.env.remote` file with the instances' host urls and ports.
+Then update the file path in the [`package.json`](./package.json) file on line 22 in the scripts section.
+This file path needs to reference your `.env.remote` file to volume in your updates.
+Finally, run the following command for the default tests:
+
+```sh
+yarn test:remote <PACKAGE_IDs>
+```
+
+If you want to make changes to the tests, you can run your changes without rebuilding anything by using the *dev* version of the command:
+
+> Remember to update the **volume file path** in the `package.json`
+
+```sh
+yarn test:remote:dev <PACKAGE_IDs>
+```
+
+> The `PACKAGE_IDs` is a string of the package ids separated by space.
+
+To run custom package tests in the remote environment, no changes need to be made to your setup as the existing `instant` volume contains the custom package in the appropriate directory.
+However, if you want to make changes to the custom package tests you will need to add a new volume reference to the npm test script.
+For example, to experiment with the [WHO Covid19 Surveillance Package](https://github.com/jembi/who-covid19-surveillance-package) tests we will need to add the local file path of the package to the test command.
+Line 23 of our package.json should look something like this (substituting in your specific file path):
+
+```json
+    "test:remote:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant -v </absolute/path/to/who-covid19-surveillance-package>:/instant/who-covid19-surveillance-package --network host openhie/package-test remote",
+```
+
+This will allow us to make changes to the Covid19 Surveillance tests without having to rebuild the pods between runs.

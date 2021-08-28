@@ -77,8 +77,13 @@ exports.triggerSync = async () => {
       'Content-Type': 'application/json'
     }
   })
-
-  console.log('\n Triggered sync')
+    .then((res) => {
+      console.log(`\n Triggered sync`)
+    })
+    .catch((err) => {
+      console.error(`Trigger Failed. Clean up needed. ${err}`)
+      throw err
+    })
 }
 
 exports.ihrisMockServicePractitioner = async () => {
@@ -252,7 +257,7 @@ exports.verifyPractitionerRoleExistsAndCleanup = async () => {
 
   if (!(response.status === 200) || !(response.data.total === 1))
     throw Error(
-      `${resource} with identifier-value ${identifierValue} does not exist in FHIR`
+      `${resource} with identifier-value ${identifierValue} exists ${response.data.total} times in FHIR`
     )
 
   // Remove resource from FHIR

@@ -8,7 +8,7 @@ if [ "$1" == "init" ]; then
 elif [ "$1" == "up" ]; then
     kubectl apply -k $k8sMainRootFilePath
 elif [ "$1" == "down" ]; then
-    kubectl delete deployment mapper-deployment
+    kubectl delete deployment mcsd-mediator-deployment
 elif [ "$1" == "destroy" ]; then
     kubectl delete deployments,services,jobs -l package=hwf
 else
