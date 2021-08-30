@@ -2,6 +2,9 @@ configMapGenerator:
   - name: core-openhim-core-configmap
     files:
       - ./openhim/volume/openhim-core/development.json
+  - name: core-hapi-fhir-mysql-configmap
+    files:
+      - ./hapi-fhir/volume/mysql.cnf
 
 resources:
   # volumes
