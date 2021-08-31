@@ -8,6 +8,10 @@ if [ "$1" == "init" ]; then
     # Set up the replica set
     "$composeFilePath"/initiateReplicaSet.sh
 
+    docker create --name hapi-mysql-helper -v hapi-mysql-config:/conf.d busybox
+    docker cp "$composeFilePath"/importer/volume/mysql.cnf hapi-mysql-helper:/conf.d/mysql.cnf
+    docker rm hapi-mysql-helper
+
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml up -d
