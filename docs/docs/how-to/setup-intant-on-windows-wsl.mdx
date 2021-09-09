@@ -14,9 +14,32 @@ description: How to setup Instant OpenHIE for development on Windows with WSL
 The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
 :::
 
+## Overview
+
+The purpose of this how-to guide is to help set up a complete development environment for Instant OpenHIE on Windows using WSL 2 including VSCode and Docker setup.
+
+WSL is the Windows Subsystem for Linux which allows Windows users to interact with GNU/Linux environment directly from Windows. More about WSL can be found here:
+- [What is the Windows Subsystem for Linux?](https://docs.microsoft.com/en-us/windows/wsl/about)
+
+## Prerequisites
+
+System requirements:
+- Stable internet connection with high download speeds.
+- 16GB RAM.
+- At least 20GB free space.
+
+To make use of WSL 2, you must be running Windows 10.
+- For x64 systems: Version 1903 or higher, with Build 18362 or higher.
+- For ARM64 systems: Version 2004 or higher, with Build 19041 or higher.
+- Builds lower than 18362 do not support WSL 2. Use the Windows Update Assistant to update your version of Windows.
+
+> The version and build number can be checked in the Windows System Information by simply typing "System Information" into Windows search and looking at the `Version` item under the `System Summary`.
+
 ## 1. Install WSL
-Follow the steps on the Microsoft website to install the WSL feature for Windows:
+Follow the Manual steps on the Microsoft website to install the WSL feature for Windows:
 - [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+> Ensure you upgrade to WSL 2 for performance reasons.
 
 ## 2. Linux Distribution Setup
 
@@ -24,7 +47,20 @@ If you haven't already done this as part of the step 1 above, you will need to c
 
 - [Create a user account and password for your new Linux distribution](https://docs.microsoft.com/en-us/windows/wsl/user-support)
 
-When using WSL 2 it is better to store files in the Linux subsystem file system rather than in the Windows file system for performance reasons. The easiest way to do this is to simply clone repositories and other files to the $HOME (~) directory on the Linux subsystem.
+Limit the RAM usage of WSL to prevent the Windows `LxssManager` service from hogging all of the computer resources. The following article helps to achieve this:
+- [How to Stop WSL2 from Hogging All Your Ram With Docker](https://medium.com/@lewwybogus/how-to-stop-wsl2-from-hogging-all-your-ram-with-docker-d7846b9c5b37)
+
+The recommended .wslconfig file to use:
+```makefile title=".wslconfig"
+[wsl2]
+memory=8GB # Limits VM memory in WSL 2 to 8 GB
+processors=5 # Makes the WSL 2 VM use two virtual processors
+```
+
+
+> When using WSL 2 it is better to store files in the Linux subsystem file system rather than in the Windows file system for performance reasons. The easiest way to do this is to simply clone repositories and other files to the $HOME (~) directory on the Linux subsystem.
+
+> The current suggested Linux distribution is `Ubuntu 20.04 LTS`
 
 ## 3. Git Setup
 
@@ -41,6 +77,8 @@ sudo apt-get install git
 
 Download and install Docker Desktop from:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+> Docker Desktop installs `docker-compose` by default and sets up docker without sudo in the Linux terminal
 
 ## 5. Source Code & Development Environment Setup
 
@@ -82,6 +120,10 @@ Build the Docker images using:
 
 ```sh
 yarn docker:instant build
+```
+
+```sh
+yarn docker:instant init core
 ```
 
 ## Useful Links
