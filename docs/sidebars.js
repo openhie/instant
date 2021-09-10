@@ -20,7 +20,8 @@ module.exports = {
       'how-to/creating-packages',
       'how-to/setup-kubernetes-in-cloud',
       'how-to/configure-openhim-mapping-mediator',
-      'how-to/configure-dhis2'
+      'how-to/configure-dhis2',
+      'how-to/setup-instant-on-windows-wsl'
     ],
     'Existing Packages': [
       'packages/core',
