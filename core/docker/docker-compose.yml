@@ -43,7 +43,7 @@ services:
         target: /instant
     depends_on:
       - mysql
-
+    mem_limit: 2g
   mysql:
     container_name: hapi-mysql
     image: mysql:5.7

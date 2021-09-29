@@ -23,6 +23,7 @@ spec:
       containers:
         - name: hapi-fhir-server
           image: hapiproject/hapi:latest
+          mem_limit: 2g
           env:
             - name: spring.datasource.url
               value: jdbc:mysql://hapi-fhir-mysql-service:3306/hapi
