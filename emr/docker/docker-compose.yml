@@ -21,7 +21,7 @@ services:
     depends_on:
       - openmrs-referenceapplication-mysql
     ports:
-      - "8080:8080"
+      - "8090:8080"
     environment:
       DB_DATABASE: ${MYSQL_DB:-openmrs}
       DB_HOST: openmrs-referenceapplication-mysql
