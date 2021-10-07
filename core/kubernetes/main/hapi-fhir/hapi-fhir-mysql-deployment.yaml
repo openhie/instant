@@ -33,8 +33,13 @@ spec:
           volumeMounts:
             - name: core-hapi-fhir-mysql-volume
               mountPath: /var/lib/mysql
+            - name: core-hapi-fhir-mysql-config-map
+              mountPath: /etc/mysql/conf.d
       restartPolicy: Always
       volumes:
         - name: core-hapi-fhir-mysql-volume
           persistentVolumeClaim:
             claimName: hapi-fhir-mysql-volume-claim
+        - name: core-hapi-fhir-mysql-config-map
+          configMap:
+            name: core-hapi-fhir-mysql-configmap
