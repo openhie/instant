@@ -1,0 +1,119 @@
+version: '3.3'
+services:
+    certs:
+        container_name: oe-certs 
+        image: ghcr.io/i-tech-uw/certgen:main
+        restart: always
+        environment:
+            - KEYSTORE_PW="kspass"
+            - TRUSTSTORE_PW="tspass"
+        volumes:  
+            - cert-volume:/etc/openelis-global
+          
+    database:
+        container_name: openelisglobal-database 
+        image: postgres:9.5
+        ports:
+            - "15432:5432"
+        restart: always
+        environment:
+            -  POSTGRES_USER=postgres
+            -  POSTGRES_PASSWORD=admin
+            -  POSTGRES_DB=clinlims
+            -  POSTGRES_INITDB_ARGS="--auth-host=md5"
+        # env_file:
+        #      - /home/moses/Desktop/U-WASH-PROJ/TICKETS/INSTANT-OPENHIE-PROJECT/labPackage/instant/lab/docker/importer/volume/database/database.env
+        volumes:
+              # preserves the database between containers
+             - db-data:/var/lib/postgresql/data                
+              # files here will run on install
+             - openelis-db-data:/docker-entrypoint-initdb.d
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-q", "-d", "clinlims", "-U", "clinlims" ]
+            timeout: 45s
+            interval: 10s
+            retries: 10 
+            
+    oe.openelis.org:
+        container_name: openelisglobal-webapp 
+        image: ghcr.io/i-tech-uw/openelis-global-2:develop     
+        depends_on:
+            - database
+        ports:
+            - "8095:8080"
+            - "8443:8443"
+        restart: always
+        networks:
+          default:
+              # ipv4_address: 127.0.0.1
+              # driver: bridge
+              # # ipam:
+              # #   config:
+              # #     - subnet: 172.20.1.0/24 
+
+        restart: always
+        environment:
+            - TZ=Africa/Nairobi
+              # context.xml doesn't seem to be able to pick up environment variables directly, so we are passing them in as CATALINA_OPTS
+            - CATALINA_OPTS= -Ddatasource.url=jdbc:postgresql://database:5432/clinlims -Ddatasource.username=clinlims
+        volumes:
+            -  cert-volume:/etc/openelis-global
+            -  openelis-plugins-data:/var/lib/openelis-global/plugins
+            -  openelis-server-data:/usr/local/tomcat/conf/
+        secrets:
+            - source: datasource.password
+            - source: common.properties
+            
+    fhir.openelis.org:
+        container_name: external-fhir-api
+        image: hapiproject/hapi:v5.4.0
+        ports:
+            - "8081:8080"
+            - "8444:8443"
+        networks:
+            - default
+        restart: always
+        environment:
+          TZ: Africa/Nairobi
+
+          JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/openelis-global/truststore 
+                      -Djavax.net.ssl.trustStorePassword=tspass
+                      -Djavax.net.ssl.trustStoreType=pkcs12 
+                      -Djavax.net.ssl.keyStore=/etc/openelis-global/keystore 
+                      -Djavax.net.ssl.keyStorePassword=kspass 
+                      -Djavax.net.ssl.keyStoreType=pkcs12"            
+        
+        volumes:
+            -  cert-volume:/etc/openelis-global
+            -  openelis-fhir-data:/usr/local/tomcat/conf/
+        secrets:
+            - source: common.properties
+                
+secrets:  
+  datasource.password:
+    # external: true
+      file: /home/moses/Desktop/U-WASH-PROJ/TICKETS/INSTANT-OPENHIE-PROJECT/labPackage/instant/lab/docker/importer/volume/properties/datasource.password  
+  common.properties:
+    # external: true
+      file:  /home/moses/Desktop/U-WASH-PROJ/TICKETS/INSTANT-OPENHIE-PROJECT/labPackage/instant/lab/docker/importer/volume/properties/common.properties  
+      
+volumes:
+  db-data:
+  cert-volume:
+  openelis-db-data:
+    external: true
+  openelis-server-data:
+    external: true  
+  openelis-fhir-data:
+    external: true 
+  openelis-plugins-data:
+    external: true  
+    
+networks:
+  default:
+    # driver: bridge
+    # ipam:
+    #   config:
+    #     - subnet: 127.0.0.1/10    
+       
+    

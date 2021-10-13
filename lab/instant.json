@@ -1,0 +1,7 @@
+{
+  "id": "lab",
+  "name": "Labaratory Package",
+  "description": "Installs and starts up an instance of OpenELIS Global2",
+  "type": "infrastructure",
+  "version": "v0.0.1"
+}
