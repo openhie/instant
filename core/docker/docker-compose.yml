@@ -42,7 +42,7 @@ services:
     volumes:
       - type: volume
         source: instant
-        target: /instant     
+        target: /instant 
     depends_on:
       - mysql
 
