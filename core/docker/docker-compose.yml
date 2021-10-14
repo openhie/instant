@@ -42,10 +42,10 @@ services:
     volumes:
       - type: volume
         source: instant
-        target: /instant
+        target: /instant     
     depends_on:
       - mysql
- 
+
   mysql:
     container_name: hapi-mysql
     image: mysql:5.7
@@ -65,4 +65,3 @@ volumes:
     external: true
   instant:
     external: true
-    
