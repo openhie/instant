@@ -140,9 +140,14 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
           name: 'target',
           alias: 't',
           defaultValue: 'docker'
+        },
+        {
+          name: 'ignore-deps',
+          alias: 'i',
+          defaultValue: 'false'
         }
       ],
-      { argv, stopAtFirstUnknown: true }
+      { argv, stopAtFirstUnknown: true, camelCase: true }
     )
 
     console.log(`Target environment is: ${mainOptions.target}`)
@@ -160,8 +165,10 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
       chosenPackageIds = Object.keys(allPackages)
     }
 
-    // Order the packages such that the dependencies are instantiated first
-    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    if (mainOptions.ignoreDeps !== 'true') {
+      // Order the packages such that the dependencies are instantiated first
+      chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    }
 
     if (['destroy', 'down'].includes(main.command)) {
       chosenPackageIds.reverse()
@@ -175,6 +182,13 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
       case 'docker':
         for (const id of chosenPackageIds) {
           await runBashScript(`${allPackages[id].path}docker/`, 'compose.sh', [
+            main.command
+          ])
+        }
+        break
+      case 'swarm':
+        for (const id of chosenPackageIds) {
+          await runBashScript(`${allPackages[id].path}docker/`, 'swarm.sh', [
             main.command
           ])
         }
