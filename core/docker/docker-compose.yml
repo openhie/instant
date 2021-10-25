@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  core:
+  openhim-core:
     container_name: openhim-core
     image: jembi/openhim-core:7
     environment:
@@ -17,13 +17,13 @@ services:
       - "5051:5051"
       - "5052:5052"
 
-  console:
+  openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:1.14
     ports:
         - "9000:80"
     depends_on:
-      - core
+      - openhim-core
 
   hapi-fhir:
     container_name: hapi-fhir
