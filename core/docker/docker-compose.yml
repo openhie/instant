@@ -35,6 +35,7 @@ services:
       - spring.datasource.driverClassName=com.mysql.jdbc.Driver
       - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
       - hapi.fhir.allow_external_references=true
+      - hapi.fhir.bulk_export_enabled=true
       - JAVA_TOOL_OPTIONS=-Xmx2g
       - CATALINA_OPTS=-Xmx2g
     volumes:
