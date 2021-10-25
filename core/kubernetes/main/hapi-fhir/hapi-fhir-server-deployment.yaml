@@ -22,7 +22,7 @@ spec:
           command: ['sh', '-c', 'until telnet hapi-fhir-mysql-service 3306; do echo MySQL not running yet; sleep 10; done;']
       containers:
         - name: hapi-fhir-server
-          image: hapiproject/hapi:latest
+          image: hapiproject/hapi:v5.5.1
           env:
             - name: spring.datasource.url
               value: jdbc:mysql://hapi-fhir-mysql-service:3306/hapi
