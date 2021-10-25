@@ -38,4 +38,8 @@ spec:
               value: 'true'
             - name: hapi.fhir.bulk_export_enabled
               value: 'true'
+            - name: JAVA_TOOL_OPTIONS
+              value: '-Xmx2g'
+            - name: CATALINA_OPTS
+              value: '-Xmx2g'
       restartPolicy: Always
