@@ -37,6 +37,8 @@ services:
       - hapi.fhir.allow_external_references=true
       - hapi.fhir.max_page_size=50
       - hapi.fhir.default_page_size=20
+      - "JAVA_TOOL_OPTIONS=-Xmx2g"
+      - "CATALINA_OPTS=-Xmx2g"
     volumes:
       - type: volume
         source: instant

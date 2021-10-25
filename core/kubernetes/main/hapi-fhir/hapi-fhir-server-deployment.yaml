@@ -36,4 +36,8 @@ spec:
               value: org.hibernate.dialect.MySQL5InnoDBDialect
             - name: hapi.fhir.allow_external_references
               value: 'true'
+            - name: JAVA_TOOL_OPTIONS
+              value: '-Xmx2g'
+            - name: CATALINA_OPTS
+              value: '-Xmx2g'
       restartPolicy: Always
