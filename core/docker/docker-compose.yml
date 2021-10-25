@@ -35,8 +35,7 @@ services:
       - spring.datasource.driverClassName=com.mysql.jdbc.Driver
       - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
       - hapi.fhir.allow_external_references=true
-      - hapi.fhir.max_page_size=50
-      - hapi.fhir.default_page_size=20
+      - hapi.fhir.bulk_export_enabled=true
     volumes:
       - type: volume
         source: instant
