@@ -6,4 +6,4 @@ services:
     container_name: ihris-data
     image: ihris/ihris-data:latest
     environment:
-      IHRIS_FHIR__BASE: http://fhir:8080/fhir
+      IHRIS_FHIR__BASE: http:/hapi-fhir8080/fhir
