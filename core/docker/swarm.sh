@@ -18,7 +18,7 @@ elif [ "$1" == "up" ]; then
 elif [ "$1" == "down" ]; then
     docker service scale instant_openhim-core=0 instant_openhim-console=0 instant_hapi-fhir=0 instant_hapi-mysql=0
 elif [ "$1" == "destroy" ]; then
-    docker service rm instant_core instant_console instant_fhir instant_mysql
+    docker service rm instant_openhim-core instant_openhim-console instant_hapi-fhir instant_hapi-mysql
 
     docker volume rm hapi-mysql hapi-mysql-config instant_openhim-mongo1 instant_openhim-mongo2 instant_openhim-mongo3
 else
