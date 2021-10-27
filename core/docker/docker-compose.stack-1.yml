@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  openhim-core:
+    deploy:
+      replicas: 2
+
+  openhim-console:
+    deploy:
+      replicas: 1
+    configs:
+      - source: console.config
+        target: /usr/share/nginx/html/config/default.json
+
+  hapi-fhir:
+    deploy:
+      replicas: 1
+
+  hapi-mysql:
+    deploy:
+      replicas: 2
+    configs:
+      - source: conf.d
+        target: /etc/mysql/conf.d/mysql.cnf
+
+configs:
+  conf.d:
+    file: ./importer/volume/mysql.cnf
+  console.config:
+    file: ./importer/volume/default.json

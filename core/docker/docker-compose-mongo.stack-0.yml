@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  mongo-1:
+    deploy:
+      replicas: 1
+
+  mongo-2:
+    deploy:
+      replicas: 1
+
+  mongo-3:
+    deploy:
+      replicas: 1
