@@ -9,6 +9,11 @@ if [ "$1" == "init" ]; then
     "$composeFilePath"/initiateReplicaSet.sh
 
     docker stack deploy -c "$composeFilePath"/docker-compose.yml -c "$composeFilePath"/docker-compose.dev.yml -c "$composeFilePath"/importer/docker-compose.config.yml -c "$composeFilePath"/docker-compose.stack-1.yml -c "$composeFilePath"/importer/docker-compose.config.stack-0.yml instant
+
+    echo "Sleep 60 seconds to give core config importer time to run before cleaning up service"
+    sleep 60
+
+    docker service rm instant_core-config-importer
 elif [ "$1" == "up" ]; then
     docker stack deploy -c "$composeFilePath"/docker-compose.mongo.yml -c "$composeFilePath"/docker-compose-mongo.stack-0.yml instant
 
@@ -16,11 +21,14 @@ elif [ "$1" == "up" ]; then
     sleep 20
     docker stack deploy -c "$composeFilePath"/docker-compose.yml -c "$composeFilePath"/docker-compose.dev.yml -c "$composeFilePath"/docker-compose.stack-1.yml instant
 elif [ "$1" == "down" ]; then
-    docker service scale instant_openhim-core=0 instant_openhim-console=0 instant_hapi-fhir=0 instant_hapi-mysql=0
+    docker service scale instant_openhim-core=0 instant_openhim-console=0 instant_hapi-fhir=0 instant_hapi-mysql=0 instant_mongo-1=0 instant_mongo-2=0 instant_mongo-3=0
 elif [ "$1" == "destroy" ]; then
-    docker service rm instant_openhim-core instant_openhim-console instant_hapi-fhir instant_hapi-mysql
+    docker service rm instant_openhim-core instant_openhim-console instant_hapi-fhir instant_hapi-mysql instant_mongo-1 instant_mongo-2 instant_mongo-3
 
-    docker volume rm hapi-mysql hapi-mysql-config instant_openhim-mongo1 instant_openhim-mongo2 instant_openhim-mongo3
+    echo "Sleep 10 Seconds to allow services to shut down before deleting volumes"
+    sleep 20
+
+    docker volume rm instant_hapi-mysql-volume hapi-mysql-config instant_openhim-mongo1 instant_openhim-mongo2 instant_openhim-mongo3
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
