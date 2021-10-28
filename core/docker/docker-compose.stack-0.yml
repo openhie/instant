@@ -18,7 +18,7 @@ services:
 
   hapi-mysql:
     deploy:
-      replicas: 2
+      replicas: 1
     configs:
       - source: conf.d
         target: /etc/mysql/conf.d/mysql.cnf
