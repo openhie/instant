@@ -3,7 +3,7 @@ version: '3.3'
 services:
   openhim-core:
     deploy:
-      replicas: 2
+      replicas: 1
 
   openhim-console:
     deploy:
