@@ -10,7 +10,13 @@ config='{"_id":"mongo-set","members":[{"_id":0,"priority":1,"host":"mongo-1:2701
 # Sleep to ensure all the mongo instances for the replica set are up and running
 sleep 50
 
-docker exec -i $(docker ps -f name=instant_mongo-1 --format "{{.ID}}") mongo --eval "rs.initiate($config)"
+containerName='mongo-1'
+
+if [ "$(docker ps -f name=instant_mongo-1 --format "{{.ID}}")" ]; then
+  containerName="$(docker ps -f name=instant_mongo-1 --format "{{.ID}}")"
+fi
+
+docker exec -i $containerName mongo --eval "rs.initiate($config)"
 
 sleep 30
 
