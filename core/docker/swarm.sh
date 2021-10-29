@@ -18,7 +18,7 @@ if [ "$1" == "init" ]; then
     echo "Sleep 60 seconds to give HAPI-FHIR and OpenHIM Console time to start up"
     sleep 60
 
-    docker stack deploy -c "$composeFilePath"/importer/docker-compose.config.yml -c "$composeFilePath"/importer/docker-compose.config.stack-0.yml instant
+    docker stack deploy -c "$composeFilePath"/importer/docker-compose.config.yml -c "$composeFilePath"/importer/docker-compose.config.stack.yml instant
 
     echo "Sleep 60 seconds to give core config importer time to run before cleaning up service"
     sleep 60
