@@ -3,12 +3,21 @@ version: '3.3'
 services:
   mongo-1:
     deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-1"
       replicas: 1
 
   mongo-2:
     deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-2"
       replicas: 1
 
   mongo-3:
     deploy:
+      placement:
+        constraints:
+          - "node.labels.name==secondary"
       replicas: 1
