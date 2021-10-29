@@ -3,7 +3,7 @@
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
-    docker stack deploy  -c "$composeFilePath"/docker-compose-mongo.yml -c "$composeFilePath"/docker-compose-mongo.stack-0.yml instant
+    docker stack deploy  -c "$composeFilePath"/docker-compose-mongo.yml -c "$composeFilePath"/docker-compose-mongo.stack.yml instant
 
     # Set up the replica set
     "$composeFilePath"/initiateReplicaSet.sh
@@ -25,7 +25,7 @@ if [ "$1" == "init" ]; then
 
     docker service rm instant_core-config-importer
 elif [ "$1" == "up" ]; then
-    docker stack deploy -c "$composeFilePath"/docker-compose.mongo.yml -c "$composeFilePath"/docker-compose-mongo.stack-0.yml instant
+    docker stack deploy -c "$composeFilePath"/docker-compose.mongo.yml -c "$composeFilePath"/docker-compose-mongo.stack.yml instant
 
     # Wait for mongo replica set to be set up
     sleep 20
