@@ -1,0 +1,8 @@
+{
+  "id": "lab",
+  "name": "Laboratory Workflows Package",
+  "description": "Installs and starts up an instance of OpenELIS Global2",
+  "type": "infrastructure",
+  "version": "v0.0.1",
+  "dependencies": ["core"]
+}
