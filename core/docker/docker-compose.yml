@@ -5,8 +5,8 @@ services:
     container_name: openhim-core
     image: jembi/openhim-core:7
     environment:
-      - mongo_url=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
-      - mongo_atnaUrl=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
+      - mongo_url=mongodb://mongo:27017
+      - mongo_atnaUrl=mongodb://mongo:27017
       - api_authenticationTypes=["token", "basic"]
       - authentication_enableCustomTokenAuthentication=true
     ports:

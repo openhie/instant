@@ -1,12 +1,12 @@
 version: '3.3'
 
 services:
-  mongo-1:
+  mongo:
     image: mongo:4.2
-    container_name: mongo-1
+    container_name: mongo
     ports:
       - "27017:27017"
-    command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
+    command: ['--wiredTigerCacheSizeGB', '0.5']
 
   fhir:
     container_name: hapi-fhir
