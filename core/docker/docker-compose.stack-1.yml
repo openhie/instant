@@ -1,0 +1,42 @@
+version: '3.3'
+
+services:
+  openhim-core:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-1"
+      replicas: 1
+
+  openhim-console:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-2"
+      replicas: 1
+    configs:
+      - source: console.config
+        target: /usr/share/nginx/html/config/default.json
+
+  hapi-fhir:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-1"
+      replicas: 1
+
+  hapi-mysql:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.name==primary-2"
+      replicas: 1
+    configs:
+      - source: conf.d
+        target: /etc/mysql/conf.d/mysql.cnf
+
+configs:
+  conf.d:
+    file: ./importer/volume/mysql.cnf
+  console.config:
+    file: ./importer/volume/default.json
