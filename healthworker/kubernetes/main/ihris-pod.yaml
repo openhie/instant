@@ -18,7 +18,7 @@ spec:
       - name: IHRIS_ELASTICSEARCH__BASE
         value: http://es:9200
       - name: IHRIS_FHIR__BASE
-        value: http:/hapi-fhir8080/fhir
+        value: http://hapi-fhir:8080/fhir
       - name: IHRIS_KIBANA__BASE
         value: http://kibana:5601
       - name: IHRIS_REDIS__URL
@@ -36,15 +36,15 @@ spec:
     image: ihris/upload-definitions:latest
     env:
       - name: IHRIS_FHIR__BASE
-        value: http:/hapi-fhir8080/fhir
+        value: http://hapi-fhir:8080/fhir
   - name: ihris-config
     image: ihris/ihris-config:latest
     env:
       - name: IHRIS_FHIR__BASE
-        value: http:/hapi-fhir8080/fhir
+        value: http://hapi-fhir:8080/fhir
   - name: ihris-data
     image: ihris/ihris-data:latest
     env:
       - name: IHRIS_FHIR__BASE
-        value: http:/hapi-fhir8080/fhir
+        value: http://hapi-fhir:8080/fhir
 
