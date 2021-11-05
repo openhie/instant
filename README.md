@@ -82,6 +82,13 @@ Each command also takes a list of package IDs to operate on. If this is left out
 
 E.g only run `core` package: `yarn docker:instant init -t k8s core`
 
+### Supported options
+
+Instant supports a few options after the main command in the form: `instant <main_command> [options] [package-ids]` e.g. `yarn docker:instant init -t k8s`
+
+* --target, -t : specify a target to deploy to, defaults to docker. Allowed values: docker, kubernetes, k8s
+* --only, -o : if supplied only the specified packages will be acted upon in the order they are provided, ignoring dependencies
+
 ## Custom packages
 
 To add a custom package to your instant instance use the following flag
