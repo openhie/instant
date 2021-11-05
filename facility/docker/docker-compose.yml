@@ -1,13 +1,6 @@
-version: "3.3"
+version: '3.7'
 
 services:
-  mongo:
-    container_name: mongo-gofr
-    image: mongo:3.6
-    ports:
-      - "27017:27017"
-    restart: always
-
   redis:
     container_name: redis-gofr
     image: redis
@@ -15,29 +8,49 @@ services:
       - "6379:6379"
     restart: always
 
-  hearth:
-    container_name: hearth-gofr
-    image: intrahealth/hearth:latest
-    environment:
-      - mongodb__url=mongodb://mongo/hearth-dev
-      - logger__level=warning
-      - authentication__type=disabled
-      # - idGenerator=uuidv4 <- setting from jembi/health, is untested
+  fhir:
+    container_name: hapi-fhir
+    image: hapiproject/hapi:latest
     ports:
-      - "3447:3447"
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - hapi.fhir.partitioning.enabled=true
+      - hapi.fhir.partitioning.allow_references_across_partitions=false
+      - hapi.fhir.partitioning.partitioning_include_in_search_hashes=false
+      - spring.jpa.properties.hibernate.search.enabled=true
+      - spring.jpa.properties.hibernate.search.backend.type=lucene
+      - spring.jpa.properties.hibernate.search.backend.analysis.configurer=ca.uhn.fhir.jpa.search.HapiLuceneAnalysisConfigurer
+      - spring.jpa.properties.hibernate.search.backend.directory.type=local-filesystem
+      - spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles
+      - spring.jpa.properties.hibernate.search.backend.lucene_version=lucene_current
+      - hapi.fhir.allow_placeholder_references=true
+      - hapi.fhir.auto_create_placeholder_reference_targets=true
+      - hapi.fhir.enable_index_missing_fields=true
+      - hapi.fhir.client_id_strategy=ANY
+      - hapi.fhir.enforce_referential_integrity_on_write=false
+      # file:// can only deal with absolute paths, have to use classpath
+    #   SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
+  
+
+
+  gofr:
+    container_name: gofr
+    image: intrahealth/gofr:latest
+    environment:
+      - mCSD__server__protocal=http
+      - mCSD__server__host=fhir
+      - mCSD__server__port=8080
+      - mCSD__server__basePath=fhir
+      - REDIS_HOST=redis
+    ports:
+      - "4000:4000"
     restart: always
 
-  facility-recon:
-    container_name: facility-recon
-    image: openhie/facility-recon:latest
-    environment: 
-      - HEARTH_URL=http://hearth:3447 
-      - REDIS_HOST=redis 
-      - DB_HOST=mongo 
-    depends_on:
-      - mongo
-      - redis
-      - hearth
-    ports:
-      - "3000:3000"
-    restart: always
+# join core network
+# networks:
+#   default:
+#     external: true
+#     name: instant_default
