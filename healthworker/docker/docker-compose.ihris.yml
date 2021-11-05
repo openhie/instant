@@ -21,7 +21,7 @@ services:
     # - es
     restart: on-failure
     environment:
-      IHRIS_FHIR__BASE: http://fhir:8080/fhir
+      IHRIS_FHIR__BASE: http://hapi-fhir:8080/fhir
       # do not use any longer
       # AUTOLOAD_RESOURCE_DIR: ../resources
       IHRIS_REDIS__URL: redis://redis
