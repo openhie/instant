@@ -8,13 +8,13 @@ services:
       - "27017:27017"
     command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
 
-  fhir:
+  hapi-fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:latest
+    image: hapiproject/hapi:v5.5.1
     ports:
       - "3447:8080"
 
-  mysql:
+  hapi-mysql:
     container_name: hapi-mysql
     image: mysql:5.7
     ports:
