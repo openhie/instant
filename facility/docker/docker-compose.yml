@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.3'
 
 services:
   redis:
@@ -9,10 +9,10 @@ services:
     restart: always
 
   fhir:
-    container_name: hapi-fhir
+    container_name: fhir
     image: hapiproject/hapi:latest
     ports:
-      - "8080:8080"
+      - "8092:8080"
     restart: always
     depends_on:
       - redis
