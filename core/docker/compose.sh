@@ -3,6 +3,7 @@
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$PROD" == "true" ]; then
+    printf "\nRunning core package in PROD mode\n"
     devComposeParam=""
 else
     printf "\nRunning core package in DEV mode\n"
