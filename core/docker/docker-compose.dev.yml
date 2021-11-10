@@ -1,21 +1,23 @@
 version: '3.3'
 
 services:
-  mongo-1:
-    image: mongo:4.2
-    container_name: mongo-1
+  openhim-core:
     ports:
-      - "27017:27017"
-    command: ['--replSet', 'mongo-set', '--wiredTigerCacheSizeGB', '0.5']
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+      - "5050:5050"
+      - "5051:5051"
+      - "5052:5052"
+
+  openhim-console:
+    ports:
+        - "9000:80"
 
   hapi-fhir:
-    container_name: hapi-fhir
-    image: hapiproject/hapi:v5.5.1
     ports:
       - "3447:8080"
 
   hapi-mysql:
-    container_name: hapi-mysql
-    image: mysql:5.7
     ports:
       - "3306:3306"
