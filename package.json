@@ -1,6 +1,6 @@
 {
   "name": "instant",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "instant.ts",
   "repository": "git@github.com:openhie/instant.git",
   "author": "Jembi and IntraHealth",
