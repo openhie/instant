@@ -9,21 +9,14 @@ services:
       - mongo_atnaUrl=mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set
       - api_authenticationTypes=["token", "basic"]
       - authentication_enableCustomTokenAuthentication=true
-    ports:
-      - "8080:8080"
-      - "5000:5000"
-      - "5001:5001"
-      - "5050:5050"
-      - "5051:5051"
-      - "5052:5052"
+    restart: unless-stopped
 
   openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:1.14
-    ports:
-        - "9000:80"
     depends_on:
       - openhim-core
+    restart: unless-stopped
 
   hapi-fhir:
     container_name: hapi-fhir
@@ -44,6 +37,7 @@ services:
         target: /instant
     depends_on:
       - hapi-mysql
+    restart: unless-stopped
 
   hapi-mysql:
     container_name: hapi-mysql
@@ -57,6 +51,7 @@ services:
     volumes:
       - 'hapi-mysql-volume:/var/lib/mysql'
       - 'hapi-mysql-config:/etc/mysql/conf.d'
+    restart: unless-stopped
 
 volumes:
   hapi-mysql-volume:
