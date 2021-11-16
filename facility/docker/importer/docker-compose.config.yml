@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  # container for executing config import scripts for setting up initial config
+  facility-openhim-config-importer:
+    container_name: facility-openhim-config-importer
+    image: jembi/instantohie-config-importer
+    restart: on-failure
+    environment:
+      OPENHIM_API_HOSTNAME: 'openhim-core'
+      OPENHIM_API_PORT: 8080
+      OPENHIM_API_USERNAME: 'root@openhim.org'
+      OPENHIM_API_PASSWORD: 'instant101'
+      # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+    volumes:
+      - type: volume
+        source: instant
+        target: /instant
+    # This command will only attempt to import the OpenHIM config when the heartbeat responds with a 2xx
+    command: sh -c "wait-on -t 60000 https-get://openhim-core:8080/heartbeat && node /instant/facility/docker/importer/volume/openhimConfig.js"
+    # ensure all relevant services are running before executing the importer
+    depends_on:
+      - gofr
+
+volumes:
+  instant:
+    external: true
