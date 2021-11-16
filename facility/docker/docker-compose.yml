@@ -20,21 +20,26 @@ services:
       - hapi.fhir.partitioning.enabled=true
       - hapi.fhir.partitioning.allow_references_across_partitions=false
       - hapi.fhir.partitioning.partitioning_include_in_search_hashes=false
+      - hapi.fhir.enable_index_missing_fields=true
+      - hapi.fhir.auto_create_placeholder_reference_targets=true
+      - hapi.fhir.client_id_strategy=ANY
       - spring.jpa.properties.hibernate.search.enabled=true
       - spring.jpa.properties.hibernate.search.backend.type=lucene
       - spring.jpa.properties.hibernate.search.backend.analysis.configurer=ca.uhn.fhir.jpa.search.HapiLuceneAnalysisConfigurer
       - spring.jpa.properties.hibernate.search.backend.directory.type=local-filesystem
       - spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles
       - spring.jpa.properties.hibernate.search.backend.lucene_version=lucene_current
-      - hapi.fhir.allow_placeholder_references=true
-      - hapi.fhir.auto_create_placeholder_reference_targets=true
-      - hapi.fhir.enable_index_missing_fields=true
-      - hapi.fhir.client_id_strategy=ANY
-      - hapi.fhir.enforce_referential_integrity_on_write=false
       # file:// can only deal with absolute paths, have to use classpath
-    #   SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
+      #  SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
   
-
+  fhir_cli:
+    container_name: fhir_cli
+    image: gjergjsheldija/hapi-fhir-cli:0.1
+    depends_on:
+      - fhir
+    environment:  
+      - APP_VERSION=5.5.3
+    command: upload-definitions -v r4 -t http://fhir:8080/fhir/DEFAULT 
 
   gofr:
     container_name: gofr
@@ -47,6 +52,8 @@ services:
       - REDIS_HOST=redis
     ports:
       - "4000:4000"
+    depends_on:
+      - fhir  
     restart: always
 
 # join core network

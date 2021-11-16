@@ -34,14 +34,12 @@ services:
             
     oe.openelis.org:
         container_name: openelisglobal-webapp 
-        image: ghcr.io/i-tech-uw/openelis-global-2:develop     
+        image: ghcr.io/mozzy11/openelis-global-facility-registry:develop     
         depends_on:
             - database
         ports:
             - "8095:8080"
             - "8443:8443"
-        restart: always
-
         restart: always
         environment:
             - TZ=Africa/Nairobi
@@ -58,21 +56,27 @@ services:
         image: hapiproject/hapi:v5.4.0
         ports:
             - "8081:8080"
-            - "8444:8443"
-
+          # - "8444:8443"
         restart: always
         environment:
-          TZ: Africa/Nairobi
+          - hapi.fhir.enable_index_missing_fields=true
+            - hapi.fhir.auto_create_placeholder_reference_targets=true
+            - hapi.fhir.allow_contains_searches=true
+            - hapi.fhir.allow_external_references=true
+            - hapi.fhir.allow_placeholder_references=true
+            - hapi.fhir.default_pretty_print=false
+            - hapi.fhir.default_page_size=100
+        #   TZ: Africa/Nairobi
 
-          JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/openelis-global/truststore 
-                      -Djavax.net.ssl.trustStorePassword=tspass
-                      -Djavax.net.ssl.trustStoreType=pkcs12 
-                      -Djavax.net.ssl.keyStore=/etc/openelis-global/keystore 
-                      -Djavax.net.ssl.keyStorePassword=kspass 
-                      -Djavax.net.ssl.keyStoreType=pkcs12"                 
-        volumes:
-            -  cert-volume:/etc/openelis-global
-            -  openelis-fhir-data:/usr/local/tomcat/conf/
+        #   JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/openelis-global/truststore 
+        #               -Djavax.net.ssl.trustStorePassword=tspass
+        #               -Djavax.net.ssl.trustStoreType=pkcs12 
+        #               -Djavax.net.ssl.keyStore=/etc/openelis-global/keystore 
+        #               -Djavax.net.ssl.keyStorePassword=kspass 
+        #               -Djavax.net.ssl.keyStoreType=pkcs12"                 
+        # volumes:
+        #     -  cert-volume:/etc/openelis-global
+        #     -  openelis-fhir-data:/usr/local/tomcat/conf/
    
 volumes:
   db-data:
