@@ -12,6 +12,10 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/mysql.cnf hapi-mysql-helper:/conf.d/mysql.cnf
     docker rm hapi-mysql-helper
 
+    docker create --name  openhim-console-helper -v openhim-console-config:/config busybox
+    docker cp "$composeFilePath"/importer/volume/default.json openhim-console-helper:/config/default.json
+    docker rm openhim-console-helper
+
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/docker-compose.dev.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml up -d

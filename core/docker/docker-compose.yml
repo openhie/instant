@@ -24,6 +24,8 @@ services:
         - "9000:80"
     depends_on:
       - openhim-core
+    volumes:
+       - 'openhim-console-config:/usr/share/nginx/html/config' 
 
   hapi-fhir:
     container_name: hapi-fhir
@@ -62,5 +64,7 @@ volumes:
   hapi-mysql-volume:
   hapi-mysql-config:
     external: true
+  openhim-console-config:
+    external: true  
   instant:
     external: true
