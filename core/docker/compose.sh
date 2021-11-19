@@ -21,6 +21,13 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/mysql.cnf hapi-mysql-helper:/conf.d/mysql.cnf
     docker rm hapi-mysql-helper
 
+    PASSWORD_SALT=$(openssl rand -hex 16)
+    PASSWORD_HASH=$(echo -n $PASSWORD_SALT${OPENHIM_ROOT_PASSWORD-instant101} | openssl sha512 | awk '{print $2}')
+
+    cp "$composeFilePath"/importer/volume/openhim-import-temp.json "$composeFilePath"/importer/volume/openhim-import.json
+    sed -i "s/{{PASSWORD_SALT}}/$PASSWORD_SALT/g" "$composeFilePath"/importer/volume/openhim-import.json
+    sed -i "s/{{PASSWORD_HASH}}/$PASSWORD_HASH/g" "$composeFilePath"/importer/volume/openhim-import.json
+
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml $devComposeParam up -d
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml $devComposeMongoParam up -d
@@ -33,6 +40,7 @@ elif [ "$1" == "down" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
 elif [ "$1" == "destroy" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml down -v
+    docker volume rm hapi-mysql-config
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
