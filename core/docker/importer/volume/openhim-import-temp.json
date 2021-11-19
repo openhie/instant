@@ -21,9 +21,9 @@
       "roles": [
         "instant"
       ],
-      "customTokenID": "test",
-      "clientID": "test",
-      "name": "Test Client"
+      "customTokenID": "{{OPENHIM_CLIENT_TOKEN}}",
+      "clientID": "instant-client",
+      "name": "Instant Client"
     }
   ],
   "Channels": [

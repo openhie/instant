@@ -27,6 +27,7 @@ if [ "$1" == "init" ]; then
     cp "$composeFilePath"/importer/volume/openhim-import-temp.json "$composeFilePath"/importer/volume/openhim-import.json
     sed -i "s/{{PASSWORD_SALT}}/$PASSWORD_SALT/g" "$composeFilePath"/importer/volume/openhim-import.json
     sed -i "s/{{PASSWORD_HASH}}/$PASSWORD_HASH/g" "$composeFilePath"/importer/volume/openhim-import.json
+    sed -i "s/{{OPENHIM_CLIENT_TOKEN}}/${OPENHIM_CLIENT_TOKEN-test}/g" "$composeFilePath"/importer/volume/openhim-import.json
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml $devComposeParam up -d
 elif [ "$1" == "up" ]; then
