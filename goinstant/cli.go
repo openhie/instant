@@ -7,11 +7,14 @@ import (
 
 func CLI() {
 	argsWOProg := os.Args[1:]
-	// fmt.Println(argsWOProg[0])
 
 	switch argsWOProg[0] {
 	case "docker", "k8s", "kubernetes":
-		SomeStuffDirect(argsWOProg[0], argsWOProg[1], argsWOProg[2])
+		if len(argsWOProg) < 3 {
+			panic("Incorrect arguments list passed to CLI. Requires at least 3 arguments when in non-interactive mode.")
+		}
+
+		RunDirectDockerCommand(argsWOProg[0], argsWOProg[1], argsWOProg[2], argsWOProg...)
 
 	case "help":
 		fmt.Println(`

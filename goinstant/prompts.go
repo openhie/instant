@@ -84,8 +84,8 @@ func selectPackageDocker() {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		SomeStuffDirect("docker", "core", "init")
-		SomeStuffDirect("docker", "core", "up")
+		RunDirectDockerCommand("docker", "core", "init")
+		RunDirectDockerCommand("docker", "core", "up")
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		// now working
 		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
@@ -96,35 +96,35 @@ func selectPackageDocker() {
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		SomeStuffDirect("docker", "facility", "up")
+		RunDirectDockerCommand("docker", "facility", "up")
 		selectPackageDocker()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		SomeStuffDirect("docker", "healthworker", "up")
+		RunDirectDockerCommand("docker", "healthworker", "up")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		SomeStuffDirect("docker", "core", "destroy")
+		RunDirectDockerCommand("docker", "core", "destroy")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		SomeStuffDirect("docker", "facility", "destroy")
+		RunDirectDockerCommand("docker", "facility", "destroy")
 		selectPackageDocker()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		SomeStuffDirect("docker", "healthworker", "destroy")
+		RunDirectDockerCommand("docker", "healthworker", "destroy")
 		selectPackageDocker()
 
 	case "Stop All Services and Cleanup Docker":
 		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		SomeStuffDirect("docker", "core", "destroy")
-		SomeStuffDirect("docker", "facility", "destroy")
-		SomeStuffDirect("docker", "healthworker", "destroy")
+		RunDirectDockerCommand("docker", "core", "destroy")
+		RunDirectDockerCommand("docker", "facility", "destroy")
+		RunDirectDockerCommand("docker", "healthworker", "destroy")
 		selectPackageDocker()
 
 	// case "Developer Mode":
@@ -160,41 +160,41 @@ func selectPackageCluster() {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		SomeStuffDirect("k8s", "core", "init")
-		SomeStuffDirect("k8s", "core", "up")
+		RunDirectDockerCommand("k8s", "core", "init")
+		RunDirectDockerCommand("k8s", "core", "up")
 		selectPackageCluster()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		SomeStuffDirect("k8s", "facility", "up")
+		RunDirectDockerCommand("k8s", "facility", "up")
 		selectPackageCluster()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		SomeStuffDirect("k8s", "healthworker", "up")
+		RunDirectDockerCommand("k8s", "healthworker", "up")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		SomeStuffDirect("k8s", "core", "destroy")
+		RunDirectDockerCommand("k8s", "core", "destroy")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		SomeStuffDirect("k8s", "facility", "destroy")
+		RunDirectDockerCommand("k8s", "facility", "destroy")
 		selectPackageCluster()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		SomeStuffDirect("k8s", "healthworker", "destroy")
+		RunDirectDockerCommand("k8s", "healthworker", "destroy")
 		selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
 		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		SomeStuffDirect("k8s", "core", "destroy")
-		SomeStuffDirect("k8s", "facility", "destroy")
-		SomeStuffDirect("k8s", "healthworker", "destroy")
+		RunDirectDockerCommand("k8s", "core", "destroy")
+		RunDirectDockerCommand("k8s", "facility", "destroy")
+		RunDirectDockerCommand("k8s", "healthworker", "destroy")
 		selectPackageCluster()
 
 	// case "Developer Mode":
