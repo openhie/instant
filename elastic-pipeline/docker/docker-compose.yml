@@ -12,8 +12,12 @@ services:
     image: jembi/fhir-extractor:latest
     container_name: fhir-extractor
     environment:
-      - GET_URL=http://fhir:8080/fhir
+      - GET_URL=http://hapi-fhir:8080/fhir
       - POST_URL=http://logstash:5055/fhir
+      - TRUST_SELF_SIGNED=true
+      - OPENHIM_PASSWORD=instant101
+      - OPENHIM_USERNAME=root@openhim.org
+      - OPENHIM_URL=https://openhim-core:8080
 
 volumes:
   logstash-pipeline:

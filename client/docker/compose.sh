@@ -3,7 +3,9 @@
 composeFilePath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 if [ "$1" == "init" ]; then
-
+    cp "$composeFilePath"/importer/volume/config_instant-temp.json "$composeFilePath"/importer/volume/config_instant.json
+    sed -i "s/{{OPENHIM_API_PASSWORD}}/${OPENHIM_ROOT_PASSWORD-instant101}/g" "$composeFilePath"/importer/volume/config_instant.json
+    
     docker create --name opencr-helper -v opencr-data:/config busybox
     docker cp "$composeFilePath"/importer/volume/. opencr-helper:/config/
     docker rm opencr-helper
