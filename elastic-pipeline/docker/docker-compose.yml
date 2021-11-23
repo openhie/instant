@@ -9,7 +9,7 @@ services:
       - logstash-config:/usr/share/logstash/config/
 
   fhir-extractor:
-    image: jembi/fhir-extractor:latest
+    image: jembi/fhir-extractor:v2.0.0
     container_name: fhir-extractor
     environment:
       - GET_URL=http://hapi-fhir:8080/fhir
