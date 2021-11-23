@@ -25,7 +25,6 @@ if [ "$1" == "init" ]; then
     echo "Setting passwords in config files..."
     sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../elastic-pipeline/docker/pipeline/*.conf
     sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../elastic-pipeline/docker/logstash.yml
-    sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../cdr/docker/jsreport/scripts/*/content.js
     echo "Done"
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
