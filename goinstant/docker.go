@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -76,21 +77,53 @@ func listDocker() {
 
 }
 
-func RunDirectDockerCommand(runner string, pk string, action string, customPackages ...string) {
+func filter(searchString []string, test func(string) bool) (ret []string) {
+	for _, s := range searchString {
+		if test(s) {
+			ret = append(ret, s)
+		}
+	}
+	return
+}
+
+func cleanFlagsAndPrint(inputArr []string, flag string) (ret []string) {
+	for _, i := range inputArr {
+		i = strings.Replace(i, flag, "", 1)
+		i = strings.Trim(i, "\"")
+		fmt.Print(i + " ")
+		ret = append(ret, i)
+	}
+	return
+}
+
+func RunDirectDockerCommand(runner string, pk string, action string, customFlags ...string) {
+	var customPackages []string
+
 	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	fmt.Println("Runner requested: " + runner)
 	fmt.Println("Package requested: " + pk)
 	fmt.Println("Action requested: " + action)
 
-	if len(customPackages) > 3 {
-		customPackages = customPackages[3:]
-		fmt.Println("Custom packages requested: ")
-		for i := 0; i < len(customPackages); i++ {
-			fmt.Print(customPackages[i])
+	if len(customFlags) > 3 {
+		customFlags = customFlags[3:]
+
+		testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") }
+		customPackages = filter(customFlags, testCustomPackage)
+
+		if len(customPackages) > 0 {
+			fmt.Print("Custom packages requested: ")
+			customPackages = cleanFlagsAndPrint(customPackages, "-c=")
 		}
+		//TODO: add filters for -only, --env and --env-file arguments
 	}
 
 	home, _ := os.UserHomeDir()
+
+	if action == "init" {
+		fmt.Println("\n\nDelete a pre-existing instant volume...")
+		commandSlice := []string{"volume", "rm", "instant"}
+		RunDockerCommand(commandSlice...)
+	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
 	commandSlice := []string{"create", "--rm",
@@ -102,24 +135,27 @@ func RunDirectDockerCommand(runner string, pk string, action string, customPacka
 		"--network", "host",
 		"openhie/instant:latest",
 		action, "-t", runner, pk}
+	//TODO: Add --env-file flag and other flags
 	RunDockerCommand(commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
-	commandSlice = []string{"create", "--rm",
-		"--mount=type=volume,src=instant,dst=/instant",
-		"--name", "instant-openhie",
-		"-v", "/var/run/docker.sock:/var/run/docker.sock",
-		"-v", home + "/.kube/config:/root/.kube/config:ro",
-		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
-		"--network", "host",
-		"openhie/instant:latest",
-		action, "-t", runner, pk}
-	RunDockerCommand(commandSlice...)
+	for _, c := range customPackages {
+		fmt.Print("- " + c)
+		commandSlice = []string{"cp", c, "instant-openhie:instant/"}
+		RunDockerCommand(commandSlice...)
+	}
+
+	if action == "destroy" {
+		fmt.Println("Delete instant volume...")
+		commandSlice := []string{"volume", "rm", "instant"}
+		RunDockerCommand(commandSlice...)
+	}
 }
 
 func RunDockerCommand(commandSlice ...string) {
 	cmd := exec.Command("docker", commandSlice...)
+	//fmt.Println(cmd.String()) TODO: remove, use for debugging to see docker command
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {
@@ -143,6 +179,8 @@ func RunDockerCommand(commandSlice ...string) {
 	err = cmd.Wait()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+		/*TODO: The error handling here is terrible, we just get the exit code logged to the output,
+		we need more than that to know if it's a valid error. Example, require docker login gives 125 exit code*/
 		return
 	}
 }
