@@ -140,6 +140,11 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
           name: 'target',
           alias: 't',
           defaultValue: 'docker'
+        },
+        {
+          name: 'only',
+          alias: 'o',
+          type: Boolean
         }
       ],
       { argv, stopAtFirstUnknown: true }
@@ -160,8 +165,10 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
       chosenPackageIds = Object.keys(allPackages)
     }
 
-    // Order the packages such that the dependencies are instantiated first
-    chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    if (!mainOptions.only) {
+      // Order the packages such that the dependencies are instantiated first
+      chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    }
 
     if (['destroy', 'down'].includes(main.command)) {
       chosenPackageIds.reverse()

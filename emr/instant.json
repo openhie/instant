@@ -1,0 +1,8 @@
+{
+  "id": "emr",
+  "name": "Electronic Medical Record Package",
+  "description": "Installs and starts up an instance of OpenMRS",
+  "type": "infrastructure",
+  "version": "v0.0.1",
+  "dependencies": ["core"]
+}
