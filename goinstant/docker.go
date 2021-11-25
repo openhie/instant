@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"net/http"
 	"os"
@@ -158,6 +159,9 @@ func RunDockerCommand(commandSlice ...string) {
 	//fmt.Println(cmd.String()) TODO: remove, use for debugging to see docker command
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
 		return
@@ -170,15 +174,13 @@ func RunDockerCommand(commandSlice ...string) {
 		}
 	}()
 
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
+	if err := cmd.Start(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting Cmd.", stderr.String(), err)
 		return
 	}
 
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+	if err := cmd.Wait(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
 		/*TODO: The error handling here is terrible, we just get the exit code logged to the output,
 		we need more than that to know if it's a valid error. Example, require docker login gives 125 exit code*/
 		return
