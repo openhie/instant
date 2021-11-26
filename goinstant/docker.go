@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
@@ -27,7 +25,6 @@ func debugDocker() {
 		fmt.Println(cwd)
 	}
 
-	// ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		panic(err)
@@ -44,36 +41,6 @@ func debugDocker() {
 		result := str2 + str1
 		fmt.Println(result)
 		fmt.Println("Docker setup looks good")
-	}
-
-}
-
-// TODO: change printf to consoleSender
-// listDocker may be used in future
-func listDocker() {
-
-	fmt.Println("Listing containers...")
-
-	// ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
-	if err != nil {
-		panic(err)
-	}
-
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
-	if err != nil {
-		fmt.Println("Unable to list Docker containers. Please ensure that Docker is downloaded and running")
-		// return
-	}
-
-	if len(containers) == 0 {
-		fmt.Println("No containers are running.")
-	} else {
-		for _, container := range containers {
-			items := fmt.Sprintf("ContainerID: %s Status: %s Image: %s Names: %s", container.ID[:10], container.State, container.Image, container.Names)
-			fmt.Println(items)
-		}
-		fmt.Println("\nContainers are already running.\nCleanup running containers in the Docker dashboard before continuing.")
 	}
 
 }
@@ -192,8 +159,6 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 func RunDockerCommand(commandSlice ...string) {
 	cmd := exec.Command("docker", commandSlice...)
-	//fmt.Println(cmd.String()) //TODO: remove, use for debugging to see docker command
-	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -217,81 +182,6 @@ func RunDockerCommand(commandSlice ...string) {
 
 	if err := cmd.Wait(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
-		/*TODO: The error handling here is terrible, we just get the exit code logged to the output,
-		we need more than that to know if it's a valid error. Example, require docker login gives 125 exit code*/
 		return
 	}
 }
-
-// DockerCommand HTTP API-only
-func RunHTTPDockerCommand(r *http.Request) {
-	fmt.Printf("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
-	runner := r.URL.Query().Get("runner")
-	pk := r.URL.Query().Get("package")
-	state := r.URL.Query().Get("state")
-	home, _ := os.UserHomeDir()
-
-	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", state, "-t", runner, pk)
-	// create a pipe for the output of the script
-	cmdReader, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return
-	}
-
-	scanner := bufio.NewScanner(cmdReader)
-	go func() {
-		for scanner.Scan() {
-			fmt.Printf("\t > %s\n", scanner.Text())
-		}
-	}()
-
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return
-	}
-
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return
-	}
-
-}
-
-// func composeUpCoreDOD() {
-
-// 	home, _ := os.UserHomeDir()
-// 	color.Yellow.Println("Running on", runtime.GOOS)
-// 	switch runtime.GOOS {
-// 	case "linux", "darwin":
-// 		// cmd := exec.Command("docker-compose", "-f", composefile, "up", "-d")
-// 		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", "init", "-t", "docker")
-
-// 		var outb, errb bytes.Buffer
-// 		cmd.Stdout = &outb
-// 		cmd.Stderr = &errb
-// 		// cmd.Stdout = os.Stdout
-// 		// cmd.Stderr = os.Stderr
-// 		err := cmd.Run()
-// 		if err != nil {
-// 			log.Fatalf("cmd.Run() failed with %s\n", err)
-
-// 		}
-// 		consoleSender(server, outb.String())
-// 		fmt.Println("out:", outb.String(), "err:", errb.String())
-
-// 	case "windows":
-// 		// cmd := exec.Command("cmd", "/C", "docker-compose", "-f", composefile, "up", "-d")
-// 		cmd := exec.Command("cmd", "/C", "docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"\\.kube:/root/.kube/config:ro", "--mount=type=volume,src=instant,dst=/instant", "openhie/instant:latest", "init", "-t", "docker")
-// 		cmd.Stdout = os.Stdout
-// 		cmd.Stderr = os.Stderr
-// 		if err := cmd.Run(); err != nil {
-// 			fmt.Println("Error: ", err)
-// 		}
-// 	default:
-// 		consoleSender(server, "What operating system is this?")
-// 	}
-
-// }

@@ -27,7 +27,6 @@ func selectSetup() {
 	switch result {
 	case "Use Docker on your PC":
 		debugDocker()
-		listDocker()
 		selectPackageDocker()
 
 	case "Use a Kubernetes Cluster":
