@@ -166,8 +166,9 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
 		"--network", "host"}
 	commandSlice = append(commandSlice, environmentVariables...)
-	commandSlice = append(commandSlice, []string{"openhie/instant:latest", action, "-t", runner, pk}...)
+	commandSlice = append(commandSlice, []string{"openhie/instant:latest", action}...)
 	commandSlice = append(commandSlice, otherFlags...)
+	commandSlice = append(commandSlice, []string{"-t", runner, pk}...)
 	RunDockerCommand(commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
