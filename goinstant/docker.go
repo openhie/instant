@@ -127,15 +127,17 @@ func RunDirectDockerCommand(startupCommands []string) {
 		RunDockerCommand(commandSlice...)
 	}
 
-	// Extract to separate func
 	fmt.Println("Creating fresh instant container with volumes...")
-	commandSlice := []string{"create", "--rm",
+	commandSlice := []string{
+		"create",
+		"--rm",
 		"--mount=type=volume,src=instant,dst=/instant",
 		"--name", "instant-openhie",
 		"-v", "/var/run/docker.sock:/var/run/docker.sock",
 		"-v", home + "/.kube/config:/root/.kube/config:ro",
 		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
-		"--network", "host"}
+		"--network", "host",
+	}
 	commandSlice = append(commandSlice, environmentVariables...)
 	commandSlice = append(commandSlice, []string{"openhie/instant:latest", deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
