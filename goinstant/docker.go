@@ -45,24 +45,12 @@ func debugDocker() {
 
 }
 
-func filterAndSplit(items []string, filterTest func(string) bool) (filtered []string, unfiltered []string) {
-	for _, s := range items {
-		if filterTest(s) {
-			filtered = append(filtered, s)
-		} else {
-			unfiltered = append(unfiltered, s)
-		}
-	}
-	return
-}
-
 func getPackagePaths(inputArr []string, flags []string) (packagePaths []string) {
 	for _, i := range inputArr {
 		for _, flag := range flags {
 			if strings.Contains(i, flag) {
 				packagePath := strings.Replace(i, flag, "", 1)
 				packagePath = strings.Trim(packagePath, "\"")
-				fmt.Print(packagePath + " ")
 				packagePaths = append(packagePaths, packagePath)
 			}
 		}
@@ -74,7 +62,6 @@ func getEnvironmentVariables(inputArr []string, flags []string) (environmentVari
 	for _, i := range inputArr {
 		for _, flag := range flags {
 			if strings.Contains(i, flag) {
-				fmt.Print(i)
 				environmentVariables = append(environmentVariables, strings.SplitN(i, "=", 2)...)
 			}
 		}
@@ -82,48 +69,65 @@ func getEnvironmentVariables(inputArr []string, flags []string) (environmentVari
 	return
 }
 
-func extractFlags(customFlags []string) (customPackages []string, environmentVariables []string, otherFlags []string) {
-	testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") || strings.HasPrefix(s, "--custom-package=") }
-	customPackages, otherFlags = filterAndSplit(customFlags, testCustomPackage)
+func sliceContains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
 
-	testEnvVars := func(s string) bool { return strings.HasPrefix(s, "-e=") || strings.HasPrefix(s, "--env-file=") }
-	environmentVariables, otherFlags = filterAndSplit(otherFlags, testEnvVars)
+func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string) {
 
-	if len(customPackages) > 0 {
-		fmt.Print("Custom packages requested: ")
-		customPackages = getPackagePaths(customPackages, []string{"-c=", "--custom-package="})
+	for _, option := range startupCommands {
+		switch {
+		case sliceContains([]string{"init", "up", "down", "destroy"}, option):
+			deployCommand = option
+		case sliceContains([]string{"docker", "kubernetes", "k8s"}, option):
+			deployEnvironment = option
+		case strings.HasPrefix(option, "-c=") || strings.HasPrefix(option, "--custom-package="):
+			customPackagePaths = append(customPackagePaths, option)
+		case strings.HasPrefix(option, "-e=") || strings.HasPrefix(option, "--env-file="):
+			environmentVariables = append(environmentVariables, option)
+		case strings.HasPrefix(option, "-") || strings.HasPrefix(option, "--"):
+			otherFlags = append(otherFlags, option)
+		default:
+			packages = append(packages, option)
+		}
+	}
+
+	if len(customPackagePaths) > 0 {
+		customPackagePaths = getPackagePaths(customPackagePaths, []string{"-c=", "--custom-package="})
 	}
 
 	if len(environmentVariables) > 0 {
-		fmt.Print("Environment Variables provided: ")
 		environmentVariables = getEnvironmentVariables(environmentVariables, []string{"-e=", "--env-file="})
 	}
 	return
 }
 
-func RunDirectDockerCommand(runner string, pk string, action string, customFlags ...string) {
-	var customPackages []string
-	var otherFlags []string
-	var environmentVariables []string
+func RunDirectDockerCommand(startupCommands []string) {
+	fmt.Println("Note: Initial setup takes 1-5 minutes.\nWait for the DONE message.\n--------------------------")
 
-	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
-	fmt.Println("Runner requested: " + runner)
-	fmt.Println("Package requested: " + pk)
-	fmt.Println("Action requested: " + action)
+	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths := extractCommands(startupCommands)
 
-	if len(customFlags) > 3 {
-		customFlags = customFlags[3:]
-		customPackages, environmentVariables, otherFlags = extractFlags(customFlags)
-	}
+	fmt.Println("Environment:", deployEnvironment)
+	fmt.Println("Action:", deployCommand)
+	fmt.Println("Package IDs:", packages)
+	fmt.Println("Custom package paths:", customPackagePaths)
+	fmt.Println("Environment Variables:", environmentVariables)
+	fmt.Println("Other Flags:", otherFlags)
 
 	home, _ := os.UserHomeDir()
 
-	if action == "init" {
+	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		RunDockerCommand(commandSlice...)
 	}
 
+	// Extract to separate func
 	fmt.Println("Creating fresh instant container with volumes...")
 	commandSlice := []string{"create", "--rm",
 		"--mount=type=volume,src=instant,dst=/instant",
@@ -133,15 +137,15 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
 		"--network", "host"}
 	commandSlice = append(commandSlice, environmentVariables...)
-	commandSlice = append(commandSlice, []string{"openhie/instant:latest", action}...)
+	commandSlice = append(commandSlice, []string{"openhie/instant:latest", deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
-	commandSlice = append(commandSlice, []string{"-t", runner, pk}...)
+	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
+	commandSlice = append(commandSlice, packages...)
 	RunDockerCommand(commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
-	for _, c := range customPackages {
-		fmt.Print("- " + c)
+	for _, c := range customPackagePaths {
 		commandSlice = []string{"cp", c, "instant-openhie:instant/"}
 		RunDockerCommand(commandSlice...)
 	}
@@ -150,7 +154,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 	commandSlice = []string{"start", "-a", "instant-openhie"}
 	RunDockerCommand(commandSlice...)
 
-	if action == "destroy" {
+	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		RunDockerCommand(commandSlice...)
