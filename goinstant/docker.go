@@ -103,13 +103,33 @@ func getPackagePaths(inputArr []string, flags []string) (packagePaths []string) 
 	return
 }
 
-func extractFlags(customFlags []string) (customPackages []string, otherFlags []string) {
+func getEnvironmentVariables(inputArr []string, flags []string) (environmentVariables []string) {
+	for _, i := range inputArr {
+		for _, flag := range flags {
+			if strings.Contains(i, flag) {
+				fmt.Print(i)
+				environmentVariables = append(environmentVariables, strings.SplitN(i, "=", 2)...)
+			}
+		}
+	}
+	return
+}
+
+func extractFlags(customFlags []string) (customPackages []string, environmentVariables []string, otherFlags []string) {
 	testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") || strings.HasPrefix(s, "--custom-package=") }
 	customPackages, otherFlags = filterAndSplit(customFlags, testCustomPackage)
+
+	testEnvVars := func(s string) bool { return strings.HasPrefix(s, "-e=") || strings.HasPrefix(s, "--env-file=") }
+	environmentVariables, otherFlags = filterAndSplit(otherFlags, testEnvVars)
 
 	if len(customPackages) > 0 {
 		fmt.Print("Custom packages requested: ")
 		customPackages = getPackagePaths(customPackages, []string{"-c=", "--custom-package="})
+	}
+
+	if len(environmentVariables) > 0 {
+		fmt.Print("Environment Variables provided: ")
+		environmentVariables = getEnvironmentVariables(environmentVariables, []string{"-e=", "--env-file="})
 	}
 	return
 }
@@ -117,6 +137,7 @@ func extractFlags(customFlags []string) (customPackages []string, otherFlags []s
 func RunDirectDockerCommand(runner string, pk string, action string, customFlags ...string) {
 	var customPackages []string
 	var otherFlags []string
+	var environmentVariables []string
 
 	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	fmt.Println("Runner requested: " + runner)
@@ -125,7 +146,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 	if len(customFlags) > 3 {
 		customFlags = customFlags[3:]
-		customPackages, otherFlags = extractFlags(customFlags)
+		customPackages, environmentVariables, otherFlags = extractFlags(customFlags)
 	}
 
 	home, _ := os.UserHomeDir()
@@ -143,9 +164,9 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 		"-v", "/var/run/docker.sock:/var/run/docker.sock",
 		"-v", home + "/.kube/config:/root/.kube/config:ro",
 		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
-		"--network", "host",
-		"openhie/instant:latest",
-		action, "-t", runner, pk}
+		"--network", "host"}
+	commandSlice = append(commandSlice, environmentVariables...)
+	commandSlice = append(commandSlice, []string{"openhie/instant:latest", action, "-t", runner, pk}...)
 	commandSlice = append(commandSlice, otherFlags...)
 	RunDockerCommand(commandSlice...)
 
