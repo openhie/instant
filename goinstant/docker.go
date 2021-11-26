@@ -89,23 +89,14 @@ func filterAndSplit(items []string, filterTest func(string) bool) (filtered []st
 	return
 }
 
-func sliceContains(stringArr []string, el string) bool {
-	for _, s := range stringArr {
-		if strings.Contains(s, el) {
-			return true
-		}
-	}
-	return false
-}
-
-func cleanFlagsAndPrint(inputArr []string, flags []string) (ret []string) {
-	for _, f := range flags {
-		if sliceContains(inputArr, f) {
-			for _, i := range inputArr {
-				i = strings.Replace(i, f, "", 1)
-				i = strings.Trim(i, "\"")
-				fmt.Print(i + " ")
-				ret = append(ret, i)
+func getPackagePaths(inputArr []string, flags []string) (packagePaths []string) {
+	for _, i := range inputArr {
+		for _, flag := range flags {
+			if strings.Contains(i, flag) {
+				packagePath := strings.Replace(i, flag, "", 1)
+				packagePath = strings.Trim(packagePath, "\"")
+				fmt.Print(packagePath + " ")
+				packagePaths = append(packagePaths, packagePath)
 			}
 		}
 	}
@@ -118,7 +109,7 @@ func extractFlags(customFlags []string) (customPackages []string, otherFlags []s
 
 	if len(customPackages) > 0 {
 		fmt.Print("Custom packages requested: ")
-		customPackages = cleanFlagsAndPrint(customPackages, []string{"-c=", "--custom-package="})
+		customPackages = getPackagePaths(customPackages, []string{"-c=", "--custom-package="})
 	}
 	return
 }
