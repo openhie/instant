@@ -78,27 +78,54 @@ func listDocker() {
 
 }
 
-func filter(searchString []string, test func(string) bool) (ret []string) {
-	for _, s := range searchString {
-		if test(s) {
-			ret = append(ret, s)
+func filterAndSplit(items []string, filterTest func(string) bool) (filtered []string, unfiltered []string) {
+	for _, s := range items {
+		if filterTest(s) {
+			filtered = append(filtered, s)
+		} else {
+			unfiltered = append(unfiltered, s)
 		}
 	}
 	return
 }
 
-func cleanFlagsAndPrint(inputArr []string, flag string) (ret []string) {
-	for _, i := range inputArr {
-		i = strings.Replace(i, flag, "", 1)
-		i = strings.Trim(i, "\"")
-		fmt.Print(i + " ")
-		ret = append(ret, i)
+func sliceContains(stringArr []string, el string) bool {
+	for _, s := range stringArr {
+		if strings.Contains(s, el) {
+			return true
+		}
+	}
+	return false
+}
+
+func cleanFlagsAndPrint(inputArr []string, flags []string) (ret []string) {
+	for _, f := range flags {
+		if sliceContains(inputArr, f) {
+			for _, i := range inputArr {
+				i = strings.Replace(i, f, "", 1)
+				i = strings.Trim(i, "\"")
+				fmt.Print(i + " ")
+				ret = append(ret, i)
+			}
+		}
+	}
+	return
+}
+
+func extractFlags(customFlags []string) (customPackages []string, otherFlags []string) {
+	testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") || strings.HasPrefix(s, "--custom-package=") }
+	customPackages, otherFlags = filterAndSplit(customFlags, testCustomPackage)
+
+	if len(customPackages) > 0 {
+		fmt.Print("Custom packages requested: ")
+		customPackages = cleanFlagsAndPrint(customPackages, []string{"-c=", "--custom-package="})
 	}
 	return
 }
 
 func RunDirectDockerCommand(runner string, pk string, action string, customFlags ...string) {
 	var customPackages []string
+	var otherFlags []string
 
 	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
 	fmt.Println("Runner requested: " + runner)
@@ -107,15 +134,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 	if len(customFlags) > 3 {
 		customFlags = customFlags[3:]
-
-		testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") }
-		customPackages = filter(customFlags, testCustomPackage)
-
-		if len(customPackages) > 0 {
-			fmt.Print("Custom packages requested: ")
-			customPackages = cleanFlagsAndPrint(customPackages, "-c=")
-		}
-		//TODO: add filters for -only, --env and --env-file arguments
+		customPackages, otherFlags = extractFlags(customFlags)
 	}
 
 	home, _ := os.UserHomeDir()
@@ -136,7 +155,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 		"--network", "host",
 		"openhie/instant:latest",
 		action, "-t", runner, pk}
-	//TODO: Add --env-file flag and other flags
+	commandSlice = append(commandSlice, otherFlags...)
 	RunDockerCommand(commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
@@ -147,6 +166,10 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 		RunDockerCommand(commandSlice...)
 	}
 
+	fmt.Println("\nRun Instant OpenHIE Installer Container")
+	commandSlice = []string{"start", "-a", "instant-openhie"}
+	RunDockerCommand(commandSlice...)
+
 	if action == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
@@ -156,7 +179,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 func RunDockerCommand(commandSlice ...string) {
 	cmd := exec.Command("docker", commandSlice...)
-	//fmt.Println(cmd.String()) TODO: remove, use for debugging to see docker command
+	//fmt.Println(cmd.String()) //TODO: remove, use for debugging to see docker command
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
