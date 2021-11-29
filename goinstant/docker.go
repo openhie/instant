@@ -119,8 +119,6 @@ func RunDirectDockerCommand(startupCommands []string) {
 	fmt.Println("Environment Variables:", environmentVariables)
 	fmt.Println("Other Flags:", otherFlags)
 
-	home, _ := os.UserHomeDir()
-
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
@@ -134,8 +132,6 @@ func RunDirectDockerCommand(startupCommands []string) {
 		"--mount=type=volume,src=instant,dst=/instant",
 		"--name", "instant-openhie",
 		"-v", "/var/run/docker.sock:/var/run/docker.sock",
-		"-v", home + "/.kube/config:/root/.kube/config:ro",
-		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
 		"--network", "host",
 	}
 	commandSlice = append(commandSlice, environmentVariables...)
