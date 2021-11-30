@@ -248,7 +248,6 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 		fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
 		return
 	}
-	defer archive.Close()
 
 	packageName := ""
 	for _, file := range archive.File {
@@ -283,6 +282,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 
 	// Remove temp zip file
 	tempFilePath := filepath.Join(".", tempZipFile)
+	archive.Close()
 	err = os.Remove(tempFilePath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:", err)
