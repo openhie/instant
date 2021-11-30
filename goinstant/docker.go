@@ -159,8 +159,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 	for _, c := range customPackages {
 		fmt.Print("- " + c)
-		commandSlice = []string{"cp", c, "instant-openhie:instant/"}
-		RunDockerCommand(commandSlice...)
+		mountCustomPackage(c)
 	}
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
@@ -242,6 +241,38 @@ func RunHTTPDockerCommand(r *http.Request) {
 		return
 	}
 
+}
+
+func mountCustomPackage(pathToPackage string) {
+	gitRegex := regexp.MustCompile(`\.git`)
+	httpRegex := regexp.MustCompile("http")
+	zipRegex := regexp.MustCompile(`\.zip`)
+	tarRegex := regexp.MustCompile(`\.tar`)
+
+	if gitRegex.MatchString(pathToPackage) {
+		pathToPackage = retrieveGitRepo(pathToPackage)
+	} else if httpRegex.MatchString(pathToPackage) {
+		resp, err := http.Get(pathToPackage)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in dowloading custom package", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			fmt.Fprintln(os.Stderr, "Error in dowloading custom package - http status", resp.StatusCode)
+			return
+		}
+
+		if zipRegex.MatchString(pathToPackage) {
+			pathToPackage = unzipPackage(resp.Body)
+		} else if tarRegex.MatchString(pathToPackage) {
+			pathToPackage = untarPackage(resp.Body)
+		}
+	}
+
+	commandSlice := []string{"cp", pathToPackage, "instant-openhie:instant/"}
+	RunDockerCommand(commandSlice...)
 }
 
 func createZipFile(file string, content io.Reader) {
