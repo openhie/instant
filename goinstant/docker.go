@@ -16,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
@@ -33,7 +32,6 @@ func debugDocker() {
 		fmt.Println(cwd)
 	}
 
-	// ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		panic(err)
@@ -54,54 +52,12 @@ func debugDocker() {
 
 }
 
-// TODO: change printf to consoleSender
-// listDocker may be used in future
-func listDocker() {
-
-	fmt.Println("Listing containers...")
-
-	// ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
-	if err != nil {
-		panic(err)
-	}
-
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
-	if err != nil {
-		fmt.Println("Unable to list Docker containers. Please ensure that Docker is downloaded and running")
-		// return
-	}
-
-	if len(containers) == 0 {
-		fmt.Println("No containers are running.")
-	} else {
-		for _, container := range containers {
-			items := fmt.Sprintf("ContainerID: %s Status: %s Image: %s Names: %s", container.ID[:10], container.State, container.Image, container.Names)
-			fmt.Println(items)
-		}
-		fmt.Println("\nContainers are already running.\nCleanup running containers in the Docker dashboard before continuing.")
-	}
-
-}
-
-func filterAndSplit(items []string, filterTest func(string) bool) (filtered []string, unfiltered []string) {
-	for _, s := range items {
-		if filterTest(s) {
-			filtered = append(filtered, s)
-		} else {
-			unfiltered = append(unfiltered, s)
-		}
-	}
-	return
-}
-
 func getPackagePaths(inputArr []string, flags []string) (packagePaths []string) {
 	for _, i := range inputArr {
 		for _, flag := range flags {
 			if strings.Contains(i, flag) {
 				packagePath := strings.Replace(i, flag, "", 1)
 				packagePath = strings.Trim(packagePath, "\"")
-				fmt.Print(packagePath + " ")
 				packagePaths = append(packagePaths, packagePath)
 			}
 		}
@@ -109,55 +65,92 @@ func getPackagePaths(inputArr []string, flags []string) (packagePaths []string) 
 	return
 }
 
-func extractFlags(customFlags []string) (customPackages []string, otherFlags []string) {
-	testCustomPackage := func(s string) bool { return strings.HasPrefix(s, "-c=") || strings.HasPrefix(s, "--custom-package=") }
-	customPackages, otherFlags = filterAndSplit(customFlags, testCustomPackage)
-
-	if len(customPackages) > 0 {
-		fmt.Print("Custom packages requested: ")
-		customPackages = getPackagePaths(customPackages, []string{"-c=", "--custom-package="})
+func getEnvironmentVariables(inputArr []string, flags []string) (environmentVariables []string) {
+	for _, i := range inputArr {
+		for _, flag := range flags {
+			if strings.Contains(i, flag) {
+				environmentVariables = append(environmentVariables, strings.SplitN(i, "=", 2)...)
+			}
+		}
 	}
 	return
 }
 
-func RunDirectDockerCommand(runner string, pk string, action string, customFlags ...string) {
-	var customPackages []string
-	var otherFlags []string
+func sliceContains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
 
-	fmt.Println("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
-	fmt.Println("Runner requested: " + runner)
-	fmt.Println("Package requested: " + pk)
-	fmt.Println("Action requested: " + action)
+func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string) {
 
-	if len(customFlags) > 3 {
-		customFlags = customFlags[3:]
-		customPackages, otherFlags = extractFlags(customFlags)
+	for _, option := range startupCommands {
+		switch {
+		case sliceContains([]string{"init", "up", "down", "destroy"}, option):
+			deployCommand = option
+		case sliceContains([]string{"docker", "kubernetes", "k8s"}, option):
+			deployEnvironment = option
+		case strings.HasPrefix(option, "-c=") || strings.HasPrefix(option, "--custom-package="):
+			customPackagePaths = append(customPackagePaths, option)
+		case strings.HasPrefix(option, "-e=") || strings.HasPrefix(option, "--env-file="):
+			environmentVariables = append(environmentVariables, option)
+		case strings.HasPrefix(option, "-") || strings.HasPrefix(option, "--"):
+			otherFlags = append(otherFlags, option)
+		default:
+			packages = append(packages, option)
+		}
 	}
 
-	home, _ := os.UserHomeDir()
+	if len(customPackagePaths) > 0 {
+		customPackagePaths = getPackagePaths(customPackagePaths, []string{"-c=", "--custom-package="})
+	}
 
-	if action == "init" {
+	if len(environmentVariables) > 0 {
+		environmentVariables = getEnvironmentVariables(environmentVariables, []string{"-e=", "--env-file="})
+	}
+	return
+}
+
+func RunDirectDockerCommand(startupCommands []string) {
+	fmt.Println("Note: Initial setup takes 1-5 minutes.\nWait for the DONE message.\n--------------------------")
+
+	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths := extractCommands(startupCommands)
+
+	fmt.Println("Environment:", deployEnvironment)
+	fmt.Println("Action:", deployCommand)
+	fmt.Println("Package IDs:", packages)
+	fmt.Println("Custom package paths:", customPackagePaths)
+	fmt.Println("Environment Variables:", environmentVariables)
+	fmt.Println("Other Flags:", otherFlags)
+
+	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		RunDockerCommand(commandSlice...)
 	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
-	commandSlice := []string{"create", "--rm",
+	commandSlice := []string{
+		"create",
+		"--rm",
 		"--mount=type=volume,src=instant,dst=/instant",
 		"--name", "instant-openhie",
 		"-v", "/var/run/docker.sock:/var/run/docker.sock",
-		"-v", home + "/.kube/config:/root/.kube/config:ro",
-		"-v", home + "/.minikube:/home/$USER/.minikube:ro",
 		"--network", "host",
-		"openhie/instant:latest",
-		action, "-t", runner, pk}
+	}
+	commandSlice = append(commandSlice, environmentVariables...)
+	commandSlice = append(commandSlice, []string{"openhie/instant:latest", deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
+	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
+	commandSlice = append(commandSlice, packages...)
 	RunDockerCommand(commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
-	for _, c := range customPackages {
+	for _, c := range customPackagePaths {
 		fmt.Print("- " + c)
 		mountCustomPackage(c)
 	}
@@ -166,7 +159,7 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 	commandSlice = []string{"start", "-a", "instant-openhie"}
 	RunDockerCommand(commandSlice...)
 
-	if action == "destroy" {
+	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		RunDockerCommand(commandSlice...)
@@ -175,8 +168,6 @@ func RunDirectDockerCommand(runner string, pk string, action string, customFlags
 
 func RunDockerCommand(commandSlice ...string) {
 	cmd := exec.Command("docker", commandSlice...)
-	//fmt.Println(cmd.String()) //TODO: remove, use for debugging to see docker command
-	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -200,47 +191,8 @@ func RunDockerCommand(commandSlice ...string) {
 
 	if err := cmd.Wait(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
-		/*TODO: The error handling here is terrible, we just get the exit code logged to the output,
-		we need more than that to know if it's a valid error. Example, require docker login gives 125 exit code*/
 		return
 	}
-}
-
-// DockerCommand HTTP API-only
-func RunHTTPDockerCommand(r *http.Request) {
-	fmt.Printf("Note: Initial setup takes 1-5 minutes. wait for the DONE message")
-	runner := r.URL.Query().Get("runner")
-	pk := r.URL.Query().Get("package")
-	state := r.URL.Query().Get("state")
-	home, _ := os.UserHomeDir()
-
-	cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", state, "-t", runner, pk)
-	// create a pipe for the output of the script
-	cmdReader, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return
-	}
-
-	scanner := bufio.NewScanner(cmdReader)
-	go func() {
-		for scanner.Scan() {
-			fmt.Printf("\t > %s\n", scanner.Text())
-		}
-	}()
-
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return
-	}
-
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return
-	}
-
 }
 
 func mountCustomPackage(pathToPackage string) {
@@ -421,39 +373,3 @@ func retrieveGitRepo(gitUrl string) (pathToPackage string) {
 	pathToPackage = filepath.Join(".", repoName)
 	return
 }
-
-// func composeUpCoreDOD() {
-
-// 	home, _ := os.UserHomeDir()
-// 	color.Yellow.Println("Running on", runtime.GOOS)
-// 	switch runtime.GOOS {
-// 	case "linux", "darwin":
-// 		// cmd := exec.Command("docker-compose", "-f", composefile, "up", "-d")
-// 		cmd := exec.Command("docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"/.kube/config:/root/.kube/config:ro", "-v", home+"/.minikube:/home/$USER/.minikube:ro", "--mount=type=volume,src=instant,dst=/instant", "--network", "host", "openhie/instant:latest", "init", "-t", "docker")
-
-// 		var outb, errb bytes.Buffer
-// 		cmd.Stdout = &outb
-// 		cmd.Stderr = &errb
-// 		// cmd.Stdout = os.Stdout
-// 		// cmd.Stderr = os.Stderr
-// 		err := cmd.Run()
-// 		if err != nil {
-// 			log.Fatalf("cmd.Run() failed with %s\n", err)
-
-// 		}
-// 		consoleSender(server, outb.String())
-// 		fmt.Println("out:", outb.String(), "err:", errb.String())
-
-// 	case "windows":
-// 		// cmd := exec.Command("cmd", "/C", "docker-compose", "-f", composefile, "up", "-d")
-// 		cmd := exec.Command("cmd", "/C", "docker", "run", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "-v", home+"\\.kube:/root/.kube/config:ro", "--mount=type=volume,src=instant,dst=/instant", "openhie/instant:latest", "init", "-t", "docker")
-// 		cmd.Stdout = os.Stdout
-// 		cmd.Stderr = os.Stderr
-// 		if err := cmd.Run(); err != nil {
-// 			fmt.Println("Error: ", err)
-// 		}
-// 	default:
-// 		consoleSender(server, "What operating system is this?")
-// 	}
-
-// }

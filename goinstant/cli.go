@@ -3,19 +3,22 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 func CLI() {
-	argsWOProg := os.Args[1:]
+	startupCommands := os.Args[1:]
 
-	switch argsWOProg[0] {
-	case "docker", "k8s", "kubernetes":
-		if len(argsWOProg) < 3 {
+	switch startupCommands[0] {
+	case "docker":
+		if len(startupCommands) < 3 {
 			panic("Incorrect arguments list passed to CLI. Requires at least 3 arguments when in non-interactive mode.")
 		}
 
-		RunDirectDockerCommand(argsWOProg[0], argsWOProg[1], argsWOProg[2], argsWOProg...)
-
+		RunDirectDockerCommand(startupCommands)
+	case "k8s", "kubernetes":
+		color.Red("\nKubernetes not supported for now :(")
 	case "help":
 		fmt.Println(`
 Commands: 
@@ -47,26 +50,26 @@ Commands:
 
 	case "install":
 		params := &Params{}
-		switch argsWOProg[3] {
+		switch startupCommands[3] {
 		case "none", "None":
 			params.TypeAuth = "None"
-			loadIGpackage(argsWOProg[1], argsWOProg[2], params)
+			loadIGpackage(startupCommands[1], startupCommands[2], params)
 		case "basic", "Basic":
 			params.TypeAuth = "Basic"
-			params.BasicUser = argsWOProg[4]
-			params.BasicPass = argsWOProg[5]
-			loadIGpackage(argsWOProg[1], argsWOProg[2], params)
+			params.BasicUser = startupCommands[4]
+			params.BasicPass = startupCommands[5]
+			loadIGpackage(startupCommands[1], startupCommands[2], params)
 		case "token", "Token":
 			params.TypeAuth = "Token"
-			params.Token = argsWOProg[4]
-			loadIGpackage(argsWOProg[1], argsWOProg[2], params)
+			params.Token = startupCommands[4]
+			loadIGpackage(startupCommands[1], startupCommands[2], params)
 		case "custom", "Custom":
 			params.TypeAuth = "Custom"
-			params.Token = argsWOProg[4]
-			loadIGpackage(argsWOProg[1], argsWOProg[2], params)
+			params.Token = startupCommands[4]
+			loadIGpackage(startupCommands[1], startupCommands[2], params)
 		}
-	case "default":
-		fmt.Println("The command is not recognized.")
+	default:
+		fmt.Println("The deploy command is not recognized: ", startupCommands)
 	}
 
 }
