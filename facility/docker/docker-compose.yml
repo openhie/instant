@@ -31,9 +31,9 @@ services:
     container_name: facility-recon
     image: openhie/facility-recon:latest
     environment: 
-      - HEARTH_URL=http://hearth:3447 
-      - REDIS_HOST=redis 
-      - DB_HOST=mongo 
+      - HEARTH_URL=http://hearth:3447
+      - REDIS_HOST=redis
+      - DB_HOST=mongo
     depends_on:
       - mongo
       - redis
