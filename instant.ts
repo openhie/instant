@@ -6,6 +6,7 @@ import * as fs from 'fs'
 import * as child from 'child_process'
 import * as util from 'util'
 import * as path from 'path'
+import { env } from 'process'
 
 const exec = util.promisify(child.exec)
 
@@ -16,6 +17,7 @@ interface PackageInfo {
     description: string
     version: string
     dependencies: string[]
+    environmentVariables: object
   }
   path: string
 }
@@ -107,6 +109,15 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
   return orderedPackageIds
 }
 
+const logPackageDetails = (packageInfo: PackageInfo) => {
+  console.log(`------------------------------------------------------------\nConfig Details: ${packageInfo.metadata.name} (${packageInfo.metadata.id})\n------------------------------------------------------------`)
+  const envVars = []
+  for(let envVar in packageInfo.metadata.environmentVariables) {
+    envVars.push({"Environment Variable": envVar, "Default Value": packageInfo.metadata.environmentVariables[envVar], "Updated Value": env[envVar]})
+  }
+  console.table(envVars)
+}
+
 // Main script execution
 ;(async () => {
   const allPackages = getInstantOHIEPackages()
@@ -158,7 +169,7 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
     if (
       !chosenPackageIds.every((id) => Object.keys(allPackages).includes(id))
     ) {
-      throw new Error('Unknown package id')
+      throw new Error(`Deploy - Unknown package id in list: ${chosenPackageIds}`)
     }
 
     if (chosenPackageIds.length < 1) {
@@ -181,6 +192,7 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
     switch (mainOptions.target) {
       case 'docker':
         for (const id of chosenPackageIds) {
+          logPackageDetails(allPackages[id])
           await runBashScript(`${allPackages[id].path}docker/`, 'compose.sh', [
             main.command
           ])
@@ -225,7 +237,7 @@ const orderPackageIds = (allPackages, chosenPackageIds) => {
     if (
       !chosenPackageIds.every((id) => Object.keys(allPackages).includes(id))
     ) {
-      throw new Error('Unknown package id')
+      throw new Error(`Testing - Unknown package id in list: ${chosenPackageIds}`)
     }
 
     if (chosenPackageIds.length < 1) {
