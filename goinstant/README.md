@@ -6,7 +6,7 @@ This is a Go CLI app and is provided as a native binary for the AMD64 architectu
 
 ## Usage
 
-Download the latest release for your OS.
+Download Golang version 1.17.x or higher.
 
 On Unix-like operating systems, you must add execute permissions, ie. `chmod +x goinstant-linux`.
 
