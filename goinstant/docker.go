@@ -1,12 +1,18 @@
 package main
 
 import (
+	"archive/tar"
+	"archive/zip"
 	"bufio"
 	"bytes"
+	"compress/gzip"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -236,6 +242,42 @@ func RunHTTPDockerCommand(r *http.Request) {
 		return
 	}
 
+}
+
+func retrieveGitRepo(gitUrl string) (pathToPackage string) {
+	cmd := exec.Command("git", "clone", gitUrl)
+	cmdReader, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
+		return
+	}
+
+	scanner := bufio.NewScanner(cmdReader)
+	go func() {
+		for scanner.Scan() {
+			fmt.Printf("\t > %s\n", scanner.Text())
+		}
+	}()
+
+	err = cmd.Start()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
+		return
+	}
+
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
+		return
+	}
+
+	// Get name of repo
+	urlSplit := strings.Split(gitUrl, ".")
+	urlPathSplit := strings.Split(urlSplit[len(urlSplit)-2], "/")
+	repoName := urlPathSplit[len(urlPathSplit)-1]
+
+	pathToPackage = filepath.Join(".", repoName)
+	return
 }
 
 // func composeUpCoreDOD() {
