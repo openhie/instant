@@ -244,6 +244,51 @@ func RunHTTPDockerCommand(r *http.Request) {
 
 }
 
+func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
+	packageName := ""
+	gzipReader, err := gzip.NewReader(tarContent)
+	if err != nil {
+		return
+	}
+	defer gzipReader.Close()
+
+	tarReader := tar.NewReader(gzipReader)
+
+	for {
+		file, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if file == nil {
+			continue
+		}
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:", err)
+			continue
+		}
+
+		filePath := filepath.Join(".", file.Name)
+		if file.Typeflag == tar.TypeDir {
+			if packageName == "" {
+				packageName = filePath
+			}
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in untaring file:", err)
+			return
+		}
+		if _, err := io.Copy(dest, tarReader); err != nil {
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:", err)
+		}
+	}
+	pathToPackage = filepath.Join(".", packageName)
+	return
+}
+
 func retrieveGitRepo(gitUrl string) (pathToPackage string) {
 	cmd := exec.Command("git", "clone", gitUrl)
 	cmdReader, err := cmd.StdoutPipe()
