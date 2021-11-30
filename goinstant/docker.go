@@ -244,6 +244,72 @@ func RunHTTPDockerCommand(r *http.Request) {
 
 }
 
+func createZipFile(file string, content io.Reader) {
+	output, err := os.Create(file)
+	defer output.Close()
+
+	_, err = io.Copy(output, content)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in creating zip file:", err)
+		return
+	}
+}
+
+func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
+	tempZipFile := "temp.zip"
+	createZipFile(tempZipFile, zipContent)
+
+	// Unzip file
+	archive, err := zip.OpenReader(tempZipFile)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
+		return
+	}
+	defer archive.Close()
+
+	packageName := ""
+	for _, file := range archive.File {
+		filePath := filepath.Join(".", file.Name)
+
+		if file.FileInfo().IsDir() {
+			if packageName == "" {
+				packageName = file.Name
+			}
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		content, err := file.Open()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
+			return
+		}
+
+		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
+			return
+		}
+		_, err = io.Copy(dest, content)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in copying unzipped files:", err)
+			return
+		}
+		content.Close()
+	}
+
+	// Remove temp zip file
+	tempFilePath := filepath.Join(".", tempZipFile)
+	err = os.Remove(tempFilePath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:", err)
+		return
+	}
+
+	pathToPackage = filepath.Join(".", packageName)
+	return
+}
+
 func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 	packageName := ""
 	gzipReader, err := gzip.NewReader(tarContent)
