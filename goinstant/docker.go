@@ -129,7 +129,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		RunDockerCommand(commandSlice...)
+		runCommand(deployEnvironment, commandSlice...)
 	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
@@ -146,28 +146,28 @@ func RunDirectDockerCommand(startupCommands []string) {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
-	RunDockerCommand(commandSlice...)
+	runCommand(deployEnvironment, commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
 	for _, c := range customPackagePaths {
 		fmt.Print("- " + c)
-		mountCustomPackage(c)
+		mountCustomPackage(deployEnvironment, c)
 	}
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	RunDockerCommand(commandSlice...)
+	runCommand(deployEnvironment, commandSlice...)
 
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		RunDockerCommand(commandSlice...)
+		runCommand(deployEnvironment, commandSlice...)
 	}
 }
 
-func RunDockerCommand(commandSlice ...string) {
-	cmd := exec.Command("docker", commandSlice...)
+func runCommand(commandName string, commandSlice ...string) (pathToPackage string) {
+	cmd := exec.Command(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -193,16 +193,31 @@ func RunDockerCommand(commandSlice ...string) {
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
 		return
 	}
+
+	if commandName == "git" {
+		if len(commandSlice) < 2 {
+			fmt.Fprintln(os.Stderr, "Not enough arguments for git command", stderr.String(), err)
+			return
+		}
+		pathToPackage = commandSlice[1]
+		// Get name of repo
+		urlSplit := strings.Split(pathToPackage, ".")
+		urlPathSplit := strings.Split(urlSplit[len(urlSplit)-2], "/")
+		repoName := urlPathSplit[len(urlPathSplit)-1]
+
+		pathToPackage = filepath.Join(".", repoName)
+	}
+	return
 }
 
-func mountCustomPackage(pathToPackage string) {
+func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 	gitRegex := regexp.MustCompile(`\.git`)
 	httpRegex := regexp.MustCompile("http")
 	zipRegex := regexp.MustCompile(`\.zip`)
 	tarRegex := regexp.MustCompile(`\.tar`)
 
 	if gitRegex.MatchString(pathToPackage) {
-		pathToPackage = retrieveGitRepo(pathToPackage)
+		pathToPackage = runCommand("git", []string{"clone", pathToPackage}...)
 	} else if httpRegex.MatchString(pathToPackage) {
 		resp, err := http.Get(pathToPackage)
 		if err != nil {
@@ -224,16 +239,20 @@ func mountCustomPackage(pathToPackage string) {
 	}
 
 	commandSlice := []string{"cp", pathToPackage, "instant-openhie:instant/"}
-	RunDockerCommand(commandSlice...)
+	runCommand(deployEnvironment, commandSlice...)
 }
 
 func createZipFile(file string, content io.Reader) {
 	output, err := os.Create(file)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in creating zip file:", err)
+		return
+	}
 	defer output.Close()
 
 	_, err = io.Copy(output, content)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error in creating zip file:", err)
+		fmt.Fprintln(os.Stderr, "Error in copying zip file content:", err)
 		return
 	}
 }
@@ -335,41 +354,5 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 		}
 	}
 	pathToPackage = filepath.Join(".", packageName)
-	return
-}
-
-func retrieveGitRepo(gitUrl string) (pathToPackage string) {
-	cmd := exec.Command("git", "clone", gitUrl)
-	cmdReader, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return
-	}
-
-	scanner := bufio.NewScanner(cmdReader)
-	go func() {
-		for scanner.Scan() {
-			fmt.Printf("\t > %s\n", scanner.Text())
-		}
-	}()
-
-	err = cmd.Start()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return
-	}
-
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return
-	}
-
-	// Get name of repo
-	urlSplit := strings.Split(gitUrl, ".")
-	urlPathSplit := strings.Split(urlSplit[len(urlSplit)-2], "/")
-	repoName := urlPathSplit[len(urlPathSplit)-1]
-
-	pathToPackage = filepath.Join(".", repoName)
 	return
 }
