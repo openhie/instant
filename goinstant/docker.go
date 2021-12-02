@@ -222,13 +222,12 @@ func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 		resp, err := http.Get(pathToPackage)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in dowloading custom package", err)
-			return
+			panic(err)
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			fmt.Fprintln(os.Stderr, "Error in dowloading custom package - http status", resp.StatusCode)
-			return
+			panic("Error in dowloading custom package - HTTP status code: " + strconv.Itoa(resp.StatusCode))
 		}
 
 		if zipRegex.MatchString(pathToPackage) {
@@ -245,15 +244,15 @@ func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 func createZipFile(file string, content io.Reader) {
 	output, err := os.Create(file)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error in creating zip file:", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error in creating zip file:")
+		panic(err)
 	}
 	defer output.Close()
 
 	_, err = io.Copy(output, content)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error in copying zip file content:", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error in copying zip file content:")
+		panic(err)
 	}
 }
 
@@ -264,8 +263,8 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 	// Unzip file
 	archive, err := zip.OpenReader(tempZipFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+		panic(err)
 	}
 
 	packageName := ""
@@ -282,19 +281,19 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 
 		content, err := file.Open()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
-			return
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+			panic(err)
 		}
 
 		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error in unzipping file:", err)
-			return
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+			panic(err)
 		}
 		_, err = io.Copy(dest, content)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error in copying unzipped files:", err)
-			return
+			fmt.Fprintln(os.Stderr, "Error in copying unzipped files:")
+			panic(err)
 		}
 		content.Close()
 	}
@@ -304,8 +303,8 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 	archive.Close()
 	err = os.Remove(tempFilePath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:")
+		panic(err)
 	}
 
 	pathToPackage = filepath.Join(".", packageName)
@@ -316,7 +315,8 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 	packageName := ""
 	gzipReader, err := gzip.NewReader(tarContent)
 	if err != nil {
-		return
+		fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+		panic(err)
 	}
 	defer gzipReader.Close()
 
@@ -331,8 +331,8 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 			continue
 		}
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error in extracting tar file:", err)
-			continue
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+			panic(err)
 		}
 
 		filePath := filepath.Join(".", file.Name)
@@ -346,11 +346,12 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 
 		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error in untaring file:", err)
-			return
+			fmt.Fprintln(os.Stderr, "Error in untaring file:")
+			panic(err)
 		}
 		if _, err := io.Copy(dest, tarReader); err != nil {
-			fmt.Fprintln(os.Stderr, "Error in extracting tar file:", err)
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+			panic(err)
 		}
 	}
 	pathToPackage = filepath.Join(".", packageName)
