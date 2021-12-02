@@ -13,7 +13,7 @@ services:
 
   openhim-console:
     container_name: openhim-console
-    image: jembi/openhim-console:1.14
+    image: jembi/openhim-console:1.14.4
     depends_on:
       - openhim-core
     restart: unless-stopped
