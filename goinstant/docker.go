@@ -76,9 +76,9 @@ func getEnvironmentVariables(inputArr []string, flags []string) (environmentVari
 	return
 }
 
-func sliceContains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
+func sliceContains(slice []string, element string) bool {
+	for _, e := range slice {
+		if e == element {
 			return true
 		}
 	}
