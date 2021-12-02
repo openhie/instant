@@ -30,7 +30,8 @@ module.exports = {
       'packages/health-worker',
       'packages/health-workforce',
       'packages/client',
-      'packages/elastic'
+      'packages/elastic',
+      'packages/use-case-packages'
     ],
     'More Information': [
       'more-info/architecture'
