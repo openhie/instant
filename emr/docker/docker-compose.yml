@@ -3,6 +3,7 @@ version: '2.1'
 services:
   openmrs-reference-application-mysql:
     image: mysql:5.7
+    restart: unless-stopped
     command: 'mysqld --character-set-server=utf8 --collation-server=utf8_general_ci'
     environment:
       MYSQL_DATABASE: 'openmrs'
@@ -14,6 +15,7 @@ services:
  
   openmrs-reference-application:
     image: openmrs/openmrs-reference-application-distro:2.12.0
+    restart: unless-stopped
     depends_on:
       - openmrs-reference-application-mysql
     ports:
