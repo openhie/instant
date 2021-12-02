@@ -37,7 +37,6 @@ elif [ "$1" == "down" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml stop
 elif [ "$1" == "destroy" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml down -v
-    docker volume rm hapi-mysql-config
 else
     echo "Valid options are: init, up, down, or destroy"
 fi
