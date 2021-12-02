@@ -27,7 +27,7 @@ func selectSetup() {
 	switch result {
 	case "Use Docker on your PC":
 		debugDocker()
-		selectPackageDocker()
+		selectDefaultOrCustom()
 
 	case "Use a Kubernetes Cluster":
 		debugKubernetes()
@@ -61,6 +61,37 @@ func selectUtil() {
 	fmt.Println("FHIR Server target:", fhir_server)
 	loadIGpackage(ig_url, fhir_server, params)
 	selectSetup()
+}
+
+func selectDefaultOrCustom() {
+	prompt := promptui.Select{
+		Label: "Great, now choose an installation type",
+		Items: []string{"Default Install Options", "Custom Install Options", "Quit", "Back"},
+		Size:  12,
+	}
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	switch result {
+	case "Default Install Options":
+		selectPackageDocker()
+	case "Custom Install Options":
+		selectCustomOptions()
+	case "Quit":
+		os.Exit(0)
+	case "Back":
+		selectSetup()
+	}
+}
+
+func selectCustomOptions() {
+	//TODO: Prompt user for custom options
 }
 
 func selectPackageDocker() {
@@ -131,7 +162,7 @@ func selectPackageDocker() {
 		os.Exit(0)
 
 	case "Back":
-		selectSetup()
+		selectDefaultOrCustom()
 	}
 
 }
