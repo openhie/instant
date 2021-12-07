@@ -1,42 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 
-	"github.com/gookit/color"
 	"github.com/manifoldco/promptui"
-	"github.com/markbates/pkger"
 )
-
-func pkgerPrint(text string, scolor string) {
-
-	f, err := pkger.Open(text)
-	if err != nil {
-		panic(err)
-	}
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-	s := string(b)
-
-	if scolor == "green" {
-		color.Green.Println(s)
-	}
-
-	if scolor == "yellow" {
-		color.Yellow.Println(s)
-	}
-}
 
 func selectSetup() {
 
 	prompt := promptui.Select{
-		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on a cluster, then you have should been provided credentials. \nOnly choose Cluster on your PC if you're an expert user.",
-		Items: []string{"Use Docker on your PC", "Use Cluster on your PC", "Use Cluster on Remote Server", "Quit"},
+		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
+		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -50,60 +26,49 @@ func selectSetup() {
 
 	switch result {
 	case "Use Docker on your PC":
+		debugDocker()
 		selectPackageDocker()
 
-	case "Use Cluster on your PC":
+	case "Use a Kubernetes Cluster":
 		debugKubernetes()
-		configServerKubernetes()
-		selectPackageClusterLocal()
+		// configServerKubernetes()
+		selectPackageCluster()
 
-	case "Use Cluster on Remote Server":
-		fmt.Println("Great, but this feature isn't built yet.")
-		debugKubernetes()
-		configServerKubernetes()
-		selectPackageClusterRemote()
+	case "Install FHIR package":
+		selectUtil()
 
 	case "Quit":
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 }
 
-func selectDocker() {
-
-	debugDocker()
-
-	prompt := promptui.Select{
-		Label: "Setup",
-		Items: []string{"Check Docker again", "Clean up Docker", "Quit"},
+func selectUtil() {
+	fmt.Println("Enter URL for the published package")
+	// prompt for url
+	prompt := promptui.Prompt{
+		Label: "URL",
 	}
 
-	_, result, err := prompt.Run()
+	ig_url, err := prompt.Run()
 
 	if err != nil {
 		fmt.Printf("Prompt failed %v\n", err)
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
-
-	switch result {
-	case "Check Docker again":
-		debugDocker()
-		selectPackageDocker()
-	case "Clean up Docker":
-		fmt.Println("This feature needs more work, sorry.")
-	case "Quit":
-		os.Exit(1)
-	}
-
+	fhir_server, params := selectFHIR()
+	fmt.Println("FHIR Server target:", fhir_server)
+	loadIGpackage(ig_url, fhir_server, params)
+	selectSetup()
 }
 
 func selectPackageDocker() {
 
 	prompt := promptui.Select{
-		Label: "Great, now choose a package",
-		Items: []string{"Core", "Core + Facility", "Core + Facility + Workforce", "Stop Services and Cleanup Docker", "Developer Mode", "Quit"},
+		Label: "Great, now choose an action",
+		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -116,165 +81,287 @@ func selectPackageDocker() {
 	fmt.Printf("You choose %q\n", result)
 
 	switch result {
-	case "Core":
-		fmt.Println("...Setting up")
-		composeUpCore()
-		fmt.Print("Press 'Enter' to continue...")
-		bufio.NewReader(os.Stdin).ReadBytes('\n')
+	case "Launch Core (Required, Start Here)":
+		fmt.Println("...Setting up Core Package")
+		RunDirectDockerCommand([]string{"docker", "core", "init"})
+		RunDirectDockerCommand([]string{"docker", "core", "up"})
+		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
+		// now working
+		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
+		selectPackageDocker()
 
-	case "Core + Facility":
-		fmt.Println("Core + Facility")
-	case "Core + Facility + Workforce":
-		fmt.Println("Core + Facility + Workforce")
-	case "Stop Services and Cleanup Docker":
-		composeDownCore()
-	case "Developer Mode":
-		selectPackageDockerDev()
+	case "Launch Facility Registry":
+		fmt.Println("...Setting up Facility Registry Package")
+		RunDirectDockerCommand([]string{"docker", "facility", "up"})
+		selectPackageDocker()
+
+	case "Launch Workforce":
+		fmt.Println("...Setting up Workforce Package")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
+		selectPackageDocker()
+
+	case "Stop and Cleanup Core":
+		fmt.Println("Stopping and Cleaning Up Core...")
+		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
+		selectPackageDocker()
+
+	case "Stop and Cleanup Facility Registry":
+		fmt.Println("Stopping and Cleaning Up Facility Registry...")
+		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
+		selectPackageDocker()
+
+	case "Stop and Cleanup Workforce":
+		fmt.Println("Stopping and Cleaning Up Workforce...")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
+		selectPackageDocker()
+
+	case "Stop All Services and Cleanup Docker":
+		// composeDownCore()
+		fmt.Println("Stopping and Cleaning Up Everything...")
+		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
+		selectPackageDocker()
+
+	// case "Developer Mode":
+	// selectPackageDockerDev()
+	// selectPackageDocker()
+
 	case "Quit":
-		os.Exit(1)
-	}
+		os.Exit(0)
 
-}
-
-func selectPackageClusterLocal() {
-
-	prompt := promptui.Select{
-		Label: "Great, now choose a package",
-		Items: []string{"Core", "Core + Facility", "Core + Facility + Workforce", "Quit"},
-	}
-
-	_, result, err := prompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-
-	fmt.Printf("You choose %q\n", result)
-
-	switch result {
-	case "Core":
-		fmt.Println("Core")
-	case "Core + Facility":
-		fmt.Println("Core + Facility")
-	case "Core + Facility + Workforce":
-		fmt.Println("Core + Facility + Workforce")
-	case "Quit":
-		os.Exit(1)
-	}
-
-}
-
-func selectPackageClusterRemote() {
-
-	prompt := promptui.Select{
-		Label: "Great, now choose a package",
-		Items: []string{"Core", "Core + Facility", "Core + Facility + Workforce", "Quit"},
-	}
-
-	_, result, err := prompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-
-	fmt.Printf("You choose %q\n", result)
-
-	switch result {
-	case "Core":
-		fmt.Println("Core")
-	case "Core + Facility":
-		fmt.Println("Core + Facility")
-	case "Core + Facility + Workforce":
-		fmt.Println("Core + Facility + Workforce")
-	case "Quit":
-		os.Exit(1)
-	}
-
-}
-
-func selectPackageDockerDev() {
-
-	prompt := promptui.Select{
-		Label: "Great, now choose a package",
-		Items: []string{"Core (dev.yml)", "Facility (w/o Core)", "Facility + Workforce (w/o Core)", "Quit"},
-	}
-
-	_, result, err := prompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-
-	fmt.Printf("You choose %q\n", result)
-
-	switch result {
-	case "Core (dev.yml)":
-		fmt.Println("Core (dev.yml)")
-		// composeUpCore()
-	case "Facility (w/o Core)":
-		fmt.Println("Facility (w/o Core)")
-	case "Facility + Workforce (w/o Core)":
-		fmt.Println("Facility + Workforce (w/o Core)")
-	case "Quit":
-		os.Exit(1)
-	}
-
-}
-
-// old start menu system
-func mainMenu() {
-
-	prompt := promptui.Select{
-		Label: "Developer Mode",
-		Items: []string{"Setup", "Select Packages", "Start Instant OpenHIE", "Stop Instant OpenHIE", "Debug", "Help", "Quit"},
-	}
-
-	_, result, err := prompt.Run()
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
-	}
-	fmt.Printf("You chose %q\n", result)
-
-	stack := "https://raw.github.com/openhie/instant/master/core/docker/docker-compose.yml"
-
-	switch result {
-	case "Setup":
-		setup()
+	case "Back":
 		selectSetup()
-	case "Select Packages":
-		fmt.Println("in-progress")
-	case "Start Instant OpenHIE":
-
-		// http.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-		// 	fmt.Fprintln(w, "Hello, you hit foo!")
-		// })
-
-		// dir := http.FileServer(pkger.Dir("/templates"))
-		// // use in goroutine to return control
-		// go http.ListenAndServe(":27517", dir)
-		// go openBrowser("http://localhost:27517")
-
-		debugDocker()
-		stuff := composeGet(stack)
-		composeUp(stuff)
-
-		// color.Green.Println("A browser will open http://localhost:27517")
-		// color.Red.Println("Enter 'control c' key combination to stop the utility.")
-		// color.Println("Then stop containers by running 'goinstant' again and choosing 'Stop OpenHIE")
-
-	case "Stop Instant OpenHIE":
-		stuff := composeGet(stack)
-		composeDown(stuff)
-	case "Debug":
-		debugDocker()
-	case "Help":
-		help()
-	case "Quit":
-		os.Exit(1)
 	}
+
+}
+
+func selectPackageCluster() {
+
+	prompt := promptui.Select{
+		Label: "Great, now choose an action",
+		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	switch result {
+	case "Launch Core (Required, Start Here)":
+		fmt.Println("...Setting up Core Package")
+		RunDirectDockerCommand([]string{"k8s", "core", "init"})
+		RunDirectDockerCommand([]string{"k8s", "core", "up"})
+		selectPackageCluster()
+
+	case "Launch Facility Registry":
+		fmt.Println("...Setting up Facility Registry Package")
+		RunDirectDockerCommand([]string{"k8s", "facility", "up"})
+		selectPackageCluster()
+
+	case "Launch Workforce":
+		fmt.Println("...Setting up Workforce Package")
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
+		selectPackageCluster()
+
+	case "Stop and Cleanup Core":
+		fmt.Println("Stopping and Cleaning Up Core...")
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		selectPackageCluster()
+
+	case "Stop and Cleanup Facility Registry":
+		fmt.Println("Stopping and Cleaning Up Facility Registry...")
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		selectPackageCluster()
+
+	case "Stop and Cleanup Workforce":
+		fmt.Println("Stopping and Cleaning Up Workforce...")
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		selectPackageCluster()
+
+	case "Stop All Services and Cleanup Kubernetes":
+		// composeDownCore()
+		fmt.Println("Stopping and Cleaning Up Everything...")
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		selectPackageCluster()
+
+	// case "Developer Mode":
+	// 	selectPackageDockerDev()
+	// 	// selectPackageCluster()
+
+	case "Quit":
+		os.Exit(0)
+
+	case "Back":
+		selectSetup()
+	}
+
+}
+
+func selectFHIR() (result_url string, params *Params) {
+
+	prompt := promptui.Select{
+		Label: "Select or enter URL for a FHIR Server",
+		Items: []string{"Docker Default", "Kubernetes Default", "Use Public HAPI Server", "Enter a Server URL", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	switch result {
+
+	case "Docker Default":
+		result_url := "http://localhost:8080/fhir"
+		params := &Params{}
+		params.TypeAuth = "Custom"
+		params.Token = "test"
+		return result_url, params
+
+	case "Kubernetes Default":
+		result_url := "http://localhost:8080/fhir"
+		params := &Params{}
+		params.TypeAuth = "Custom"
+		params.Token = "test"
+		return result_url, params
+
+	case "Use Public HAPI Server":
+		result_url := "http://hapi.fhir.org/baseR4"
+		params := &Params{}
+		params.TypeAuth = "None"
+		return result_url, params
+
+	case "Enter a Server URL":
+		prompt := promptui.Prompt{
+			Label: "URL",
+		}
+		result_url, err := prompt.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		// TODO: validate URL
+		// params.TypeAuth =
+		params := selectParams()
+		return result_url, params
+
+	case "Quit":
+		os.Exit(0)
+		params := &Params{}
+		return "", params
+
+	case "Back":
+		selectUtil()
+		params := &Params{}
+		return "", params
+
+	}
+	return result_url, params
+
+}
+
+type Params struct {
+	// none, token, basic, custom
+	TypeAuth  string
+	Token     string
+	BasicUser string
+	BasicPass string
+}
+
+func selectParams() *Params {
+
+	a := &Params{}
+
+	prompt := promptui.Select{
+		Label: "Choose authentication type",
+		Items: []string{"None", "Basic", "Token", "Custom", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+	}
+
+	fmt.Printf("You choose %q\n", result)
+	switch result {
+
+	case "None":
+		a.TypeAuth = "None"
+		return a
+
+	case "Basic":
+		a.TypeAuth = "Basic"
+
+		// basic user
+		prompt_basic_user := promptui.Prompt{
+			Label: "Basic User",
+		}
+		result_basic_user, err := prompt_basic_user.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.BasicUser = result_basic_user
+
+		// basic pass
+		prompt_basic_pass := promptui.Prompt{
+			Label: "Basic Password",
+		}
+		result_basic_pass, err := prompt_basic_pass.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.BasicPass = result_basic_pass
+
+		return a
+
+	case "Token":
+		a.TypeAuth = "Token"
+
+		// bearer token
+		prompt_token := promptui.Prompt{
+			Label: "Bearer Token",
+		}
+		result_token, err := prompt_token.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.Token = result_token
+		return a
+
+	case "Custom":
+		a.TypeAuth = "Custom"
+
+		// custom token
+		prompt_ctoken := promptui.Prompt{
+			Label: "Custom Token",
+		}
+		result_ctoken, err := prompt_ctoken.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		}
+		a.Token = result_ctoken
+		return a
+
+	case "Quit":
+		os.Exit(0)
+		return a
+
+	case "Back":
+		selectUtil()
+		return a
+	}
+	return a
 
 }

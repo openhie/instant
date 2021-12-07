@@ -1,34 +1,26 @@
 module github.com/openhie/instant/goinstant
 
-go 1.15
+go 1.16
 
 require (
-	github.com/Microsoft/go-winio v0.4.15 // indirect
-	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v1.13.1
+	github.com/Microsoft/go-winio v0.5.0 // indirect
+	github.com/containerd/containerd v1.5.4 // indirect
+	github.com/docker/docker v20.10.7+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/docker/go-units v0.4.0 // indirect
-	github.com/go-git/go-git/v5 v5.2.0
-	github.com/gobuffalo/here v0.6.2 // indirect
-	github.com/gobuffalo/packr/v2 v2.8.1
-	github.com/gookit/color v1.3.3
-	github.com/gorilla/mux v1.8.0
-	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/karrick/godirwalk v1.16.1 // indirect
-	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
+	github.com/fatih/color v1.12.0
+	github.com/go-resty/resty/v2 v2.6.0
+	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
-	github.com/markbates/pkger v0.17.1
-	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/pkg/browser v0.0.0-20201207095918-0426ae3fba23
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/r3labs/sse v0.0.0-20201126193848-34e640891548
-	github.com/sirupsen/logrus v1.7.0 // indirect
-	github.com/xanzy/ssh-agent v0.3.0 // indirect
-	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392 // indirect
-	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
-	golang.org/x/sys v0.0.0-20201202213521-69691e467435 // indirect
-	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
+	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
+	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
+	golang.org/x/net v0.0.0-20210716203947-853a461950ff
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
+	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
+	google.golang.org/genproto v0.0.0-20210719143636-1d5a45f8e492 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
