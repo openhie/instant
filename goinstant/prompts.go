@@ -7,6 +7,10 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
+func quit() {
+	os.Exit(0)
+}
+
 func selectSetup() {
 
 	prompt := promptui.Select{
@@ -38,7 +42,7 @@ func selectSetup() {
 		selectUtil()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 	}
 
 }
@@ -80,21 +84,57 @@ func selectDefaultOrCustom() {
 
 	switch result {
 	case "Default Install Options":
-		selectPackageDocker()
+		selectDefaultInstall()
 	case "Custom Install Options":
 		selectCustomOptions()
 	case "Quit":
-		os.Exit(0)
+		quit()
 	case "Back":
 		selectSetup()
 	}
 }
 
 func selectCustomOptions() {
-	//TODO: Prompt user for custom options
+	prompt := promptui.Select{
+		Label: "Great, now choose an action",
+		Items: []string{"Specify/Update environment variable file location", "Set/Update environment variables", "Add/Update custom package locations", "Toggle only flag", "Continue with current options", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	//TODO: Update switch below with correct new flows.
+	switch result {
+	case "Specify/Update environment variable file location":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Set/Update environment variables":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Add/Update custom package locations":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Toggle only flag":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Continue with current options":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Quit":
+		quit()
+	case "Back":
+		selectDefaultOrCustom()
+	}
 }
 
-func selectPackageDocker() {
+func selectDefaultInstall() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
@@ -119,32 +159,32 @@ func selectPackageDocker() {
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		// now working
 		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
 		RunDirectDockerCommand([]string{"docker", "facility", "up"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
 		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
 		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop All Services and Cleanup Docker":
 		// composeDownCore()
@@ -152,14 +192,14 @@ func selectPackageDocker() {
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	// case "Developer Mode":
 	// selectPackageDockerDev()
 	// selectPackageDocker()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 
 	case "Back":
 		selectDefaultOrCustom()
@@ -229,7 +269,7 @@ func selectPackageCluster() {
 	// 	// selectPackageCluster()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 
 	case "Back":
 		selectSetup()
@@ -288,7 +328,7 @@ func selectFHIR() (result_url string, params *Params) {
 		return result_url, params
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 		params := &Params{}
 		return "", params
 
@@ -386,7 +426,7 @@ func selectParams() *Params {
 		return a
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 		return a
 
 	case "Back":
