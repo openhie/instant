@@ -3,12 +3,17 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 )
 
-func selectSetup() {
+func quit() {
+	os.Exit(0)
+}
 
+func selectSetup() {
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
 		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
@@ -27,7 +32,7 @@ func selectSetup() {
 	switch result {
 	case "Use Docker on your PC":
 		debugDocker()
-		selectPackageDocker()
+		selectDefaultOrCustom()
 
 	case "Use a Kubernetes Cluster":
 		debugKubernetes()
@@ -38,7 +43,7 @@ func selectSetup() {
 		selectUtil()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 	}
 
 }
@@ -63,7 +68,257 @@ func selectUtil() {
 	selectSetup()
 }
 
-func selectPackageDocker() {
+func selectDefaultOrCustom() {
+	prompt := promptui.Select{
+		Label: "Great, now choose an installation type",
+		Items: []string{"Default Install Options", "Custom Install Options", "Quit", "Back"},
+		Size:  12,
+	}
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	switch result {
+	case "Default Install Options":
+		selectDefaultInstall()
+	case "Custom Install Options":
+		selectCustomOptions()
+	case "Quit":
+		quit()
+	case "Back":
+		selectSetup()
+	}
+}
+
+func selectCustomOptions() {
+	prompt := promptui.Select{
+		Label: "Great, now choose an action",
+		Items: []string{"Choose deploy action (default is init)", "Specify deploy packages", "Specify environment variable file location", "Specify environment variables", "Specify custom package locations", "Toggle only flag", "Execute with current options", "Print current options", "Reset to default options", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	//TODO: Update switch below with correct new flows.
+	switch result {
+	case "Choose deploy action (default is init)":
+		setStartupAction()
+	case "Specify deploy packages":
+		setStartupPackages()
+	case "Specify environment variable file location":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Specify environment variables":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Specify custom package locations":
+		setCustomPackages()
+	case "Toggle only flag":
+		fmt.Printf(result + " not yet implemented\n")
+		quit()
+	case "Execute with current options":
+		printAll(false)
+		executeCommand()
+	case "Print current options":
+		printAll(true)
+	case "Reset to default options":
+		resetAll()
+		printAll(true)
+	case "Quit":
+		quit()
+	case "Back":
+		selectDefaultOrCustom()
+	}
+}
+
+func resetAll() {
+	customOptions.startupAction = "init"
+	customOptions.startupPackages = make([]string, 0)
+	customOptions.envVarFileLocation = ""
+	customOptions.envVars = make([]string, 0)
+	customOptions.customPackageFileLocations = make([]string, 0)
+	customOptions.onlyFlag = false
+	fmt.Println("All custom options have been reset to default.")
+}
+
+func setStartupAction() {
+	prompt := promptui.Select{
+		Label: "Great, now choose a deploy action",
+		Items: []string{"init", "destroy", "up", "down", "test", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You choose %q\n", result)
+
+	switch result {
+	case "init", "destroy", "up", "down", "test":
+		customOptions.startupAction = result
+		selectCustomOptions()
+	case "Quit":
+		quit()
+	case "Back":
+		selectCustomOptions()
+	}
+}
+
+func executeCommand() {
+	startupCommands := []string{"docker", customOptions.startupAction}
+	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
+		startupCommands = append(startupCommands, customOptions.startupPackages...)
+	} else {
+		fmt.Println("No startup package specified, cannot start.")
+		selectCustomOptions()
+	}
+	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
+		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
+	}
+	fmt.Println("Environment Variables:")
+	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
+		for _, e := range customOptions.envVars {
+			startupCommands = append(startupCommands, "-e="+e)
+		}
+	}
+	if customOptions.customPackageFileLocations != nil && len(customOptions.customPackageFileLocations) > 0 {
+		for _, c := range customOptions.customPackageFileLocations {
+			startupCommands = append(startupCommands, "-c="+c)
+		}
+	}
+	if customOptions.onlyFlag {
+		startupCommands = append(startupCommands, "--only")
+	}
+	RunDirectDockerCommand(startupCommands)
+}
+
+func printSlice(slice []string) {
+	for _, s := range slice {
+		fmt.Printf("-%q\n", s)
+	}
+}
+
+func printAll(loopback bool) {
+	fmt.Println("Current Custom Options Specified:")
+	fmt.Println("Startup Action:")
+	fmt.Printf("-%q\n", customOptions.startupAction)
+	fmt.Println("Startup Packages:")
+	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
+		printSlice(customOptions.startupPackages)
+	}
+	fmt.Println("Environment Variable File Path:")
+	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
+		fmt.Printf("-%q\n", customOptions.envVarFileLocation)
+	}
+	fmt.Println("Environment Variables:")
+	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
+		printSlice(customOptions.envVars)
+	}
+	if customOptions.customPackageFileLocations != nil && len(customOptions.customPackageFileLocations) > 0 {
+		fmt.Println("Custom Packages:")
+		printSlice(customOptions.customPackageFileLocations)
+	}
+	fmt.Println("Only Flag Setting:")
+	fmt.Printf("-%q\n", strconv.FormatBool(customOptions.onlyFlag))
+	if loopback {
+		selectCustomOptions()
+	}
+}
+
+func setStartupPackages() {
+	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
+		fmt.Println("Current Startup Packages Specified:")
+		printSlice(customOptions.startupPackages)
+	}
+	prompt := promptui.Prompt{
+		Label: "Startup Package List(Comma Delimited). e.g. core,cdr",
+	}
+	packageList, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		selectCustomOptions()
+	}
+
+	startupPackages := strings.Split(packageList, ",")
+
+	for _, p := range startupPackages {
+		if !sliceContains(customOptions.startupPackages, p) {
+			customOptions.startupPackages = append(customOptions.startupPackages, p)
+		} else {
+			fmt.Printf(p + " package already exists in the list.\n")
+		}
+	}
+	selectCustomOptions()
+}
+
+func setCustomPackages() {
+	if customOptions.customPackageFileLocations != nil && len(customOptions.customPackageFileLocations) > 0 {
+		fmt.Println("Current Custom Packages Specified:")
+		printSlice(customOptions.customPackageFileLocations)
+	}
+	prompt := promptui.Prompt{
+		Label: "Custom Package List(Comma Delimited). e.g. ../project/cdr,../project/demo",
+	}
+	customPackageList, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		selectCustomOptions()
+	}
+
+	newCustomPackages := strings.Split(customPackageList, ",")
+
+	for _, cp := range newCustomPackages {
+		if strings.Contains(cp, "http") { //TODO: add || strings.Contains(cp, "git@") if SSH will be supported
+			if !sliceContains(customOptions.customPackageFileLocations, cp) {
+				customOptions.customPackageFileLocations = append(customOptions.customPackageFileLocations, cp)
+			} else {
+				fmt.Printf(cp + " URL already exists in the list.\n")
+			}
+		} else {
+			exists, fileErr := fileExists(cp)
+			if exists {
+				if !sliceContains(customOptions.customPackageFileLocations, cp) {
+					customOptions.customPackageFileLocations = append(customOptions.customPackageFileLocations, cp)
+				} else {
+					fmt.Printf(cp + " path already exists in the list.\n")
+				}
+			} else {
+				fmt.Printf("File at location %q could not be found due to error: %v\n", cp, fileErr)
+			}
+		}
+	}
+	selectCustomOptions()
+}
+
+// fileExists returns whether the given file or directory exists
+func fileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, err
+	}
+	return false, err
+}
+
+func selectDefaultInstall() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
@@ -88,32 +343,32 @@ func selectPackageDocker() {
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		// now working
 		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
 		RunDirectDockerCommand([]string{"docker", "facility", "up"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
 		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
 		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	case "Stop All Services and Cleanup Docker":
 		// composeDownCore()
@@ -121,17 +376,17 @@ func selectPackageDocker() {
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectPackageDocker()
+		selectDefaultInstall()
 
 	// case "Developer Mode":
 	// selectPackageDockerDev()
 	// selectPackageDocker()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 
 	case "Back":
-		selectSetup()
+		selectDefaultOrCustom()
 	}
 
 }
@@ -198,7 +453,7 @@ func selectPackageCluster() {
 	// 	// selectPackageCluster()
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 
 	case "Back":
 		selectSetup()
@@ -257,7 +512,7 @@ func selectFHIR() (result_url string, params *Params) {
 		return result_url, params
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 		params := &Params{}
 		return "", params
 
@@ -355,7 +610,7 @@ func selectParams() *Params {
 		return a
 
 	case "Quit":
-		os.Exit(0)
+		quit()
 		return a
 
 	case "Back":

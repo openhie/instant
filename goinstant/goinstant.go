@@ -10,8 +10,22 @@ import (
 //go:embed banner.txt
 var f embed.FS
 
-func main() {
+type customOption struct {
+	startupAction              string
+	startupPackages            []string
+	envVarFileLocation         string
+	envVars                    []string
+	customPackageFileLocations []string
+	onlyFlag                   bool
+}
 
+var customOptions = customOption{
+	startupAction:      "init",
+	envVarFileLocation: "",
+	onlyFlag:           false,
+}
+
+func main() {
 	data, _ := f.ReadFile("banner.txt")
 	color.Green(string(data))
 
