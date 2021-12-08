@@ -98,7 +98,7 @@ func selectDefaultOrCustom() {
 func selectCustomOptions() {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Specify/Update startup action (default is init)", "Specify/Update startup packages", "Specify/Update environment variable file location", "Specify/Update environment variables", "Specify/Update custom package locations", "Toggle only flag", "Continue with current options", "Print current options", "Reset to default options", "Quit", "Back"},
+		Items: []string{"Choose deploy action (default is init)", "Specify deploy packages", "Specify environment variable file location", "Specify environment variables", "Specify custom package locations", "Toggle only flag", "Execute with current options", "Print current options", "Reset to default options", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -113,22 +113,22 @@ func selectCustomOptions() {
 
 	//TODO: Update switch below with correct new flows.
 	switch result {
-	case "Specify/Update startup action (default is init)":
+	case "Choose deploy action (default is init)":
 		setStartupAction()
-	case "Specify/Update startup packages":
+	case "Specify deploy packages":
 		setStartupPackages()
-	case "Specify/Update environment variable file location":
+	case "Specify environment variable file location":
 		fmt.Printf(result + " not yet implemented\n")
 		quit()
-	case "Specify/Update environment variables":
+	case "Specify environment variables":
 		fmt.Printf(result + " not yet implemented\n")
 		quit()
-	case "Specify/Update custom package locations":
+	case "Specify custom package locations":
 		setCustomPackages()
 	case "Toggle only flag":
 		fmt.Printf(result + " not yet implemented\n")
 		quit()
-	case "Continue with current options":
+	case "Execute with current options":
 		printAll(false)
 		executeCommand()
 	case "Print current options":
@@ -155,7 +155,7 @@ func resetAll() {
 
 func setStartupAction() {
 	prompt := promptui.Select{
-		Label: "Great, now choose a startup action",
+		Label: "Great, now choose a deploy action",
 		Items: []string{"init", "destroy", "up", "down", "test", "Quit", "Back"},
 		Size:  12,
 	}
