@@ -32,18 +32,16 @@ services:
       # file:// can only deal with absolute paths, have to use classpath
       #  SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
   
-  fhir_cli:
-    container_name: fhir_cli
-    image: gjergjsheldija/hapi-fhir-cli:0.1
+  hapi-cli:
+    container_name: hapi-cli
+    image: intrahealth/hapi-fhir-cli:latest
     depends_on:
       - fhir
-    environment:  
-      - APP_VERSION=5.5.3
-    command: upload-definitions -v r4 -t http://fhir:8080/fhir/DEFAULT 
+    command: /bin/sh -c "/upload-definitions.sh -p 8080 -h fhir"
 
   gofr:
     container_name: gofr
-    image: intrahealth/gofr:6e6a7897
+    image: intrahealth/gofr:latest
     environment:
       - mCSD__server__protocal=http
       - mCSD__server__host=fhir
