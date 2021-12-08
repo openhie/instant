@@ -1,11 +1,18 @@
 package main
 
 import (
+	"archive/tar"
+	"archive/zip"
 	"bufio"
 	"bytes"
+	"compress/gzip"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -69,9 +76,9 @@ func getEnvironmentVariables(inputArr []string, flags []string) (environmentVari
 	return
 }
 
-func sliceContains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
+func sliceContains(slice []string, element string) bool {
+	for _, e := range slice {
+		if e == element {
 			return true
 		}
 	}
@@ -122,7 +129,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		RunDockerCommand(commandSlice...)
+		runCommand(deployEnvironment, commandSlice...)
 	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
@@ -139,28 +146,28 @@ func RunDirectDockerCommand(startupCommands []string) {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
-	RunDockerCommand(commandSlice...)
+	runCommand(deployEnvironment, commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
 	for _, c := range customPackagePaths {
-		commandSlice = []string{"cp", c, "instant-openhie:instant/"}
-		RunDockerCommand(commandSlice...)
+		fmt.Print("- " + c)
+		mountCustomPackage(deployEnvironment, c)
 	}
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	RunDockerCommand(commandSlice...)
+	runCommand(deployEnvironment, commandSlice...)
 
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		RunDockerCommand(commandSlice...)
+		runCommand(deployEnvironment, commandSlice...)
 	}
 }
 
-func RunDockerCommand(commandSlice ...string) {
-	cmd := exec.Command("docker", commandSlice...)
+func runCommand(commandName string, commandSlice ...string) (pathToPackage string) {
+	cmd := exec.Command(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -186,4 +193,167 @@ func RunDockerCommand(commandSlice ...string) {
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
 		return
 	}
+
+	if commandName == "git" {
+		if len(commandSlice) < 2 {
+			fmt.Fprintln(os.Stderr, "Not enough arguments for git command", stderr.String(), err)
+			return
+		}
+		pathToPackage = commandSlice[1]
+		// Get name of repo
+		urlSplit := strings.Split(pathToPackage, ".")
+		urlPathSplit := strings.Split(urlSplit[len(urlSplit)-2], "/")
+		repoName := urlPathSplit[len(urlPathSplit)-1]
+
+		pathToPackage = filepath.Join(".", repoName)
+	}
+	return
+}
+
+func mountCustomPackage(deployEnvironment string, pathToPackage string) {
+	gitRegex := regexp.MustCompile(`\.git`)
+	httpRegex := regexp.MustCompile("http")
+	zipRegex := regexp.MustCompile(`\.zip`)
+	tarRegex := regexp.MustCompile(`\.tar`)
+
+	if gitRegex.MatchString(pathToPackage) {
+		pathToPackage = runCommand("git", []string{"clone", pathToPackage}...)
+	} else if httpRegex.MatchString(pathToPackage) {
+		resp, err := http.Get(pathToPackage)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in dowloading custom package", err)
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			panic("Error in dowloading custom package - HTTP status code: " + strconv.Itoa(resp.StatusCode))
+		}
+
+		if zipRegex.MatchString(pathToPackage) {
+			pathToPackage = unzipPackage(resp.Body)
+		} else if tarRegex.MatchString(pathToPackage) {
+			pathToPackage = untarPackage(resp.Body)
+		}
+	}
+
+	commandSlice := []string{"cp", pathToPackage, "instant-openhie:instant/"}
+	runCommand(deployEnvironment, commandSlice...)
+}
+
+func createZipFile(file string, content io.Reader) {
+	output, err := os.Create(file)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in creating zip file:")
+		panic(err)
+	}
+	defer output.Close()
+
+	_, err = io.Copy(output, content)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in copying zip file content:")
+		panic(err)
+	}
+}
+
+func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
+	tempZipFile := "temp.zip"
+	createZipFile(tempZipFile, zipContent)
+
+	// Unzip file
+	archive, err := zip.OpenReader(tempZipFile)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+		panic(err)
+	}
+
+	packageName := ""
+	for _, file := range archive.File {
+		filePath := filepath.Join(".", file.Name)
+
+		if file.FileInfo().IsDir() {
+			if packageName == "" {
+				packageName = file.Name
+			}
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		content, err := file.Open()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+			panic(err)
+		}
+
+		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
+			panic(err)
+		}
+		_, err = io.Copy(dest, content)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in copying unzipped files:")
+			panic(err)
+		}
+		content.Close()
+	}
+
+	// Remove temp zip file
+	tempFilePath := filepath.Join(".", tempZipFile)
+	archive.Close()
+	err = os.Remove(tempFilePath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:")
+		panic(err)
+	}
+
+	pathToPackage = filepath.Join(".", packageName)
+	return
+}
+
+func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
+	packageName := ""
+	gzipReader, err := gzip.NewReader(tarContent)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+		panic(err)
+	}
+	defer gzipReader.Close()
+
+	tarReader := tar.NewReader(gzipReader)
+
+	for {
+		file, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if file == nil {
+			continue
+		}
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+			panic(err)
+		}
+
+		filePath := filepath.Join(".", file.Name)
+		if file.Typeflag == tar.TypeDir {
+			if packageName == "" {
+				packageName = filePath
+			}
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error in untaring file:")
+			panic(err)
+		}
+		if _, err := io.Copy(dest, tarReader); err != nil {
+			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
+			panic(err)
+		}
+	}
+	pathToPackage = filepath.Join(".", packageName)
+	return
 }
