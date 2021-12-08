@@ -186,7 +186,6 @@ func executeCommand() {
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
 		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
 	}
-	fmt.Println("Environment Variables:")
 	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
 		for _, e := range customOptions.envVars {
 			startupCommands = append(startupCommands, "-e="+e)
@@ -329,7 +328,7 @@ func setEnvVarFileLocation() {
 
 func setEnvVars() {
 	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
-		fmt.Println("Environment Variables Specified:")
+		fmt.Println("Current Environment Variables Specified:")
 		printSlice(customOptions.envVars)
 	}
 	prompt := promptui.Prompt{
