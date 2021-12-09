@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 
 services:
   redis:
@@ -10,7 +10,7 @@ services:
 
   fhir:
     container_name: fhir
-    image: hapiproject/hapi:latest
+    image: hapiproject/hapi:v5.5.2
     ports:
       - "8092:8080"
     restart: always
@@ -30,8 +30,8 @@ services:
       - spring.jpa.properties.hibernate.search.backend.directory.root=target/lucenefiles
       - spring.jpa.properties.hibernate.search.backend.lucene_version=lucene_current
       # file:// can only deal with absolute paths, have to use classpath
-      #  SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
-  
+    #   SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
+
   hapi-cli:
     container_name: hapi-cli
     image: intrahealth/hapi-fhir-cli:latest
@@ -50,8 +50,6 @@ services:
       - REDIS_HOST=redis
     ports:
       - "4000:4000"
-    depends_on:
-      - fhir  
     restart: always
 
 # join core network
