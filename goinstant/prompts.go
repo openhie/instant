@@ -27,7 +27,7 @@ func selectSetup() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 	case "Use Docker on your PC":
@@ -36,7 +36,6 @@ func selectSetup() {
 
 	case "Use a Kubernetes Cluster":
 		debugKubernetes()
-		// configServerKubernetes()
 		selectPackageCluster()
 
 	case "Install FHIR package":
@@ -398,8 +397,6 @@ func selectDefaultInstall() {
 		RunDirectDockerCommand([]string{"docker", "core", "init"})
 		RunDirectDockerCommand([]string{"docker", "core", "up"})
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
-		// now working
-		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
 		selectDefaultInstall()
 
 	case "Launch Facility Registry":
@@ -428,16 +425,11 @@ func selectDefaultInstall() {
 		selectDefaultInstall()
 
 	case "Stop All Services and Cleanup Docker":
-		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
 		selectDefaultInstall()
-
-	// case "Developer Mode":
-	// selectPackageDockerDev()
-	// selectPackageDocker()
 
 	case "Quit":
 		quit()
@@ -675,5 +667,4 @@ func selectParams() *Params {
 		return a
 	}
 	return a
-
 }
