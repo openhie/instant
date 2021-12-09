@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
+	"path/filepath"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -98,7 +98,7 @@ func selectDefaultOrCustom() {
 func selectCustomOptions() {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Choose deploy action (default is init)", "Specify deploy packages", "Specify environment variable file location", "Specify environment variables", "Specify custom package locations", "Toggle only flag", "Execute with current options", "Print current options", "Reset to default options", "Quit", "Back"},
+		Items: []string{"Choose deploy action (default is init)", "Specify deploy packages", "Specify environment variable file location", "Specify environment variables", "Specify custom package locations", "Toggle only flag", "Execute with current options", "View current options set", "Reset to default options", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -111,27 +111,23 @@ func selectCustomOptions() {
 
 	fmt.Printf("You choose %q\n", result)
 
-	//TODO: Update switch below with correct new flows.
 	switch result {
 	case "Choose deploy action (default is init)":
 		setStartupAction()
 	case "Specify deploy packages":
 		setStartupPackages()
 	case "Specify environment variable file location":
-		fmt.Printf(result + " not yet implemented\n")
-		quit()
+		setEnvVarFileLocation()
 	case "Specify environment variables":
-		fmt.Printf(result + " not yet implemented\n")
-		quit()
+		setEnvVars()
 	case "Specify custom package locations":
 		setCustomPackages()
 	case "Toggle only flag":
-		fmt.Printf(result + " not yet implemented\n")
-		quit()
+		toggleOnlyFlag()
 	case "Execute with current options":
 		printAll(false)
 		executeCommand()
-	case "Print current options":
+	case "View current options set":
 		printAll(true)
 	case "Reset to default options":
 		resetAll()
@@ -191,7 +187,6 @@ func executeCommand() {
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
 		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
 	}
-	fmt.Println("Environment Variables:")
 	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
 		for _, e := range customOptions.envVars {
 			startupCommands = append(startupCommands, "-e="+e)
@@ -235,7 +230,11 @@ func printAll(loopback bool) {
 		printSlice(customOptions.customPackageFileLocations)
 	}
 	fmt.Println("Only Flag Setting:")
-	fmt.Printf("-%q\n", strconv.FormatBool(customOptions.onlyFlag))
+	if customOptions.onlyFlag {
+		fmt.Printf("-%q\n", "On")
+	} else {
+		fmt.Printf("-%q\n", "Off")
+	}
 	if loopback {
 		selectCustomOptions()
 	}
@@ -273,7 +272,7 @@ func setCustomPackages() {
 		printSlice(customOptions.customPackageFileLocations)
 	}
 	prompt := promptui.Prompt{
-		Label: "Custom Package List(Comma Delimited). e.g. ../project/cdr,../project/demo",
+		Label: "Custom Package List(Comma Delimited). e.g. " + filepath.FromSlash("../project/cdr") + "," + filepath.FromSlash("../project/demo"),
 	}
 	customPackageList, err := prompt.Run()
 	if err != nil {
@@ -302,6 +301,64 @@ func setCustomPackages() {
 				fmt.Printf("File at location %q could not be found due to error: %v\n", cp, fileErr)
 			}
 		}
+	}
+	selectCustomOptions()
+}
+
+func setEnvVarFileLocation() {
+	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
+		fmt.Println("Current Environment Variable File Location Specified:")
+		fmt.Printf("-%q\n", customOptions.envVarFileLocation)
+	}
+	prompt := promptui.Prompt{
+		Label: "Environment Variable file location e.g. " + filepath.FromSlash("../project/prod.env"),
+	}
+	envVarFileLocation, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		selectCustomOptions()
+	}
+	exists, fileErr := fileExists(envVarFileLocation)
+	if exists {
+		customOptions.envVarFileLocation = envVarFileLocation
+	} else {
+		fmt.Printf("File at location %q could not be found due to error: %v\nPlease try again.\n", envVarFileLocation, fileErr)
+	}
+	selectCustomOptions()
+}
+
+func setEnvVars() {
+	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
+		fmt.Println("Current Environment Variables Specified:")
+		printSlice(customOptions.envVars)
+	}
+	prompt := promptui.Prompt{
+		Label: "Environment Variable List(Comma Delimited). e.g. NODE_ENV=PROD,DOMAIN_NAME=instant.com",
+	}
+	envVarList, err := prompt.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		selectCustomOptions()
+	}
+
+	newEnvVars := strings.Split(envVarList, ",")
+
+	for _, env := range newEnvVars {
+		if !sliceContains(customOptions.envVars, env) {
+			customOptions.envVars = append(customOptions.envVars, env)
+		} else {
+			fmt.Printf(env + " environment variable already exists in the list.\n")
+		}
+	}
+	selectCustomOptions()
+}
+
+func toggleOnlyFlag() {
+	customOptions.onlyFlag = !customOptions.onlyFlag
+	if customOptions.onlyFlag {
+		fmt.Println("Only flag is now on")
+	} else {
+		fmt.Println("Only flag is now off")
 	}
 	selectCustomOptions()
 }
