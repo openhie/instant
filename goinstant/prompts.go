@@ -378,8 +378,30 @@ func selectDefaultInstall() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action (Packages will start up their dependencies automatically)",
-		Items: []string{"Initialise All Packages", "Initialise Core", "Initialise Facility Registry", "Initialise Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
-		Size:  12,
+		Items: []string{
+			"Initialise All Packages",
+			"Initialise Core",
+			"Initialise Client",
+			"Initialise Elastic-Analytics",
+			"Initialise Elastic-Pipeline",
+			"Initialise Electronic Medical Record",
+			"Initialise Health Management Information System",
+			"Initialise Health Worker", "Initialise Facility Registry",
+			"Initialise Workforce",
+			"Stop All Services and Cleanup Docker",
+			"Stop and Cleanup Core",
+			"Stop and Cleanup Client",
+			"Stop and Cleanup Elastic-Analytics",
+			"Stop and Cleanup Elastic-Pipeline",
+			"Stop and Cleanup Electronic Medical Record",
+			"Stop and Cleanup Health Management Information System",
+			"Stop and Cleanup Health Worker",
+			"Stop and Cleanup Facility Registry",
+			"Stop and Cleanup Workforce",
+			"Quit",
+			"Back",
+		},
+		Size: 12,
 	}
 
 	_, result, err := prompt.Run()
@@ -402,6 +424,36 @@ func selectDefaultInstall() {
 		RunDirectDockerCommand([]string{"docker", "core", "init"})
 		selectDefaultInstall()
 
+	case "Initialise Client":
+		fmt.Println("...Setting up Client Package")
+		RunDirectDockerCommand([]string{"docker", "client", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Elastic-Analytics":
+		fmt.Println("...Setting up Elastic-Analytics Package")
+		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Elastic-Pipeline":
+		fmt.Println("...Setting up Elastic-Pipeline Package")
+		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Electronic Medical Record":
+		fmt.Println("...Setting up Electronic Medical Record Package")
+		RunDirectDockerCommand([]string{"docker", "emr", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Health Management Information System":
+		fmt.Println("...Setting up Health Management Information System Package")
+		RunDirectDockerCommand([]string{"docker", "hmis", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Health Worker":
+		fmt.Println("...Setting up Health Worker Package")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
+		selectDefaultInstall()
+
 	case "Initialise Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
 		RunDirectDockerCommand([]string{"docker", "facility", "init"})
@@ -420,6 +472,36 @@ func selectDefaultInstall() {
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
 		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Client":
+		fmt.Println("Stopping and Cleaning Up Client...")
+		RunDirectDockerCommand([]string{"docker", "client", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Elastic-Analytics":
+		fmt.Println("Stopping and Cleaning Up Elastic-Analytics...")
+		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Elastic-Pipeline":
+		fmt.Println("Stopping and Cleaning Up Elastic-Pipeline...")
+		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Electronic Medical Record":
+		fmt.Println("Stopping and Cleaning Up Electronic Medical Record...")
+		RunDirectDockerCommand([]string{"docker", "emr", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Health Management Information System":
+		fmt.Println("Stopping and Cleaning Up Health Management Information System...")
+		RunDirectDockerCommand([]string{"docker", "hmis", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Health Worker":
+		fmt.Println("Stopping and Cleaning Up Health Worker...")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Facility Registry":
