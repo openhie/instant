@@ -29,7 +29,6 @@ module.exports = {
       'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
-      'packages/client',
       'packages/elastic',
       'packages/use-case-packages'
     ],
