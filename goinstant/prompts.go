@@ -377,8 +377,8 @@ func fileExists(path string) (bool, error) {
 func selectDefaultInstall() {
 
 	prompt := promptui.Select{
-		Label: "Great, now choose an action. Packages will start up their dependencies automatically.",
-		Items: []string{"Initialise Core", "Initialise Facility Registry", "Initialise Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
+		Label: "Great, now choose an action (Packages will start up their dependencies automatically)",
+		Items: []string{"Initialise All Packages", "Initialise Core", "Initialise Facility Registry", "Initialise Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -392,21 +392,29 @@ func selectDefaultInstall() {
 	fmt.Printf("You chose %q\n", result)
 
 	switch result {
+	case "Initialise All Packages":
+		fmt.Println("...Setting up All Packages")
+		RunDirectDockerCommand([]string{"docker", "init"})
+		selectDefaultInstall()
+
 	case "Initialise Core":
 		fmt.Println("...Setting up Core Package")
 		RunDirectDockerCommand([]string{"docker", "core", "init"})
-		RunDirectDockerCommand([]string{"docker", "core", "up"})
-		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		selectDefaultInstall()
 
 	case "Initialise Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"docker", "facility", "up"})
+		RunDirectDockerCommand([]string{"docker", "facility", "init"})
 		selectDefaultInstall()
 
 	case "Initialise Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
+		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
+		selectDefaultInstall()
+
+	case "Stop All Services and Cleanup Docker":
+		fmt.Println("Stopping and Cleaning Up Everything...")
+		RunDirectDockerCommand([]string{"docker", "destroy"})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Core":
@@ -421,13 +429,6 @@ func selectDefaultInstall() {
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop All Services and Cleanup Docker":
-		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
 		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
 		selectDefaultInstall()
 
