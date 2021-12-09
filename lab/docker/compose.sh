@@ -8,9 +8,9 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/database/dbInit/. openelisglobal-database-helper:/database/dbInit/
     docker rm openelisglobal-database-helper
 
-    docker create --name openelis-plugins-helper -v openelis-plugins-data:/plugins/ busybox
-    docker cp "$composeFilePath"/importer/volume/plugins/. openelis-plugins-helper:/plugins/
-    docker rm openelis-plugins-helper
+    # docker create --name openelis-plugins-helper -v openelis-plugins-data:/plugins/ busybox
+    # docker cp "$composeFilePath"/importer/volume/plugins/. openelis-plugins-helper:/plugins/
+    # docker rm openelis-plugins-helper
 
     docker create --name openelisglobal-webapp-helper -v openelis-server-data:/tomcat busybox
     chmod -R a+rwx "$composeFilePath"/importer/volume/tomcat/openelis/conf/

@@ -47,7 +47,7 @@ services:
             - CATALINA_OPTS= -Ddatasource.url=jdbc:postgresql://database:5432/clinlims -Ddatasource.username=clinlims -Ddatasource.password=clinlims
         volumes:
             -  cert-volume:/etc/openelis-global
-            -  openelis-plugins-data:/var/lib/openelis-global/plugins
+            # -  openelis-plugins-data:/var/lib/openelis-global/plugins
             -  openelis-server-data:/usr/local/tomcat/conf
             -  openelis-properties-data:/run/secrets
            
@@ -87,8 +87,8 @@ volumes:
     external: true  
   openelis-fhir-data:
     external: true 
-  openelis-plugins-data:
-    external: true 
+  # openelis-plugins-data:
+  #   external: true 
   openelis-properties-data:   
      external: true
 
