@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -271,7 +272,7 @@ func setCustomPackages() {
 		printSlice(customOptions.customPackageFileLocations)
 	}
 	prompt := promptui.Prompt{
-		Label: "Custom Package List(Comma Delimited). e.g. ../project/cdr,../project/demo",
+		Label: "Custom Package List(Comma Delimited). e.g. " + filepath.FromSlash("../project/cdr") + "," + filepath.FromSlash("../project/demo"),
 	}
 	customPackageList, err := prompt.Run()
 	if err != nil {
@@ -310,7 +311,7 @@ func setEnvVarFileLocation() {
 		fmt.Printf("-%q\n", customOptions.envVarFileLocation)
 	}
 	prompt := promptui.Prompt{
-		Label: "Environment Variable file location e.g. ../project/prod.env",
+		Label: "Environment Variable file location e.g. " + filepath.FromSlash("..project/prod.env"),
 	}
 	envVarFileLocation, err := prompt.Run()
 	if err != nil {
