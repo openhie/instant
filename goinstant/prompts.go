@@ -311,7 +311,7 @@ func setEnvVarFileLocation() {
 		fmt.Printf("-%q\n", customOptions.envVarFileLocation)
 	}
 	prompt := promptui.Prompt{
-		Label: "Environment Variable file location e.g. " + filepath.FromSlash("..project/prod.env"),
+		Label: "Environment Variable file location e.g. " + filepath.FromSlash("../project/prod.env"),
 	}
 	envVarFileLocation, err := prompt.Run()
 	if err != nil {
