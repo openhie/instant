@@ -377,8 +377,8 @@ func fileExists(path string) (bool, error) {
 func selectDefaultInstall() {
 
 	prompt := promptui.Select{
-		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
+		Label: "Great, now choose an action. Packages will start up their dependencies automatically.",
+		Items: []string{"Initialise Core", "Initialise Facility Registry", "Initialise Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -389,22 +389,22 @@ func selectDefaultInstall() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
-	case "Launch Core (Required, Start Here)":
+	case "Initialise Core":
 		fmt.Println("...Setting up Core Package")
 		RunDirectDockerCommand([]string{"docker", "core", "init"})
 		RunDirectDockerCommand([]string{"docker", "core", "up"})
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		selectDefaultInstall()
 
-	case "Launch Facility Registry":
+	case "Initialise Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
 		RunDirectDockerCommand([]string{"docker", "facility", "up"})
 		selectDefaultInstall()
 
-	case "Launch Workforce":
+	case "Initialise Workforce":
 		fmt.Println("...Setting up Workforce Package")
 		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
 		selectDefaultInstall()
@@ -444,7 +444,7 @@ func selectPackageCluster() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
+		Items: []string{"Initialise Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
 		Size:  12,
 	}
 
