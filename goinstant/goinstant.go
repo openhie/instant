@@ -17,12 +17,14 @@ type customOption struct {
 	envVars                    []string
 	customPackageFileLocations []string
 	onlyFlag                   bool
+	instantVersion             string
 }
 
 var customOptions = customOption{
 	startupAction:      "init",
 	envVarFileLocation: "",
 	onlyFlag:           false,
+	instantVersion:     "latest",
 }
 
 func main() {

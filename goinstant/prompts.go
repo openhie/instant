@@ -98,8 +98,21 @@ func selectDefaultOrCustom() {
 func selectCustomOptions() {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Choose deploy action (default is init)", "Specify deploy packages", "Specify environment variable file location", "Specify environment variables", "Specify custom package locations", "Toggle only flag", "Execute with current options", "View current options set", "Reset to default options", "Quit", "Back"},
-		Size:  12,
+		Items: []string{
+			"Choose deploy action (default is init)",
+			"Specify deploy packages",
+			"Specify environment variable file location",
+			"Specify environment variables",
+			"Specify custom package locations",
+			"Toggle only flag",
+			"Specify Instant Version",
+			"Execute with current options",
+			"View current options set",
+			"Reset to default options",
+			"Quit",
+			"Back",
+		},
+		Size: 12,
 	}
 
 	_, result, err := prompt.Run()
@@ -124,6 +137,8 @@ func selectCustomOptions() {
 		setCustomPackages()
 	case "Toggle only flag":
 		toggleOnlyFlag()
+	case "Specify Instant Version":
+		setInstantVersion()
 	case "Execute with current options":
 		printAll(false)
 		executeCommand()
@@ -229,6 +244,8 @@ func printAll(loopback bool) {
 		fmt.Println("Custom Packages:")
 		printSlice(customOptions.customPackageFileLocations)
 	}
+	fmt.Println("Custom Packages:")
+	fmt.Println(customOptions.instantVersion)
 	fmt.Println("Only Flag Setting:")
 	if customOptions.onlyFlag {
 		fmt.Printf("-%q\n", "On")
@@ -324,6 +341,25 @@ func setEnvVarFileLocation() {
 	} else {
 		fmt.Printf("File at location %q could not be found due to error: %v\nPlease try again.\n", envVarFileLocation, fileErr)
 	}
+	selectCustomOptions()
+}
+
+func setInstantVersion() {
+	if customOptions.instantVersion != "latest" && len(customOptions.instantVersion) > 0 {
+		fmt.Println("Current Instant OpenHIE Image Version Specified:")
+		fmt.Printf("-%q\n", customOptions.instantVersion)
+	}
+	prompt := promptui.Prompt{
+		Label: "Instant OpenHIE Image Version e.g. 0.0.9",
+	}
+	instantVersion, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		selectCustomOptions()
+	}
+
+	customOptions.instantVersion = instantVersion
 	selectCustomOptions()
 }
 
