@@ -13,10 +13,33 @@ func quit() {
 	os.Exit(0)
 }
 
+// The version of the instant image
+var instantVersion = "latest"
+
+func setInstantVersion() {
+	fmt.Println("Default version is latest")
+
+	prompt := promptui.Prompt{
+		Label: "Instant Version",
+	}
+
+	version, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+	if version != "" {
+		instantVersion = version
+	}
+}
+
 func selectSetup() {
+	fmt.Printf("Current instant image version to be used %q\n", instantVersion)
+
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
-		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
+		Items: []string{"Set the instant image version", "Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
 		Size:  12,
 	}
 
@@ -30,6 +53,10 @@ func selectSetup() {
 	fmt.Printf("You choose %q\n", result)
 
 	switch result {
+	case "Set the instant image version":
+		setInstantVersion()
+		selectSetup()
+
 	case "Use Docker on your PC":
 		debugDocker()
 		selectDefaultOrCustom()
