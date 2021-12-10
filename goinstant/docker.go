@@ -78,7 +78,8 @@ func sliceContains(s []string, e string) bool {
 	return false
 }
 
-func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string) {
+func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, instantVersion string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string) {
+	instantVersion = "latest"
 
 	for _, option := range startupCommands {
 		switch {
@@ -90,6 +91,8 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 			customPackagePaths = append(customPackagePaths, option)
 		case strings.HasPrefix(option, "-e=") || strings.HasPrefix(option, "--env-file="):
 			environmentVariables = append(environmentVariables, option)
+		case strings.HasPrefix(option, "-v=") || strings.HasPrefix(option, "--version="):
+			instantVersion = strings.Split(option, "=")[1]
 		case strings.HasPrefix(option, "-") || strings.HasPrefix(option, "--"):
 			otherFlags = append(otherFlags, option)
 		default:
@@ -110,8 +113,9 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 func RunDirectDockerCommand(startupCommands []string) {
 	fmt.Println("Note: Initial setup takes 1-5 minutes.\nWait for the DONE message.\n--------------------------")
 
-	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths := extractCommands(startupCommands)
+	environmentVariables, deployCommand, instantVersion, otherFlags, deployEnvironment, packages, customPackagePaths := extractCommands(startupCommands)
 
+	fmt.Println("Instant Image version:", instantVersion)
 	fmt.Println("Environment:", deployEnvironment)
 	fmt.Println("Action:", deployCommand)
 	fmt.Println("Package IDs:", packages)
@@ -135,7 +139,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 		"--network", "host",
 	}
 	commandSlice = append(commandSlice, environmentVariables...)
-	commandSlice = append(commandSlice, []string{"openhie/instant:latest", deployCommand}...)
+	commandSlice = append(commandSlice, []string{"openhie/instant:" + instantVersion, deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
