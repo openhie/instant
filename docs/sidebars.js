@@ -30,9 +30,13 @@ module.exports = {
       'packages/facility',
       'packages/hmis',
       'packages/health-worker',
-      'packages/health-workforce',
-      'packages/hiv-case-reporting',
-      'packages/use-case-packages'
+      'packages/health-workforce'
+    ],
+    'Use Case Packages': [
+      'use-case-packages/overview',
+      'use-case-packages/covid19-immunization',
+      'use-case-packages/covid19-surveillance',
+      'use-case-packages/hiv-case-reporting'
     ],
     'More Information': [
       'more-info/architecture'
