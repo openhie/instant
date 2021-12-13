@@ -31,6 +31,7 @@ module.exports = {
       'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
+      'packages/hiv-case-reporting',
       'packages/use-case-packages'
     ],
     'More Information': [
