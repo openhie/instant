@@ -215,6 +215,7 @@ func executeCommand() {
 	if customOptions.onlyFlag {
 		startupCommands = append(startupCommands, "--only")
 	}
+	startupCommands = append(startupCommands, "--instant-version=" + customOptions.instantVersion)
 	RunDirectDockerCommand(startupCommands)
 }
 
@@ -431,8 +432,7 @@ func selectDefaultInstall() {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"docker", "core", "init"})
-		RunDirectDockerCommand([]string{"docker", "core", "up"})
+		RunDirectDockerCommand([]string{"docker", "core", "init", "--instant-version=" + customOptions.instantVersion})
 		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
 		// now working
 		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
@@ -440,35 +440,35 @@ func selectDefaultInstall() {
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"docker", "facility", "up"})
+		RunDirectDockerCommand([]string{"docker", "facility", "up", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "up"})
+		RunDirectDockerCommand([]string{"docker", "healthworker", "up", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	case "Stop All Services and Cleanup Docker":
 		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectDefaultInstall()
 
 	// case "Developer Mode":
@@ -504,41 +504,40 @@ func selectPackageCluster() {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"k8s", "core", "init"})
-		RunDirectDockerCommand([]string{"k8s", "core", "up"})
+		RunDirectDockerCommand([]string{"k8s", "core", "init", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"k8s", "facility", "up"})
+		RunDirectDockerCommand([]string{"k8s", "facility", "up", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "up", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
 		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
 		selectPackageCluster()
 
 	// case "Developer Mode":
