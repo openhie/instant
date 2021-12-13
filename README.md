@@ -101,7 +101,11 @@ For example, if you had downloaded the [who-covid19-surveillance-package](https:
 yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
 ```
 
-> We hope to support package urls soon
+Urls are supported. The custom package will be downloaded and then mounted to the instanst instance.
+
+`-c="https://github.com/jembi/who-covid19-surveillance-package"`
+
+> Only github repos and urls pointing to files with extensions "zip" and "tar.gz"
 
 ### Docker or Kubernetes without the Instant OpenHIE repo
 
