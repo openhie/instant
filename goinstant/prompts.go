@@ -161,7 +161,7 @@ func resetAll() {
 	customOptions.customPackageFileLocations = make([]string, 0)
 	customOptions.onlyFlag = false
 	customOptions.instantVersion = "latest"
-	fmt.Println("All custom options have been reset to default.")
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nAll custom options have been reset to default.\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 }
 
 func setStartupAction() {
@@ -226,7 +226,7 @@ func printSlice(slice []string) {
 }
 
 func printAll(loopback bool) {
-	fmt.Println("Current Custom Options Specified:")
+	fmt.Println("\nCurrent Custom Options Specified\n---------------------------------")
 	fmt.Println("Startup Action:")
 	fmt.Printf("-%q\n", customOptions.startupAction)
 	fmt.Println("Startup Packages:")
@@ -246,12 +246,13 @@ func printAll(loopback bool) {
 		printSlice(customOptions.customPackageFileLocations)
 	}
 	fmt.Println("Instant Image Version:")
-	fmt.Println(customOptions.instantVersion)
+	fmt.Printf("-%q\n", customOptions.instantVersion)
+
 	fmt.Println("Only Flag Setting:")
 	if customOptions.onlyFlag {
-		fmt.Printf("-%q\n", "On")
+		fmt.Printf("-%q\n\n", "On")
 	} else {
-		fmt.Printf("-%q\n", "Off")
+		fmt.Printf("-%q\n\n", "Off")
 	}
 	if loopback {
 		selectCustomOptions()
@@ -262,6 +263,7 @@ func setStartupPackages() {
 	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
 		fmt.Println("Current Startup Packages Specified:")
 		printSlice(customOptions.startupPackages)
+		fmt.Println("========================================")
 	}
 	prompt := promptui.Prompt{
 		Label: "Startup Package List(Comma Delimited). e.g. core,cdr",
