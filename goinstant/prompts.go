@@ -499,7 +499,7 @@ func selectDefaultInstall() {
 
 	case "Initialise Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
+		RunDirectDockerCommand([]string{"docker", "mcsd", "init"})
 		selectDefaultInstall()
 
 	case "Stop All Services and Cleanup Docker":
@@ -549,7 +549,7 @@ func selectDefaultInstall() {
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
+		RunDirectDockerCommand([]string{"docker", "mcsd", "destroy"})
 		selectDefaultInstall()
 
 	case "Quit":
