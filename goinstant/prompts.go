@@ -191,12 +191,15 @@ func setStartupAction() {
 
 func executeCommand() {
 	startupCommands := []string{"docker", customOptions.startupAction}
-	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
-		startupCommands = append(startupCommands, customOptions.startupPackages...)
-	} else {
-		fmt.Println("No startup package specified, cannot start.")
-		selectCustomOptions()
+
+	if len(customOptions.startupPackages) == 0 {
+		fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
+			"Warning: No package IDs specified, all default packages will be included in your command.\n" +
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	}
+
+	startupCommands = append(startupCommands, customOptions.startupPackages...)
+
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
 		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
 	}
