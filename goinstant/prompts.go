@@ -300,7 +300,7 @@ func setCustomPackages() {
 	newCustomPackages := strings.Split(customPackageList, ",")
 
 	for _, cp := range newCustomPackages {
-		if strings.Contains(cp, "http") { //TODO: add || strings.Contains(cp, "git@") if SSH will be supported
+		if strings.Contains(cp, "http") {
 			if !sliceContains(customOptions.customPackageFileLocations, cp) {
 				customOptions.customPackageFileLocations = append(customOptions.customPackageFileLocations, cp)
 			} else {
