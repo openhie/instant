@@ -121,8 +121,6 @@ func selectCustomOptions() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
-
 	switch result {
 	case "Choose deploy action (default is init)":
 		setStartupAction()
@@ -223,6 +221,7 @@ func printSlice(slice []string) {
 	for _, s := range slice {
 		fmt.Printf("-%q\n", s)
 	}
+	fmt.Println()
 }
 
 func printAll(loopback bool) {
@@ -261,9 +260,8 @@ func printAll(loopback bool) {
 
 func setStartupPackages() {
 	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
-		fmt.Println("Current Startup Packages Specified:")
+		fmt.Println("\nCurrent Startup Packages Specified:")
 		printSlice(customOptions.startupPackages)
-		fmt.Println("========================================")
 	}
 	prompt := promptui.Prompt{
 		Label: "Startup Package List(Comma Delimited). e.g. core,cdr",
@@ -318,7 +316,8 @@ func setCustomPackages() {
 					fmt.Printf(cp + " path already exists in the list.\n")
 				}
 			} else {
-				fmt.Printf("File at location %q could not be found due to error: %v\n", cp, fileErr)
+				fmt.Printf("\nFile at location %q could not be found due to error: %v\n", cp, fileErr)
+				fmt.Println("\n-----------------\nPlease try again.\n-----------------")
 			}
 		}
 	}
@@ -342,7 +341,8 @@ func setEnvVarFileLocation() {
 	if exists {
 		customOptions.envVarFileLocation = envVarFileLocation
 	} else {
-		fmt.Printf("File at location %q could not be found due to error: %v\nPlease try again.\n", envVarFileLocation, fileErr)
+		fmt.Printf("\nFile at location %q could not be found due to error: %v\n", envVarFileLocation, fileErr)
+		fmt.Println("\n-----------------\nPlease try again.\n-----------------")
 	}
 	selectCustomOptions()
 }
