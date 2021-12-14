@@ -80,7 +80,7 @@ func selectDefaultOrCustom() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 	case "Default Install Options":
@@ -121,7 +121,7 @@ func selectCustomOptions() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 	case "Choose deploy action (default is init)":
@@ -177,7 +177,7 @@ func setStartupAction() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 	case "init", "destroy", "up", "down", "test":
@@ -214,7 +214,7 @@ func executeCommand() {
 	if customOptions.onlyFlag {
 		startupCommands = append(startupCommands, "--only")
 	}
-	startupCommands = append(startupCommands, "--instant-version=" + customOptions.instantVersion)
+	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
 	RunDirectDockerCommand(startupCommands)
 }
 
@@ -575,7 +575,7 @@ func selectPackageCluster() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 	case "Launch Core (Required, Start Here)":
@@ -642,7 +642,7 @@ func selectFHIR() (result_url string, params *Params) {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 
 	switch result {
 
@@ -717,7 +717,7 @@ func selectParams() *Params {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n", result)
 	switch result {
 
 	case "None":
