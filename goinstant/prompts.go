@@ -27,7 +27,7 @@ func selectSetup() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Use Docker on your PC":
@@ -80,7 +80,7 @@ func selectDefaultOrCustom() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Default Install Options":
@@ -178,7 +178,7 @@ func setStartupAction() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "init", "destroy", "up", "down", "test":
@@ -449,7 +449,7 @@ func selectDefaultInstall() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Initialise All Packages":
@@ -576,7 +576,7 @@ func selectPackageCluster() {
 		return
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("\nYou chose %q\n========================================\n", result)
 
 	switch result {
 	case "Launch Core (Required, Start Here)":
@@ -643,7 +643,7 @@ func selectFHIR() (result_url string, params *Params) {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 
@@ -718,7 +718,7 @@ func selectParams() *Params {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You chose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 	switch result {
 
 	case "None":
