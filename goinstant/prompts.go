@@ -244,7 +244,7 @@ func printAll(loopback bool) {
 		fmt.Println("Custom Packages:")
 		printSlice(customOptions.customPackageFileLocations)
 	}
-	fmt.Println("Custom Packages:")
+	fmt.Println("Instant Image Version:")
 	fmt.Println(customOptions.instantVersion)
 	fmt.Println("Only Flag Setting:")
 	if customOptions.onlyFlag {
