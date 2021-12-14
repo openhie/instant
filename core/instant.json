@@ -2,5 +2,31 @@
   "id": "core",
   "name": "Core package",
   "description": "",
-  "version": ""
+  "version": "",
+  "environmentVariables": {
+    "mongo_url": "mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set",
+    "mongo_atnaUrl": "mongodb://mongo-1:27017,mongo-2:27017,mongo-3:27017/openhim?replicaSet=mongo-set",
+    "api_authenticationTypes": "[\"token\", \"basic\"]",
+    "authentication_enableCustomTokenAuthentication": "true",
+    "spring.datasource.url": "jdbc:postgresql://hapi-db:5432/hapi",
+    "spring.datasource.username": "admin",
+    "spring.datasource.password": "instant101",
+    "spring.datasource.driverClassName": "org.postgresql.Driver",
+    "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.PostgreSQL95Dialect",
+    "hapi.fhir.allow_external_references": "true",
+    "hapi.fhir.bulk_export_enabled": "true",
+    "JAVA_TOOL_OPTIONS": "-Xmx2g",
+    "CATALINA_OPTS": "-Xmx2g",
+    "POSTGRES_PASSWORD": "instant101",
+    "POSTGRES_USER": "admin",
+    "POSTGRES_DB": "hapi",
+    "OPENHIM_ROOT_PASSWORD": "instant101",
+    "OPENHIM_CLIENT_TOKEN": "test",
+    "OPENHIM_API_HOSTNAME": "openhim-core",
+    "OPENHIM_API_PORT": "8080",
+    "OPENHIM_API_USERNAME": "root@openhim.org",
+    "OPENHIM_API_PASSWORD": "openhim-password",
+    "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+    "NODE_ENV": "production"
+  }
 }

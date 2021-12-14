@@ -25,12 +25,13 @@ module.exports = {
     ],
     'Existing Packages': [
       'packages/core',
+      'packages/elastic',
+      'packages/emr',
       'packages/facility',
       'packages/hmis',
       'packages/health-worker',
       'packages/health-workforce',
-      'packages/client',
-      'packages/elastic'
+      'packages/use-case-packages'
     ],
     'More Information': [
       'more-info/architecture'
