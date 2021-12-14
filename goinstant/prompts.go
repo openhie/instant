@@ -160,6 +160,7 @@ func resetAll() {
 	customOptions.envVars = make([]string, 0)
 	customOptions.customPackageFileLocations = make([]string, 0)
 	customOptions.onlyFlag = false
+	customOptions.instantVersion = "latest"
 	fmt.Println("All custom options have been reset to default.")
 }
 
