@@ -85,7 +85,8 @@ func sliceContains(slice []string, element string) bool {
 	return false
 }
 
-func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string) {
+func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string, instantVersion string) {
+	instantVersion = "latest"
 
 	for _, option := range startupCommands {
 		switch {
@@ -97,6 +98,8 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 			customPackagePaths = append(customPackagePaths, option)
 		case strings.HasPrefix(option, "-e=") || strings.HasPrefix(option, "--env-file="):
 			environmentVariables = append(environmentVariables, option)
+		case strings.HasPrefix(option, "--instant-version="):
+			instantVersion = strings.Split(option, "--instant-version=")[1]
 		case strings.HasPrefix(option, "-") || strings.HasPrefix(option, "--"):
 			otherFlags = append(otherFlags, option)
 		default:
@@ -117,7 +120,7 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 func RunDirectDockerCommand(startupCommands []string) {
 	fmt.Println("Note: Initial setup takes 1-5 minutes.\nWait for the DONE message.\n--------------------------")
 
-	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths := extractCommands(startupCommands)
+	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths, instantVersion := extractCommands(startupCommands)
 
 	fmt.Println("Environment:", deployEnvironment)
 	fmt.Println("Action:", deployCommand)
@@ -125,6 +128,9 @@ func RunDirectDockerCommand(startupCommands []string) {
 	fmt.Println("Custom package paths:", customPackagePaths)
 	fmt.Println("Environment Variables:", environmentVariables)
 	fmt.Println("Other Flags:", otherFlags)
+	fmt.Println("InstantVersion:", instantVersion)
+
+	instantImage := "openhie/instant:" + instantVersion
 
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
@@ -142,7 +148,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 		"--network", "host",
 	}
 	commandSlice = append(commandSlice, environmentVariables...)
-	commandSlice = append(commandSlice, []string{"openhie/instant:latest", deployCommand}...)
+	commandSlice = append(commandSlice, []string{instantImage, deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
