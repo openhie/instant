@@ -101,11 +101,13 @@ For example, if you had downloaded the [who-covid19-surveillance-package](https:
 yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
 ```
 
-Urls are supported. The custom package will be downloaded and then mounted to the instanst instance.
+Urls are supported. The custom package will be downloaded and then mounted to the instant instance.
 
 `-c="https://github.com/jembi/who-covid19-surveillance-package"`
 
 > Only github repos and urls pointing to files with extensions "zip" and "tar.gz"
+
+> Packages that are nested in folders can also be mounted by specifying the path or url of the root folder. Packages can be nested 5 levels down. For example one can mount a package within the following folder `test/test1/test2/test3/test4/package` by using the path to the `test` folder. This also allows us to mount multiple packages contained in a folder by specifying the path to that folder.
 
 ### Docker or Kubernetes without the Instant OpenHIE repo
 
