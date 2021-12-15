@@ -17,6 +17,7 @@ module.exports = {
       'concepts/package-arch',
     ],
     'How-to': [
+      'how-to/setup-instant-with-gocli',
       'how-to/creating-packages',
       'how-to/setup-kubernetes-in-cloud',
       'how-to/configure-openhim-mapping-mediator',
