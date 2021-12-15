@@ -4,5 +4,28 @@
   "description": "",
   "type": "infrastructure",
   "version": "v0.1.0",
-  "dependencies": []
+  "dependencies": [],
+  "environmentVariables": {
+    "node.name": "es01",
+    "discovery.type": "single-node",
+    "bootstrap.memory_lock": "'true'",
+    "xpack.security.enabled": "'true'",
+    "ES_JAVA_OPTS": "-Xms512m -Xmx512m",
+    "ELASTICSEARCH_URL": "http://es-analytics:9200",
+    "ELASTICSEARCH_HOSTS": "http://es-analytics:9200",
+    "ELASTICSEARCH_USERNAME": "'kibana_system'",
+    "ELASTICSEARCH_PASSWORD": "${ES_KIBANA_SYSTEM}",
+    "allowLocalFilesAccess": "'true'",
+    "extensions_authentication_cookieSession_secret": "${JS_REPORT_SECRET}",
+    "extensions_authentication_admin_username": "'admin'",
+    "extensions_authentication_admin_password": "${JS_REPORT}",
+    "ES_LOGSTASH_SYSTEM": "dev_password_only",
+    "ES_APM_SYSTEM": "dev_password_only",
+    "ES_REMOTE_MONITORING_USER": "dev_password_only",
+    "ES_ELASTIC": "dev_password_only",
+    "ES_KIBANA_SYSTEM": "dev_password_only",
+    "ES_BEATS_SYSTEM": "dev_password_only",
+    "JS_REPORT": "dev_password_only",
+    "JS_REPORT_SECRET": "dev_secret_only"
+  }
 }

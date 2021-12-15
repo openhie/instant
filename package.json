@@ -1,6 +1,6 @@
 {
   "name": "instant",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "main": "instant.ts",
   "repository": "git@github.com:openhie/instant.git",
   "author": "Jembi and IntraHealth",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.0.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "chai": "^4.2.0",
     "prettier": "^2.0.5"
   }

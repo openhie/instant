@@ -27,7 +27,7 @@ func selectSetup() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Use Docker on your PC":
@@ -36,7 +36,6 @@ func selectSetup() {
 
 	case "Use a Kubernetes Cluster":
 		debugKubernetes()
-		// configServerKubernetes()
 		selectPackageCluster()
 
 	case "Install FHIR package":
@@ -81,7 +80,7 @@ func selectDefaultOrCustom() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Default Install Options":
@@ -122,8 +121,6 @@ func selectCustomOptions() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
-
 	switch result {
 	case "Choose deploy action (default is init)":
 		setStartupAction()
@@ -161,7 +158,8 @@ func resetAll() {
 	customOptions.envVars = make([]string, 0)
 	customOptions.customPackageFileLocations = make([]string, 0)
 	customOptions.onlyFlag = false
-	fmt.Println("All custom options have been reset to default.")
+	customOptions.instantVersion = "latest"
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nAll custom options have been reset to default.\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 }
 
 func setStartupAction() {
@@ -178,7 +176,7 @@ func setStartupAction() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "init", "destroy", "up", "down", "test":
@@ -193,12 +191,15 @@ func setStartupAction() {
 
 func executeCommand() {
 	startupCommands := []string{"docker", customOptions.startupAction}
-	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
-		startupCommands = append(startupCommands, customOptions.startupPackages...)
-	} else {
-		fmt.Println("No startup package specified, cannot start.")
-		selectCustomOptions()
+
+	if len(customOptions.startupPackages) == 0 {
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
+			"Warning: No package IDs specified, all default packages will be included in your command.\n" +
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 	}
+
+	startupCommands = append(startupCommands, customOptions.startupPackages...)
+
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
 		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
 	}
@@ -215,7 +216,7 @@ func executeCommand() {
 	if customOptions.onlyFlag {
 		startupCommands = append(startupCommands, "--only")
 	}
-	startupCommands = append(startupCommands, "--instant-version=" + customOptions.instantVersion)
+	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
 	RunDirectDockerCommand(startupCommands)
 }
 
@@ -223,10 +224,11 @@ func printSlice(slice []string) {
 	for _, s := range slice {
 		fmt.Printf("-%q\n", s)
 	}
+	fmt.Println()
 }
 
 func printAll(loopback bool) {
-	fmt.Println("Current Custom Options Specified:")
+	fmt.Println("\nCurrent Custom Options Specified\n---------------------------------")
 	fmt.Println("Startup Action:")
 	fmt.Printf("-%q\n", customOptions.startupAction)
 	fmt.Println("Startup Packages:")
@@ -245,13 +247,14 @@ func printAll(loopback bool) {
 		fmt.Println("Custom Packages:")
 		printSlice(customOptions.customPackageFileLocations)
 	}
-	fmt.Println("Custom Packages:")
-	fmt.Println(customOptions.instantVersion)
+	fmt.Println("Instant Image Version:")
+	fmt.Printf("-%q\n", customOptions.instantVersion)
+
 	fmt.Println("Only Flag Setting:")
 	if customOptions.onlyFlag {
-		fmt.Printf("-%q\n", "On")
+		fmt.Printf("-%q\n\n", "On")
 	} else {
-		fmt.Printf("-%q\n", "Off")
+		fmt.Printf("-%q\n\n", "Off")
 	}
 	if loopback {
 		selectCustomOptions()
@@ -260,7 +263,7 @@ func printAll(loopback bool) {
 
 func setStartupPackages() {
 	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
-		fmt.Println("Current Startup Packages Specified:")
+		fmt.Println("\nCurrent Startup Packages Specified:")
 		printSlice(customOptions.startupPackages)
 	}
 	prompt := promptui.Prompt{
@@ -301,7 +304,7 @@ func setCustomPackages() {
 	newCustomPackages := strings.Split(customPackageList, ",")
 
 	for _, cp := range newCustomPackages {
-		if strings.Contains(cp, "http") { //TODO: add || strings.Contains(cp, "git@") if SSH will be supported
+		if strings.Contains(cp, "http") {
 			if !sliceContains(customOptions.customPackageFileLocations, cp) {
 				customOptions.customPackageFileLocations = append(customOptions.customPackageFileLocations, cp)
 			} else {
@@ -316,7 +319,8 @@ func setCustomPackages() {
 					fmt.Printf(cp + " path already exists in the list.\n")
 				}
 			} else {
-				fmt.Printf("File at location %q could not be found due to error: %v\n", cp, fileErr)
+				fmt.Printf("\nFile at location %q could not be found due to error: %v\n", cp, fileErr)
+				fmt.Println("\n-----------------\nPlease try again.\n-----------------")
 			}
 		}
 	}
@@ -340,7 +344,8 @@ func setEnvVarFileLocation() {
 	if exists {
 		customOptions.envVarFileLocation = envVarFileLocation
 	} else {
-		fmt.Printf("File at location %q could not be found due to error: %v\nPlease try again.\n", envVarFileLocation, fileErr)
+		fmt.Printf("\nFile at location %q could not be found due to error: %v\n", envVarFileLocation, fileErr)
+		fmt.Println("\n-----------------\nPlease try again.\n-----------------")
 	}
 	selectCustomOptions()
 }
@@ -415,9 +420,31 @@ func fileExists(path string) (bool, error) {
 func selectDefaultInstall() {
 
 	prompt := promptui.Select{
-		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Docker", "Quit", "Back"},
-		Size:  12,
+		Label: "Great, now choose an action (Packages will start up their dependencies automatically)",
+		Items: []string{
+			"Initialise All Packages",
+			"Initialise Core",
+			"Initialise Client",
+			"Initialise Elastic-Analytics",
+			"Initialise Elastic-Pipeline",
+			"Initialise Electronic Medical Record",
+			"Initialise Health Management Information System",
+			"Initialise Health Worker", "Initialise Facility Registry",
+			"Initialise Workforce",
+			"Stop All Services and Cleanup Docker",
+			"Stop and Cleanup Core",
+			"Stop and Cleanup Client",
+			"Stop and Cleanup Elastic-Analytics",
+			"Stop and Cleanup Elastic-Pipeline",
+			"Stop and Cleanup Electronic Medical Record",
+			"Stop and Cleanup Health Management Information System",
+			"Stop and Cleanup Health Worker",
+			"Stop and Cleanup Facility Registry",
+			"Stop and Cleanup Workforce",
+			"Quit",
+			"Back",
+		},
+		Size: 12,
 	}
 
 	_, result, err := prompt.Run()
@@ -427,53 +454,108 @@ func selectDefaultInstall() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
-	case "Launch Core (Required, Start Here)":
+	case "Initialise All Packages":
+		fmt.Println("...Setting up All Packages")
+		RunDirectDockerCommand([]string{"docker", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Core":
 		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"docker", "core", "init", "--instant-version=" + customOptions.instantVersion})
-		fmt.Println("OpenHIM Console: http://localhost:9000/\nUser: root@openhim.org password: openhim-password")
-		// now working
-		// fmt.Printlnntln("HAPI FHIR base URL: http://localhost:3447/")
+		RunDirectDockerCommand([]string{"docker", "core", "init"})
 		selectDefaultInstall()
 
-	case "Launch Facility Registry":
+	case "Initialise Client":
+		fmt.Println("...Setting up Client Package")
+		RunDirectDockerCommand([]string{"docker", "client", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Elastic-Analytics":
+		fmt.Println("...Setting up Elastic-Analytics Package")
+		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Elastic-Pipeline":
+		fmt.Println("...Setting up Elastic-Pipeline Package")
+		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Electronic Medical Record":
+		fmt.Println("...Setting up Electronic Medical Record Package")
+		RunDirectDockerCommand([]string{"docker", "emr", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Health Management Information System":
+		fmt.Println("...Setting up Health Management Information System Package")
+		RunDirectDockerCommand([]string{"docker", "hmis", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Health Worker":
+		fmt.Println("...Setting up Health Worker Package")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
+		selectDefaultInstall()
+
+	case "Initialise Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"docker", "facility", "up", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "facility", "init"})
 		selectDefaultInstall()
 
-	case "Launch Workforce":
+	case "Initialise Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "up", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "mcsd", "init"})
+		selectDefaultInstall()
+
+	case "Stop All Services and Cleanup Docker":
+		fmt.Println("Stopping and Cleaning Up Everything...")
+		RunDirectDockerCommand([]string{"docker", "destroy"})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Client":
+		fmt.Println("Stopping and Cleaning Up Client...")
+		RunDirectDockerCommand([]string{"docker", "client", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Elastic-Analytics":
+		fmt.Println("Stopping and Cleaning Up Elastic-Analytics...")
+		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Elastic-Pipeline":
+		fmt.Println("Stopping and Cleaning Up Elastic-Pipeline...")
+		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Electronic Medical Record":
+		fmt.Println("Stopping and Cleaning Up Electronic Medical Record...")
+		RunDirectDockerCommand([]string{"docker", "emr", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Health Management Information System":
+		fmt.Println("Stopping and Cleaning Up Health Management Information System...")
+		RunDirectDockerCommand([]string{"docker", "hmis", "destroy"})
+		selectDefaultInstall()
+
+	case "Stop and Cleanup Health Worker":
+		fmt.Println("Stopping and Cleaning Up Health Worker...")
+		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
 		selectDefaultInstall()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"docker", "mcsd", "destroy"})
 		selectDefaultInstall()
-
-	case "Stop All Services and Cleanup Docker":
-		// composeDownCore()
-		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
-		selectDefaultInstall()
-
-	// case "Developer Mode":
-	// selectPackageDockerDev()
-	// selectPackageDocker()
 
 	case "Quit":
 		quit()
@@ -488,7 +570,7 @@ func selectPackageCluster() {
 
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{"Launch Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
+		Items: []string{"Initialise Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -499,45 +581,45 @@ func selectPackageCluster() {
 		return
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("\nYou chose %q\n========================================\n", result)
 
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"k8s", "core", "init", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "core", "init"})
 		selectPackageCluster()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"k8s", "facility", "up", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "facility", "up"})
 		selectPackageCluster()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "up", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
 		selectPackageCluster()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
 		selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
 		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy", "--instant-version=" + customOptions.instantVersion})
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy", "--instant-version=" + customOptions.instantVersion})
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy", "--instant-version=" + customOptions.instantVersion})
+		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
 		selectPackageCluster()
 
 	// case "Developer Mode":
@@ -566,7 +648,7 @@ func selectFHIR() (result_url string, params *Params) {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 
@@ -641,7 +723,7 @@ func selectParams() *Params {
 		fmt.Printf("Prompt failed %v\n", err)
 	}
 
-	fmt.Printf("You choose %q\n", result)
+	fmt.Printf("You chose %q\n========================================\n", result)
 	switch result {
 
 	case "None":
@@ -710,5 +792,4 @@ func selectParams() *Params {
 		return a
 	}
 	return a
-
 }
