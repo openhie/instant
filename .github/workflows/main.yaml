@@ -1,4 +1,4 @@
-name: Create go binaries
+name: Create go binaries for linux, windows and mac
 
 on:
   release:
@@ -6,17 +6,23 @@ on:
       - created
 
 jobs:
-  generate:
-    name: Generate cross-platform builds
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-      - name: Generate build files
-        uses: thatisuday/go-cross-build@v1
-        with:
-            platforms: 'linux/amd64, darwin/amd64, windows/amd64'
-            package: 'goinstant'
-            name: 'program'
-            compress: 'false'
-            dest: 'dist'
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Build Releases
+      run:  cd ./goinstant && ./buildreleases.sh
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./goinstant/bin/goinstant-linux
+          ./goinstant/bin/goinstant-macos
+          ./goinstant/bin/goinstant.exe
