@@ -179,7 +179,7 @@ func runCommand(commandName string, suppressErrors []string, commandSlice ...str
 	cmd.Stderr = &stderr
 
 	if err != nil {
-		if suppressErrors != nil && sliceContains(suppressErrors, err.Error()) {
+		if suppressErrors != nil && sliceContains(suppressErrors, strings.TrimSpace(stderr.String())) {
 			return
 		}
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
@@ -194,7 +194,7 @@ func runCommand(commandName string, suppressErrors []string, commandSlice ...str
 	}()
 
 	if err := cmd.Start(); err != nil {
-		if suppressErrors != nil && sliceContains(suppressErrors, err.Error()) {
+		if suppressErrors != nil && sliceContains(suppressErrors, strings.TrimSpace(stderr.String())) {
 			return
 		}
 		fmt.Fprintln(os.Stderr, "Error starting Cmd.", stderr.String(), err)
@@ -202,11 +202,9 @@ func runCommand(commandName string, suppressErrors []string, commandSlice ...str
 	}
 
 	if err := cmd.Wait(); err != nil {
-		if suppressErrors != nil && sliceContains(suppressErrors, stderr.String()) {
+		if suppressErrors != nil && sliceContains(suppressErrors, strings.TrimSpace(stderr.String())) {
 			return
 		}
-		// printSlice(suppressErrors)
-		// fmt.Println(stderr.String())
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
 		return
 	}
