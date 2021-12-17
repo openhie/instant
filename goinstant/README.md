@@ -39,14 +39,12 @@ For development, run the app using `go run *.go`.
 
 ### Building
 
-To build releases, create a tag and upload the binaries. A convenience bash script is included to build binaries.
-
-> Note that ARM builds are not yet supported in Go 1.15, but such builds can be supported in future for Linux and macOS.
-
 ```sh
 bash ./buildreleases.sh
-git tag 0.0.1
-git push origin 0.0.1
-# then upload the binaries to GitHub
 ```
 
+### Deploying
+
+To build releases, create an instant tag and a release, the GitHub actions will build the code after creation of the release and add the binaries to the assets of the release if the GO CLI build succeeds.
+
+Check https://github.com/openhie/instant/actions/new to review the output of the build and status of the binary deploy.
