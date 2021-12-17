@@ -1,0 +1,31 @@
+name: Create go binaries for linux, windows and mac
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Build Releases
+      run:  cd ./goinstant && ./buildreleases.sh
+
+    - name: Test binaries
+      run: ./goinstant/bin/goinstant-linux help
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./goinstant/bin/goinstant-linux
+          ./goinstant/bin/goinstant-macos
+          ./goinstant/bin/goinstant.exe
