@@ -47,4 +47,4 @@ bash ./buildreleases.sh
 
 To build releases, create an instant tag and a release, the GitHub actions will build the code after creation of the release and add the binaries to the assets of the release if the GO CLI build succeeds.
 
-Check https://github.com/openhie/instant/actions/new to review the output of the build and status of the binary deploy.
+Check [here](https://github.com/openhie/instant/actions/new) to review the output of the build and status of the binary deploy.
