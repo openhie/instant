@@ -33,6 +33,7 @@ func stopContainer() {
 	runCommand("docker", suppressErrors, commandSlice...)
 }
 
+//Gracefully shut down the instant container and then kill the go cli with the panic error or message passed.
 func gracefulPanic(err error, message string) {
 	stopContainer()
 	if message != "" {
