@@ -27,20 +27,20 @@ func debugDocker() {
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Can't get current working directory... this is not a great error.")
-		// panic(err)
+		// gracefulPanic(err,"")
 	} else {
 		fmt.Println(cwd)
 	}
 
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
-		panic(err)
+		gracefulPanic(err, "")
 	}
 
 	info, err := cli.Info(context.Background())
 	if err != nil {
 		fmt.Println("Unable to get Docker context. Please ensure that Docker is downloaded and running")
-		panic(err)
+		gracefulPanic(err, "")
 	} else {
 		// Docker default is 2GB, which may need to be revisited if Instant grows.
 		str1 := "bytes memory is allocated\n"
@@ -135,7 +135,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		runCommand(deployEnvironment, commandSlice...)
+		runCommand(deployEnvironment, nil, commandSlice...)
 	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
@@ -152,7 +152,7 @@ func RunDirectDockerCommand(startupCommands []string) {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
-	runCommand(deployEnvironment, commandSlice...)
+	runCommand(deployEnvironment, nil, commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
@@ -163,22 +163,25 @@ func RunDirectDockerCommand(startupCommands []string) {
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	runCommand(deployEnvironment, commandSlice...)
+	runCommand(deployEnvironment, nil, commandSlice...)
 
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		runCommand(deployEnvironment, commandSlice...)
+		runCommand(deployEnvironment, nil, commandSlice...)
 	}
 }
 
-func runCommand(commandName string, commandSlice ...string) (pathToPackage string) {
+func runCommand(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string) {
 	cmd := exec.Command(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
 	if err != nil {
+		if suppressErrors != nil && sliceContains(suppressErrors, err.Error()) {
+			return
+		}
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
 		return
 	}
@@ -191,11 +194,19 @@ func runCommand(commandName string, commandSlice ...string) (pathToPackage strin
 	}()
 
 	if err := cmd.Start(); err != nil {
+		if suppressErrors != nil && sliceContains(suppressErrors, err.Error()) {
+			return
+		}
 		fmt.Fprintln(os.Stderr, "Error starting Cmd.", stderr.String(), err)
 		return
 	}
 
 	if err := cmd.Wait(); err != nil {
+		if suppressErrors != nil && sliceContains(suppressErrors, stderr.String()) {
+			return
+		}
+		// printSlice(suppressErrors)
+		// fmt.Println(stderr.String())
 		fmt.Fprintln(os.Stderr, "Error waiting for Cmd.", stderr.String(), err)
 		return
 	}
@@ -223,17 +234,17 @@ func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 	tarRegex := regexp.MustCompile(`\.tar`)
 
 	if gitRegex.MatchString(pathToPackage) {
-		pathToPackage = runCommand("git", []string{"clone", pathToPackage}...)
+		pathToPackage = runCommand("git", nil, []string{"clone", pathToPackage}...)
 	} else if httpRegex.MatchString(pathToPackage) {
 		resp, err := http.Get(pathToPackage)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in dowloading custom package", err)
-			panic(err)
+			gracefulPanic(err, "")
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			panic("Error in dowloading custom package - HTTP status code: " + strconv.Itoa(resp.StatusCode))
+			gracefulPanic(nil, "Error in dowloading custom package - HTTP status code: "+strconv.Itoa(resp.StatusCode))
 		}
 
 		if zipRegex.MatchString(pathToPackage) {
@@ -244,21 +255,21 @@ func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 	}
 
 	commandSlice := []string{"cp", pathToPackage, "instant-openhie:instant/"}
-	runCommand(deployEnvironment, commandSlice...)
+	runCommand(deployEnvironment, nil, commandSlice...)
 }
 
 func createZipFile(file string, content io.Reader) {
 	output, err := os.Create(file)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in creating zip file:")
-		panic(err)
+		gracefulPanic(err, "")
 	}
 	defer output.Close()
 
 	_, err = io.Copy(output, content)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in copying zip file content:")
-		panic(err)
+		gracefulPanic(err, "")
 	}
 }
 
@@ -270,7 +281,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 	archive, err := zip.OpenReader(tempZipFile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in unzipping file:")
-		panic(err)
+		gracefulPanic(err, "")
 	}
 
 	packageName := ""
@@ -288,18 +299,18 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 		content, err := file.Open()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 
 		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in unzipping file:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 		_, err = io.Copy(dest, content)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in copying unzipped files:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 		content.Close()
 	}
@@ -310,7 +321,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string) {
 	err = os.Remove(tempFilePath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in deleting temp.zip file:")
-		panic(err)
+		gracefulPanic(err, "")
 	}
 
 	pathToPackage = filepath.Join(".", packageName)
@@ -322,7 +333,7 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 	gzipReader, err := gzip.NewReader(tarContent)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
-		panic(err)
+		gracefulPanic(err, "")
 	}
 	defer gzipReader.Close()
 
@@ -338,7 +349,7 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 
 		filePath := filepath.Join(".", file.Name)
@@ -353,11 +364,11 @@ func untarPackage(tarContent io.ReadCloser) (pathToPackage string) {
 		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in untaring file:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 		if _, err := io.Copy(dest, tarReader); err != nil {
 			fmt.Fprintln(os.Stderr, "Error in extracting tar file:")
-			panic(err)
+			gracefulPanic(err, "")
 		}
 	}
 	pathToPackage = filepath.Join(".", packageName)

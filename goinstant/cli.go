@@ -13,7 +13,7 @@ func CLI() {
 	switch startupCommands[0] {
 	case "docker":
 		if len(startupCommands) < 3 {
-			panic("Incorrect arguments list passed to CLI. Requires at least 3 arguments when in non-interactive mode.")
+			gracefulPanic(nil, "Incorrect arguments list passed to CLI. Requires at least 3 arguments when in non-interactive mode.")
 		}
 
 		RunDirectDockerCommand(startupCommands)

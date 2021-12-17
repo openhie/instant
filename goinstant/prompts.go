@@ -10,6 +10,7 @@ import (
 )
 
 func quit() {
+	stopContainer()
 	os.Exit(0)
 }
 

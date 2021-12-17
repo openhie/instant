@@ -80,7 +80,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 			var msg IndexJSON
 			err := json.Unmarshal(bs, &msg)
 			if err != nil {
-				panic(err)
+				gracefulPanic(err, "")
 			}
 
 			// Order mostly from: https://github.com/nmdp-bioinformatics/igloader/blob/main/igloader/igloader.py#L33
