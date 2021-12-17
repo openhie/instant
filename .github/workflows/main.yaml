@@ -19,6 +19,9 @@ jobs:
     - name: Build Releases
       run:  cd ./goinstant && ./buildreleases.sh
 
+    - name: Test binaries
+      run: ./goinstant/bin/goinstant-linux help
+
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
