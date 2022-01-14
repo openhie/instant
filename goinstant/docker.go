@@ -92,7 +92,7 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 		switch {
 		case sliceContains([]string{"init", "up", "down", "destroy"}, option):
 			deployCommand = option
-		case sliceContains([]string{"docker", "kubernetes", "k8s"}, option):
+		case sliceContains([]string{"docker", "kubernetes", "k8s", "swarm"}, option):
 			deployEnvironment = option
 		case strings.HasPrefix(option, "-c=") || strings.HasPrefix(option, "--custom-package="):
 			customPackagePaths = append(customPackagePaths, option)
@@ -130,12 +130,12 @@ func RunDirectDockerCommand(startupCommands []string) {
 	fmt.Println("Other Flags:", otherFlags)
 	fmt.Println("InstantVersion:", instantVersion)
 
-	instantImage := "openhie/instant:" + instantVersion
+	instantImage := cfg.Image + ":" + instantVersion
 
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		runCommand(deployEnvironment, nil, commandSlice...)
+		runCommand("docker", nil, commandSlice...)
 	}
 
 	fmt.Println("Creating fresh instant container with volumes...")
@@ -152,23 +152,23 @@ func RunDirectDockerCommand(startupCommands []string) {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
 	commandSlice = append(commandSlice, packages...)
-	runCommand(deployEnvironment, nil, commandSlice...)
+	runCommand("docker", nil, commandSlice...)
 
 	fmt.Println("Adding 3rd party packages to instant volume:")
 
 	for _, c := range customPackagePaths {
 		fmt.Print("- " + c)
-		mountCustomPackage(deployEnvironment, c)
+		mountCustomPackage(c)
 	}
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	runCommand(deployEnvironment, nil, commandSlice...)
+	runCommand("docker", nil, commandSlice...)
 
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		runCommand(deployEnvironment, nil, commandSlice...)
+		runCommand("docker", nil, commandSlice...)
 	}
 }
 
@@ -225,7 +225,7 @@ func runCommand(commandName string, suppressErrors []string, commandSlice ...str
 	return
 }
 
-func mountCustomPackage(deployEnvironment string, pathToPackage string) {
+func mountCustomPackage(pathToPackage string) {
 	gitRegex := regexp.MustCompile(`\.git`)
 	httpRegex := regexp.MustCompile("http")
 	zipRegex := regexp.MustCompile(`\.zip`)
@@ -253,7 +253,7 @@ func mountCustomPackage(deployEnvironment string, pathToPackage string) {
 	}
 
 	commandSlice := []string{"cp", pathToPackage, "instant-openhie:instant/"}
-	runCommand(deployEnvironment, nil, commandSlice...)
+	runCommand("docker", nil, commandSlice...)
 }
 
 func createZipFile(file string, content io.Reader) {

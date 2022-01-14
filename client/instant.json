@@ -1,6 +1,6 @@
 {
   "id": "client",
-  "name": "client",
+  "name": "OpenCR Client Registry",
   "description": "",
   "type": "infrastructure",
   "version": "v0.0.1",

@@ -15,9 +15,16 @@ func quit() {
 }
 
 func selectSetup() {
+	items := []string{"Use Docker on your PC", "Install FHIR package", "Quit"}
+	if !cfg.DisableKuberneses {
+		index := 1
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Use a Kubernetes Cluster"
+	}
+
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
-		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
+		Items: items,
 		Size:  12,
 	}
 
@@ -85,7 +92,7 @@ func selectDefaultOrCustom() {
 
 	switch result {
 	case "Default Install Options":
-		selectDefaultInstall()
+		selectDefaultAction()
 	case "Custom Install Options":
 		selectCustomOptions()
 	case "Quit":
@@ -191,7 +198,7 @@ func setStartupAction() {
 }
 
 func executeCommand() {
-	startupCommands := []string{"docker", customOptions.startupAction}
+	startupCommands := []string{cfg.DefaultEnvironment, customOptions.startupAction}
 
 	if len(customOptions.startupPackages) == 0 {
 		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
@@ -418,34 +425,17 @@ func fileExists(path string) (bool, error) {
 	return false, err
 }
 
-func selectDefaultInstall() {
-
+func selectDefaultAction() {
 	prompt := promptui.Select{
-		Label: "Great, now choose an action (Packages will start up their dependencies automatically)",
+		Label: "Great, now choose an action",
 		Items: []string{
-			"Initialise All Packages",
-			"Initialise Core",
-			"Initialise Client",
-			"Initialise Elastic-Analytics",
-			"Initialise Elastic-Pipeline",
-			"Initialise Electronic Medical Record",
-			"Initialise Health Management Information System",
-			"Initialise Health Worker", "Initialise Facility Registry",
-			"Initialise Workforce",
-			"Stop All Services and Cleanup Docker",
-			"Stop and Cleanup Core",
-			"Stop and Cleanup Client",
-			"Stop and Cleanup Elastic-Analytics",
-			"Stop and Cleanup Elastic-Pipeline",
-			"Stop and Cleanup Electronic Medical Record",
-			"Stop and Cleanup Health Management Information System",
-			"Stop and Cleanup Health Worker",
-			"Stop and Cleanup Facility Registry",
-			"Stop and Cleanup Workforce",
-			"Quit",
+			"init",
+			"stop",
+			"destroy",
+			"up",
 			"Back",
+			"Quit",
 		},
-		Size: 12,
 	}
 
 	_, result, err := prompt.Run()
@@ -457,114 +447,62 @@ func selectDefaultInstall() {
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
-	switch result {
-	case "Initialise All Packages":
-		fmt.Println("...Setting up All Packages")
-		RunDirectDockerCommand([]string{"docker", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Core":
-		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"docker", "core", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Client":
-		fmt.Println("...Setting up Client Package")
-		RunDirectDockerCommand([]string{"docker", "client", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Elastic-Analytics":
-		fmt.Println("...Setting up Elastic-Analytics Package")
-		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Elastic-Pipeline":
-		fmt.Println("...Setting up Elastic-Pipeline Package")
-		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Electronic Medical Record":
-		fmt.Println("...Setting up Electronic Medical Record Package")
-		RunDirectDockerCommand([]string{"docker", "emr", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Health Management Information System":
-		fmt.Println("...Setting up Health Management Information System Package")
-		RunDirectDockerCommand([]string{"docker", "hmis", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Health Worker":
-		fmt.Println("...Setting up Health Worker Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Facility Registry":
-		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"docker", "facility", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Workforce":
-		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "mcsd", "init"})
-		selectDefaultInstall()
-
-	case "Stop All Services and Cleanup Docker":
-		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"docker", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Core":
-		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Client":
-		fmt.Println("Stopping and Cleaning Up Client...")
-		RunDirectDockerCommand([]string{"docker", "client", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Elastic-Analytics":
-		fmt.Println("Stopping and Cleaning Up Elastic-Analytics...")
-		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Elastic-Pipeline":
-		fmt.Println("Stopping and Cleaning Up Elastic-Pipeline...")
-		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Electronic Medical Record":
-		fmt.Println("Stopping and Cleaning Up Electronic Medical Record...")
-		RunDirectDockerCommand([]string{"docker", "emr", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Health Management Information System":
-		fmt.Println("Stopping and Cleaning Up Health Management Information System...")
-		RunDirectDockerCommand([]string{"docker", "hmis", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Health Worker":
-		fmt.Println("Stopping and Cleaning Up Health Worker...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Facility Registry":
-		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Workforce":
-		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "mcsd", "destroy"})
-		selectDefaultInstall()
-
-	case "Quit":
+	if result == "Quit" {
 		quit()
-
-	case "Back":
-		selectDefaultOrCustom()
+		return
 	}
 
+	if result == "Back" {
+		selectDefaultOrCustom()
+		return
+	}
+
+	selectDefaultPackage(result)
+}
+
+func selectDefaultPackage(action string) {
+
+	var optionItems []string
+	for _, p := range cfg.Packages {
+		optionItems = append(optionItems, p.Name)
+	}
+	optionItems = append(optionItems, "All")
+	optionItems = append(optionItems, "Back")
+	optionItems = append(optionItems, "Quit")
+
+	prompt := promptui.Select{
+		Label: "Which package would you like to perform the action on (Packages will also invoke their dependencies automatically)",
+		Items: optionItems,
+		Size:  12,
+	}
+
+	i, result, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
+
+	fmt.Printf("You chose %q\n========================================\n", result)
+
+	if result == "All" {
+		fmt.Println("...Setting up All Packages")
+		RunDirectDockerCommand([]string{cfg.DefaultEnvironment, action})
+		return
+	}
+
+	if result == "Quit" {
+		quit()
+		return
+	}
+
+	if result == "Back" {
+		selectDefaultAction()
+		return
+	}
+
+	RunDirectDockerCommand([]string{cfg.DefaultEnvironment, cfg.Packages[i].ID, action})
+	selectDefaultAction()
 }
 
 func selectPackageCluster() {

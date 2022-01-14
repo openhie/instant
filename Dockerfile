@@ -1,4 +1,4 @@
-FROM node:fermium-buster
+FROM node:fermium-buster AS base
 
 WORKDIR /instant
 
@@ -30,6 +30,11 @@ ADD package.json .
 ADD yarn.lock .
 RUN yarn
 
-ADD . .
+# add entrypoint script
+ADD instant.ts .
 
 ENTRYPOINT [ "yarn", "instant" ]
+
+FROM base as instant-build
+# Add default instant OpenHIE packages
+ADD . .

@@ -2,13 +2,31 @@ package main
 
 import (
 	"embed"
+	"log"
 	"os"
 
 	"github.com/fatih/color"
+	yaml "gopkg.in/yaml.v2"
 )
 
 //go:embed banner.txt
 var f embed.FS
+
+//go:embed config.yml
+var yamlConfig []byte
+var cfg Config
+
+type Package struct {
+	Name string `yaml:"name"`
+	ID   string `yaml:"id"`
+}
+
+type Config struct {
+	Image              string    `yaml:"image"`
+	DefaultEnvironment string    `yaml:"defaultEnvironment"`
+	Packages           []Package `yaml:"packages"`
+	DisableKuberneses  bool      `yaml:"disableKubernetes"`
+}
 
 type customOption struct {
 	startupAction              string
@@ -42,7 +60,16 @@ func gracefulPanic(err error, message string) {
 	panic(err)
 }
 
+func loadConfig() {
+	err := yaml.Unmarshal(yamlConfig, &cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
+	loadConfig()
+
 	data, _ := f.ReadFile("banner.txt")
 	color.Green(string(data))
 

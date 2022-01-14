@@ -1,6 +1,6 @@
 {
   "id": "elastic-analytics",
-  "name": "Data Analytics using the elastic stack",
+  "name": "Data Analytics package using the elastic stack",
   "description": "",
   "type": "infrastructure",
   "version": "v0.1.0",
