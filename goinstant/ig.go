@@ -75,11 +75,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 		}
 
 		if hdr.Name == "package/.index.json" {
-			// convert the []byte to a string
-			// s := string(bs)
-			// fmt.Println(s)
-
-			var msg IndexJSON
+			var msg indexJSON
 			err := json.Unmarshal(bs, &msg)
 			if err != nil {
 				gracefulPanic(err, "")
@@ -108,7 +104,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 			fmt.Printf("Loading other singular resources %s\n", stuff2)
 			color.Unset()
 			for _, b := range stuff2 {
-				for _, a := range msg.Filesrep {
+				for _, a := range msg.Files {
 					if a.ResourceType == b {
 						err = getpushJSON(fhir_server, url_entry, a.Filename, a.ResourceType, false, a.Id, params)
 						if err != nil {
@@ -119,7 +115,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 			}
 
 			color.Blue("2nd pass: Load resources again (except ig-r4.json or bundles) to address customized dependencies in IGs.")
-			for _, dog := range msg.Filesrep {
+			for _, dog := range msg.Files {
 				if dog.ResourceType != "Bundle" && dog.ResourceType != "ImplementationGuide" {
 					err = getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, false, dog.Id, params)
 					if err != nil {
@@ -129,7 +125,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 			}
 
 			color.Blue("3rd pass - Explicit Bundles (not Structure Definitions)")
-			for _, cat := range msg.Filesrep {
+			for _, cat := range msg.Files {
 				if cat.ResourceType == "Bundle" && cat.Type == "transaction" {
 					err = getpushJSON(fhir_server, url_entry, cat.Filename, cat.ResourceType, true, cat.Id, params)
 					if err != nil {
@@ -139,7 +135,7 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 			}
 
 			color.Blue("3rd pass - Implementation Guide")
-			for _, mouse := range msg.Filesrep {
+			for _, mouse := range msg.Files {
 				if mouse.Filename != "ig-r4.json" && mouse.ResourceType == "ImplementationGuide" {
 					err = getpushJSON(fhir_server, url_entry, mouse.Filename, mouse.ResourceType, false, mouse.Id, params)
 					if err != nil {
@@ -175,7 +171,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 		return errors.Wrap(err, "invalid url")
 	}
 
-	if !(bundle) {
+	if !bundle {
 		p.Path = path.Join(p.Path, resourcetype, id)
 	}
 
@@ -183,9 +179,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 		return errors.New("Nil pointer... variable 'params' not initialised")
 	}
 	switch params.TypeAuth {
-	// TODO: On some IGs this panics: "panic: runtime error: invalid memory address or nil pointer dereference"
 	case "None":
-
 		if bundle {
 			put, err := client.R().SetBody(resp.Body()).
 				SetHeader("Content-Type", "application/fhir+json").Post(p.String())
@@ -297,16 +291,14 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 			printStatus(code, status, url, file, filename)
 		}
 	}
-
+	return nil
 }
 
 func printStatus(code int, status string, url string, file, filename string) {
-
 	if code != 200 && code != 201 {
 		color.Set(color.FgYellow)
-		fmt.Println(status) // this causes the panic
+		fmt.Println(status)
 		fmt.Println(url)
-		// color.Yellow(put.Status())
 		fmt.Println(file)
 		fmt.Println("")
 		color.Unset()
@@ -315,5 +307,4 @@ func printStatus(code int, status string, url string, file, filename string) {
 		fmt.Println(status, filename)
 		color.Unset()
 	}
-
 }

@@ -41,34 +41,6 @@ func debugKubernetes() error {
 		fmt.Println("What operating system is this?")
 	}
 
-	// switch runtime.GOOS {
-	// case "linux", "darwin":
-	// 	cmd := exec.Command("kubectl", "cluster-info")
-	// 	cmd.Stdout = os.Stdout
-	// 	cmd.Stderr = os.Stderr
-	// 	err := cmd.Run()
-	// 	if err != nil {
-	// 		log.Fatalf("cmd.Run() failed with %s\n", err)
-	// 		color.Red.Println("error")
-
-	// 	} else {
-	// 		color.Green.Println("not error")
-	// 	}
-
-	// case "windows":
-	// 	cmd := exec.Command("cmd", "/C", "kubectl", "cluster-info")
-	// 	cmd.Stdout = os.Stdout
-	// 	cmd.Stderr = os.Stderr
-	// 	if err := cmd.Run(); err != nil {
-	// 		fmt.Println("Error: ", err)
-	// 		color.Red.Println("error")
-	// 	} else {
-	// 		color.Green.Println("not error")
-	// 	}
-	// default:
-	// 	fmt.Println("What operating system is this?", runtime.GOOS)
-	// }
-
 	// TODO: choose kubernetes cluster to use
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -77,18 +49,6 @@ func debugKubernetes() error {
 	kubeconfig := path.Join(home, ".kube/config")
 	fmt.Println("...using cluster config file at:")
 	fmt.Println(kubeconfig)
-}
-
-// func configServerKubernetes() {
-
-// 	path, _ := os.Getwd()
-// 	// if err != nil {
-// 	// }
-
-// 	files, err := ioutil.ReadDir(path)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
 
 	return nil
 }

@@ -214,9 +214,9 @@ func executeCommand() error {
 	startupCommands := []string{cfg.DefaultEnvironment, customOptions.startupAction}
 
 	if len(customOptions.startupPackages) == 0 {
-		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
+		fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
 			"Warning: No package IDs specified, all default packages will be included in your command.\n" +
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 	}
 
 	startupCommands = append(startupCommands, customOptions.startupPackages...)
@@ -428,7 +428,6 @@ func toggleOnlyFlag() error {
 	return selectCustomOptions()
 }
 
-// fileExists returns whether the given file or directory exists
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -581,7 +580,6 @@ func selectPackageCluster() error {
 		err = selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
-		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
 		err = RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
 		if err != nil {
@@ -702,7 +700,6 @@ func selectParams() (*Params, error) {
 	case "Basic":
 		a.TypeAuth = "Basic"
 
-		// basic user
 		prompt_basic_user := promptui.Prompt{
 			Label: "Basic User",
 		}
@@ -712,7 +709,6 @@ func selectParams() (*Params, error) {
 		}
 		a.BasicUser = result_basic_user
 
-		// basic pass
 		prompt_basic_pass := promptui.Prompt{
 			Label: "Basic Password",
 		}
@@ -727,7 +723,6 @@ func selectParams() (*Params, error) {
 	case "Token":
 		a.TypeAuth = "Token"
 
-		// bearer token
 		prompt_token := promptui.Prompt{
 			Label: "Bearer Token",
 		}
@@ -741,7 +736,6 @@ func selectParams() (*Params, error) {
 	case "Custom":
 		a.TypeAuth = "Custom"
 
-		// custom token
 		prompt_ctoken := promptui.Prompt{
 			Label: "Custom Token",
 		}
