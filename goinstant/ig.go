@@ -8,41 +8,55 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/url"
 	"path"
 	"strings"
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
+	"github.com/pkg/errors"
 )
 
-func loadIGpackage(url_entry string, fhir_server string, params *Params) {
+type indexJSON struct {
+	IndexVersion int32      `json:"index-version"`
+	Files        []filesRep `json:"files"`
+}
 
-	// debug.SetGCPercent(200)
-	// debug.SetMaxStack(2000000000)
+type filesRep struct {
+	Filename     string `json:"filename"`
+	ResourceType string `json:"resourceType"`
+	Id           string `json:"id"`
+	Url          string `json:"url"`
+	Version      string `json:"version"`
+	Kind         string `json:"kind"`
+	Type         string `json:"type"`
+}
+
+func loadIGpackage(url_entry string, fhir_server string, params *Params) error {
 	trimmed := strings.Replace(url_entry, "index.html", "", -1)
 	u, err := url.Parse(trimmed)
 	if err != nil {
-		fmt.Println("invalid url")
+		return errors.Wrap(err, "Invalid url")
 	}
 
 	// clean url
 	u.Path = path.Join(u.Path, "package.tgz")
 
 	client := resty.New()
-	resp, _ := client.R().Get(u.String())
-
-	fmt.Println("Reached Published IG with Status Code:", resp.StatusCode())
-	if resp.StatusCode() != 200 {
-		fmt.Println("Check that the URL for the IG is correct.")
+	resp, err := client.R().Get(u.String())
+	if err != nil {
+		return err
 	}
+
+	if resp.StatusCode() != 200 {
+		return errors.Errorf("Status code: %v. Check that the URL for the IG is correct", resp.StatusCode())
+	}
+	fmt.Printf("Reached Published IG with Status Code: %v\n", resp.StatusCode())
 
 	y := bytes.NewReader(resp.Body())
 	archive, err := gzip.NewReader(y)
-
 	if err != nil {
-		fmt.Println("There is a problem - is this a tgz?")
+		return errors.New("There is a problem - is this a tgz?")
 	}
 	tr := tar.NewReader(archive)
 
@@ -52,24 +66,12 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		// fmt.Printf("Contents of %s:\n", hdr.Name)
-		// read the complete content of the file h.Name into the bs []byte
-		bs, _ := ioutil.ReadAll(tr)
-
-		type IndexJSON struct {
-			IndexVersion int32 `json:"index-version"`
-			Filesrep     []struct {
-				Filename     string `json:"filename"`
-				ResourceType string `json:"resourceType"`
-				Id           string `json:"id"`
-				Url          string `json:"url"`
-				Version      string `json:"version"`
-				Kind         string `json:"kind"`
-				Type         string `json:"type"`
-			} `json:"files"`
+		bs, err := ioutil.ReadAll(tr)
+		if err != nil {
+			return err
 		}
 
 		if hdr.Name == "package/.index.json" {
@@ -91,9 +93,12 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 			fmt.Printf("Loading primary conformance resources %s\n", stuff)
 			color.Unset()
 			for _, y := range stuff {
-				for _, x := range msg.Filesrep {
+				for _, x := range msg.Files {
 					if x.ResourceType == y {
-						getpushJSON(fhir_server, url_entry, x.Filename, x.ResourceType, false, x.Id, params)
+						err = getpushJSON(fhir_server, url_entry, x.Filename, x.ResourceType, false, x.Id, params)
+						if err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -105,7 +110,10 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 			for _, b := range stuff2 {
 				for _, a := range msg.Filesrep {
 					if a.ResourceType == b {
-						getpushJSON(fhir_server, url_entry, a.Filename, a.ResourceType, false, a.Id, params)
+						err = getpushJSON(fhir_server, url_entry, a.Filename, a.ResourceType, false, a.Id, params)
+						if err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -113,31 +121,41 @@ func loadIGpackage(url_entry string, fhir_server string, params *Params) {
 			color.Blue("2nd pass: Load resources again (except ig-r4.json or bundles) to address customized dependencies in IGs.")
 			for _, dog := range msg.Filesrep {
 				if dog.ResourceType != "Bundle" && dog.ResourceType != "ImplementationGuide" {
-					getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, false, dog.Id, params)
+					err = getpushJSON(fhir_server, url_entry, dog.Filename, dog.ResourceType, false, dog.Id, params)
+					if err != nil {
+						return err
+					}
 				}
 			}
 
 			color.Blue("3rd pass - Explicit Bundles (not Structure Definitions)")
 			for _, cat := range msg.Filesrep {
 				if cat.ResourceType == "Bundle" && cat.Type == "transaction" {
-					getpushJSON(fhir_server, url_entry, cat.Filename, cat.ResourceType, true, cat.Id, params)
+					err = getpushJSON(fhir_server, url_entry, cat.Filename, cat.ResourceType, true, cat.Id, params)
+					if err != nil {
+						return err
+					}
 				}
 			}
 
 			color.Blue("3rd pass - Implementation Guide")
 			for _, mouse := range msg.Filesrep {
 				if mouse.Filename != "ig-r4.json" && mouse.ResourceType == "ImplementationGuide" {
-					getpushJSON(fhir_server, url_entry, mouse.Filename, mouse.ResourceType, false, mouse.Id, params)
+					err = getpushJSON(fhir_server, url_entry, mouse.Filename, mouse.ResourceType, false, mouse.Id, params)
+					if err != nil {
+						return err
+					}
 				}
 			}
 
 			color.Green("If there are still errors, you may choose to run the tool again.")
 		}
 	}
+
+	return nil
 }
 
-func getpushJSON(fhir_server string, ig string, filename string, resourcetype string, bundle bool, id string, params *Params) {
-
+func getpushJSON(fhir_server string, ig string, filename string, resourcetype string, bundle bool, id string, params *Params) error {
 	trimmed := strings.Replace(ig, "index.html", "", -1)
 	u, err := url.Parse(trimmed)
 	if err != nil {
@@ -147,18 +165,23 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 	u.Path = path.Join(u.Path, filename)
 
 	client := resty.New()
-	// client.SetDebug(true)
-	resp, _ := client.R().Get(u.String())
+	resp, err := client.R().Get(u.String())
+	if err != nil {
+		return err
+	}
 
 	p, err := url.Parse(fhir_server)
 	if err != nil {
-		fmt.Println("invalid url")
+		return errors.Wrap(err, "invalid url")
 	}
 
 	if !(bundle) {
 		p.Path = path.Join(p.Path, resourcetype, id)
 	}
 
+	if params == nil {
+		return errors.New("Nil pointer... variable 'params' not initialised")
+	}
 	switch params.TypeAuth {
 	// TODO: On some IGs this panics: "panic: runtime error: invalid memory address or nil pointer dereference"
 	case "None":
@@ -167,8 +190,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 			put, err := client.R().SetBody(resp.Body()).
 				SetHeader("Content-Type", "application/fhir+json").Post(p.String())
 			if err != nil {
-				fmt.Println("error with post, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -180,8 +202,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 			put, err := client.R().SetBody(resp.Body()).
 				SetHeader("Content-Type", "application/fhir+json").Put(p.String())
 			if err != nil {
-				fmt.Println("error with put, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -197,8 +218,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetBasicAuth(params.BasicUser, params.BasicPass).Post(p.String())
 			if err != nil {
-				fmt.Println("error with post, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -211,8 +231,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetBasicAuth(params.BasicUser, params.BasicPass).Put(p.String())
 			if err != nil {
-				fmt.Println("error with put, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -227,8 +246,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetAuthToken(params.Token).Post(p.String())
 			if err != nil {
-				fmt.Println("error with post, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -241,8 +259,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetAuthToken(params.Token).Put(p.String())
 			if err != nil {
-				fmt.Println("error with put, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -258,8 +275,7 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetHeader("Authorization", custom).Put(p.String())
 			if err != nil {
-				fmt.Println("error with post, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
 			code := put.StatusCode()
 			status := put.RawResponse.Status
@@ -272,10 +288,8 @@ func getpushJSON(fhir_server string, ig string, filename string, resourcetype st
 				SetHeader("Content-Type", "application/fhir+json").
 				SetHeader("Authorization", custom).Put(p.String())
 			if err != nil {
-				fmt.Println("error with put, is it the fhir url?")
-				fmt.Println(ig, filename, resourcetype, id)
+				return errors.Wrapf(err, "Status code: %v. Tracing... IG %v, Filename %v, Resource type %v, ID %v", put.StatusCode(), ig, filename, resourcetype, id)
 			}
-
 			code := put.StatusCode()
 			status := put.RawResponse.Status
 			url := u.String()
