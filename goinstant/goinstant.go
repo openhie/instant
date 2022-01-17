@@ -50,7 +50,7 @@ func stopContainer() {
 	suppressErrors := []string{"Error response from daemon: No such container: instant-openhie"}
 	_, err := runCommand("docker", suppressErrors, commandSlice...)
 	if err != nil {
-		gracefulPanic(err, "")
+		log.Fatalf("runCommand() failed: %v", err)
 	}
 }
 
