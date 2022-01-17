@@ -25,7 +25,7 @@ type Config struct {
 	Image              string    `yaml:"image"`
 	DefaultEnvironment string    `yaml:"defaultEnvironment"`
 	Packages           []Package `yaml:"packages"`
-	DisableKuberneses  bool      `yaml:"disableKubernetes"`
+	DisableKubernetes  bool      `yaml:"disableKubernetes"`
 }
 
 type customOption struct {

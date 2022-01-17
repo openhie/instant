@@ -16,7 +16,7 @@ func quit() {
 
 func selectSetup() {
 	items := []string{"Use Docker on your PC", "Install FHIR package", "Quit"}
-	if !cfg.DisableKuberneses {
+	if !cfg.DisableKubernetes {
 		index := 1
 		items = append(items[:index+1], items[index:]...)
 		items[index] = "Use a Kubernetes Cluster"
@@ -466,9 +466,7 @@ func selectDefaultPackage(action string) {
 	for _, p := range cfg.Packages {
 		optionItems = append(optionItems, p.Name)
 	}
-	optionItems = append(optionItems, "All")
-	optionItems = append(optionItems, "Back")
-	optionItems = append(optionItems, "Quit")
+	optionItems = append(optionItems, "All", "Back", "Quit")
 
 	prompt := promptui.Select{
 		Label: "Which package would you like to perform the action on (Packages will also invoke their dependencies automatically)",
