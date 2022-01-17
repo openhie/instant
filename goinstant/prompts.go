@@ -16,11 +16,18 @@ func quit() {
 }
 
 func selectSetup() error {
-	items := []string{"Use Docker on your PC", "Install FHIR package", "Quit"}
+	items := []string{"Use Docker on your PC", "Quit"}
+
+	index := 1
 	if !cfg.DisableKubernetes {
-		index := 1
 		items = append(items[:index+1], items[index:]...)
 		items[index] = "Use a Kubernetes Cluster"
+		index++
+	}
+
+	if !cfg.DisableIG {
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Install FHIR package"
 	}
 
 	prompt := promptui.Select{
