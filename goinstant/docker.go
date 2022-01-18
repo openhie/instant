@@ -256,12 +256,12 @@ func mountCustomPackage(pathToPackage string) error {
 	} else if httpRegex.MatchString(pathToPackage) {
 		resp, err := http.Get(pathToPackage)
 		if err != nil {
-			return errors.Wrap(err, "Error in dowloading custom package")
+			return errors.Wrap(err, "Error in downloading custom package")
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			return errors.Wrapf(err, "Error in dowloading custom package - HTTP status code: %v", strconv.Itoa(resp.StatusCode))
+			return errors.Wrapf(err, "Error in downloading custom package - HTTP status code: %v", strconv.Itoa(resp.StatusCode))
 		}
 
 		if zipRegex.MatchString(pathToPackage) {
