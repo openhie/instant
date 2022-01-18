@@ -2,13 +2,32 @@ package main
 
 import (
 	"embed"
+	"log"
 	"os"
 
 	"github.com/fatih/color"
+	yaml "gopkg.in/yaml.v2"
 )
 
 //go:embed banner.txt
 var f embed.FS
+
+//go:embed config.yml
+var yamlConfig []byte
+var cfg Config
+
+type Package struct {
+	Name string `yaml:"name"`
+	ID   string `yaml:"id"`
+}
+
+type Config struct {
+	Image              string    `yaml:"image"`
+	DefaultEnvironment string    `yaml:"defaultEnvironment"`
+	Packages           []Package `yaml:"packages"`
+	DisableKubernetes  bool      `yaml:"disableKubernetes"`
+	DisableIG          bool      `yaml:"disableIG"`
+}
 
 type customOption struct {
 	startupAction              string
@@ -30,7 +49,10 @@ var customOptions = customOption{
 func stopContainer() {
 	commandSlice := []string{"stop", "instant-openhie"}
 	suppressErrors := []string{"Error response from daemon: No such container: instant-openhie"}
-	runCommand("docker", suppressErrors, commandSlice...)
+	_, err := runCommand("docker", suppressErrors, commandSlice...)
+	if err != nil {
+		log.Fatalf("runCommand() failed: %v", err)
+	}
 }
 
 //Gracefully shut down the instant container and then kill the go cli with the panic error or message passed.
@@ -42,8 +64,20 @@ func gracefulPanic(err error, message string) {
 	panic(err)
 }
 
+func loadConfig() {
+	err := yaml.Unmarshal(yamlConfig, &cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
-	data, _ := f.ReadFile("banner.txt")
+	loadConfig()
+
+	data, err := f.ReadFile("banner.txt")
+	if err != nil {
+		log.Println(err)
+	}
 	color.Green(string(data))
 
 	color.Cyan("Version: 1.02b")
@@ -51,8 +85,14 @@ func main() {
 
 	// mainMenu()
 	if len(os.Args) > 1 {
-		CLI()
+		err = CLI()
+		if err != nil {
+			gracefulPanic(err, "")
+		}
 	} else {
-		selectSetup()
+		err = selectSetup()
+		if err != nil {
+			gracefulPanic(err, "")
+		}
 	}
 }

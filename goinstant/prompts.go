@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
+	"github.com/pkg/errors"
 )
 
 func quit() {
@@ -14,41 +15,60 @@ func quit() {
 	os.Exit(0)
 }
 
-func selectSetup() {
+func selectSetup() error {
+	items := []string{"Use Docker on your PC", "Quit"}
+
+	index := 1
+	if !cfg.DisableKubernetes {
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Use a Kubernetes Cluster"
+		index++
+	}
+
+	if !cfg.DisableIG {
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Install FHIR package"
+	}
+
 	prompt := promptui.Select{
 		Label: "Please choose how you want to run Instant. \nChoose Docker if you're running on your PC. \nIf you want to run Instant on Kubernetes, then you have should been provided credentials or have Kubernetes running on your PC.",
-		Items: []string{"Use Docker on your PC", "Use a Kubernetes Cluster", "Install FHIR package", "Quit"},
+		Items: items,
 		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectSetup() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Use Docker on your PC":
-		debugDocker()
-		selectDefaultOrCustom()
+		err = debugDocker()
+		if err != nil {
+			return err
+		}
+		err = selectDefaultOrCustom()
 
 	case "Use a Kubernetes Cluster":
-		debugKubernetes()
-		selectPackageCluster()
+		err = debugKubernetes()
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Install FHIR package":
-		selectUtil()
+		err = selectUtil()
 
 	case "Quit":
 		quit()
 	}
 
+	return err
 }
 
-func selectUtil() {
+func selectUtil() error {
 	fmt.Println("Enter URL for the published package")
 	// prompt for url
 	prompt := promptui.Prompt{
@@ -56,46 +76,50 @@ func selectUtil() {
 	}
 
 	ig_url, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectUtil() prompt failed")
 	}
 
-	fhir_server, params := selectFHIR()
+	fhir_server, params, err := selectFHIR()
+	if err != nil {
+		return err
+	}
 	fmt.Println("FHIR Server target:", fhir_server)
-	loadIGpackage(ig_url, fhir_server, params)
-	selectSetup()
+	err = loadIGpackage(ig_url, fhir_server, params)
+	if err != nil {
+		return err
+	}
+	return selectSetup()
 }
 
-func selectDefaultOrCustom() {
+func selectDefaultOrCustom() error {
 	prompt := promptui.Select{
 		Label: "Great, now choose an installation type",
 		Items: []string{"Default Install Options", "Custom Install Options", "Quit", "Back"},
 		Size:  12,
 	}
 	_, result, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectDefaultOrCustom() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
 	switch result {
 	case "Default Install Options":
-		selectDefaultInstall()
+		err = selectDefaultAction()
 	case "Custom Install Options":
-		selectCustomOptions()
+		err = selectCustomOptions()
 	case "Quit":
 		quit()
 	case "Back":
-		selectSetup()
+		err = selectSetup()
 	}
+
+	return err
 }
 
-func selectCustomOptions() {
+func selectCustomOptions() error {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
 		Items: []string{
@@ -116,40 +140,43 @@ func selectCustomOptions() {
 	}
 
 	_, result, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectCustomOptions() prompt failed")
 	}
 
 	switch result {
 	case "Choose deploy action (default is init)":
-		setStartupAction()
+		err = setStartupAction()
 	case "Specify deploy packages":
-		setStartupPackages()
+		err = setStartupPackages()
 	case "Specify environment variable file location":
-		setEnvVarFileLocation()
+		err = setEnvVarFileLocation()
 	case "Specify environment variables":
-		setEnvVars()
+		err = setEnvVars()
 	case "Specify custom package locations":
-		setCustomPackages()
+		err = setCustomPackages()
 	case "Toggle only flag":
-		toggleOnlyFlag()
+		err = toggleOnlyFlag()
 	case "Specify Instant Version":
-		setInstantVersion()
+		err = setInstantVersion()
 	case "Execute with current options":
-		printAll(false)
-		executeCommand()
+		err = printAll(false)
+		if err != nil {
+			return err
+		}
+		err = executeCommand()
 	case "View current options set":
-		printAll(true)
+		err = printAll(true)
 	case "Reset to default options":
 		resetAll()
-		printAll(true)
+		err = printAll(true)
 	case "Quit":
 		quit()
 	case "Back":
-		selectDefaultOrCustom()
+		err = selectDefaultOrCustom()
 	}
+
+	return err
 }
 
 func resetAll() {
@@ -163,7 +190,7 @@ func resetAll() {
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nAll custom options have been reset to default.\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 }
 
-func setStartupAction() {
+func setStartupAction() error {
 	prompt := promptui.Select{
 		Label: "Great, now choose a deploy action",
 		Items: []string{"init", "destroy", "up", "down", "test", "Quit", "Back"},
@@ -171,10 +198,8 @@ func setStartupAction() {
 	}
 
 	_, result, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "setStartupAction() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
@@ -182,21 +207,23 @@ func setStartupAction() {
 	switch result {
 	case "init", "destroy", "up", "down", "test":
 		customOptions.startupAction = result
-		selectCustomOptions()
+		err = selectCustomOptions()
 	case "Quit":
 		quit()
 	case "Back":
-		selectCustomOptions()
+		err = selectCustomOptions()
 	}
+
+	return err
 }
 
-func executeCommand() {
-	startupCommands := []string{"docker", customOptions.startupAction}
+func executeCommand() error {
+	startupCommands := []string{cfg.DefaultEnvironment, customOptions.startupAction}
 
 	if len(customOptions.startupPackages) == 0 {
-		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
+		fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
 			"Warning: No package IDs specified, all default packages will be included in your command.\n" +
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 	}
 
 	startupCommands = append(startupCommands, customOptions.startupPackages...)
@@ -218,7 +245,7 @@ func executeCommand() {
 		startupCommands = append(startupCommands, "--only")
 	}
 	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
-	RunDirectDockerCommand(startupCommands)
+	return RunDirectDockerCommand(startupCommands)
 }
 
 func printSlice(slice []string) {
@@ -228,7 +255,7 @@ func printSlice(slice []string) {
 	fmt.Println()
 }
 
-func printAll(loopback bool) {
+func printAll(loopback bool) error {
 	fmt.Println("\nCurrent Custom Options Specified\n---------------------------------")
 	fmt.Println("Startup Action:")
 	fmt.Printf("-%q\n", customOptions.startupAction)
@@ -257,12 +284,16 @@ func printAll(loopback bool) {
 	} else {
 		fmt.Printf("-%q\n\n", "Off")
 	}
+
+	var err error
 	if loopback {
-		selectCustomOptions()
+		err = selectCustomOptions()
 	}
+
+	return err
 }
 
-func setStartupPackages() {
+func setStartupPackages() error {
 	if customOptions.startupPackages != nil && len(customOptions.startupPackages) > 0 {
 		fmt.Println("\nCurrent Startup Packages Specified:")
 		printSlice(customOptions.startupPackages)
@@ -272,8 +303,7 @@ func setStartupPackages() {
 	}
 	packageList, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		selectCustomOptions()
+		return errors.Wrap(err, "setStartupPackages() prompt failed")
 	}
 
 	startupPackages := strings.Split(packageList, ",")
@@ -285,10 +315,11 @@ func setStartupPackages() {
 			fmt.Printf(p + " package already exists in the list.\n")
 		}
 	}
-	selectCustomOptions()
+
+	return selectCustomOptions()
 }
 
-func setCustomPackages() {
+func setCustomPackages() error {
 	if customOptions.customPackageFileLocations != nil && len(customOptions.customPackageFileLocations) > 0 {
 		fmt.Println("Current Custom Packages Specified:")
 		printSlice(customOptions.customPackageFileLocations)
@@ -298,8 +329,7 @@ func setCustomPackages() {
 	}
 	customPackageList, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		selectCustomOptions()
+		return errors.Wrap(err, "setCustomPackages() prompt failed")
 	}
 
 	newCustomPackages := strings.Split(customPackageList, ",")
@@ -325,10 +355,11 @@ func setCustomPackages() {
 			}
 		}
 	}
-	selectCustomOptions()
+
+	return selectCustomOptions()
 }
 
-func setEnvVarFileLocation() {
+func setEnvVarFileLocation() error {
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
 		fmt.Println("Current Environment Variable File Location Specified:")
 		fmt.Printf("-%q\n", customOptions.envVarFileLocation)
@@ -338,8 +369,7 @@ func setEnvVarFileLocation() {
 	}
 	envVarFileLocation, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		selectCustomOptions()
+		return errors.Wrap(err, "setEnvVarFileLocation() prompt failed")
 	}
 	exists, fileErr := fileExists(envVarFileLocation)
 	if exists {
@@ -348,10 +378,11 @@ func setEnvVarFileLocation() {
 		fmt.Printf("\nFile at location %q could not be found due to error: %v\n", envVarFileLocation, fileErr)
 		fmt.Println("\n-----------------\nPlease try again.\n-----------------")
 	}
-	selectCustomOptions()
+
+	return selectCustomOptions()
 }
 
-func setInstantVersion() {
+func setInstantVersion() error {
 	if customOptions.instantVersion != "latest" && len(customOptions.instantVersion) > 0 {
 		fmt.Println("Current Instant OpenHIE Image Version Specified:")
 		fmt.Printf("-%q\n", customOptions.instantVersion)
@@ -362,15 +393,14 @@ func setInstantVersion() {
 	instantVersion, err := prompt.Run()
 
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		selectCustomOptions()
+		return errors.Wrap(err, "setInstantVersion() prompt failed")
 	}
 
 	customOptions.instantVersion = instantVersion
-	selectCustomOptions()
+	return selectCustomOptions()
 }
 
-func setEnvVars() {
+func setEnvVars() error {
 	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
 		fmt.Println("Current Environment Variables Specified:")
 		printSlice(customOptions.envVars)
@@ -380,8 +410,7 @@ func setEnvVars() {
 	}
 	envVarList, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		selectCustomOptions()
+		return errors.Wrap(err, "setEnvVars() prompt failed")
 	}
 
 	newEnvVars := strings.Split(envVarList, ",")
@@ -393,20 +422,19 @@ func setEnvVars() {
 			fmt.Printf(env + " environment variable already exists in the list.\n")
 		}
 	}
-	selectCustomOptions()
+	return selectCustomOptions()
 }
 
-func toggleOnlyFlag() {
+func toggleOnlyFlag() error {
 	customOptions.onlyFlag = !customOptions.onlyFlag
 	if customOptions.onlyFlag {
 		fmt.Println("Only flag is now on")
 	} else {
 		fmt.Println("Only flag is now off")
 	}
-	selectCustomOptions()
+	return selectCustomOptions()
 }
 
-// fileExists returns whether the given file or directory exists
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -418,157 +446,81 @@ func fileExists(path string) (bool, error) {
 	return false, err
 }
 
-func selectDefaultInstall() {
-
+func selectDefaultAction() error {
 	prompt := promptui.Select{
-		Label: "Great, now choose an action (Packages will start up their dependencies automatically)",
+		Label: "Great, now choose an action",
 		Items: []string{
-			"Initialise All Packages",
-			"Initialise Core",
-			"Initialise Client",
-			"Initialise Elastic-Analytics",
-			"Initialise Elastic-Pipeline",
-			"Initialise Electronic Medical Record",
-			"Initialise Health Management Information System",
-			"Initialise Health Worker", "Initialise Facility Registry",
-			"Initialise Workforce",
-			"Stop All Services and Cleanup Docker",
-			"Stop and Cleanup Core",
-			"Stop and Cleanup Client",
-			"Stop and Cleanup Elastic-Analytics",
-			"Stop and Cleanup Elastic-Pipeline",
-			"Stop and Cleanup Electronic Medical Record",
-			"Stop and Cleanup Health Management Information System",
-			"Stop and Cleanup Health Worker",
-			"Stop and Cleanup Facility Registry",
-			"Stop and Cleanup Workforce",
-			"Quit",
+			"init",
+			"stop",
+			"destroy",
+			"up",
 			"Back",
+			"Quit",
 		},
-		Size: 12,
 	}
 
 	_, result, err := prompt.Run()
-
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectDefaultAction() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
-	switch result {
-	case "Initialise All Packages":
-		fmt.Println("...Setting up All Packages")
-		RunDirectDockerCommand([]string{"docker", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Core":
-		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"docker", "core", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Client":
-		fmt.Println("...Setting up Client Package")
-		RunDirectDockerCommand([]string{"docker", "client", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Elastic-Analytics":
-		fmt.Println("...Setting up Elastic-Analytics Package")
-		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Elastic-Pipeline":
-		fmt.Println("...Setting up Elastic-Pipeline Package")
-		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Electronic Medical Record":
-		fmt.Println("...Setting up Electronic Medical Record Package")
-		RunDirectDockerCommand([]string{"docker", "emr", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Health Management Information System":
-		fmt.Println("...Setting up Health Management Information System Package")
-		RunDirectDockerCommand([]string{"docker", "hmis", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Health Worker":
-		fmt.Println("...Setting up Health Worker Package")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Facility Registry":
-		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"docker", "facility", "init"})
-		selectDefaultInstall()
-
-	case "Initialise Workforce":
-		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"docker", "mcsd", "init"})
-		selectDefaultInstall()
-
-	case "Stop All Services and Cleanup Docker":
-		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"docker", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Core":
-		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"docker", "core", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Client":
-		fmt.Println("Stopping and Cleaning Up Client...")
-		RunDirectDockerCommand([]string{"docker", "client", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Elastic-Analytics":
-		fmt.Println("Stopping and Cleaning Up Elastic-Analytics...")
-		RunDirectDockerCommand([]string{"docker", "elastic-analytics", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Elastic-Pipeline":
-		fmt.Println("Stopping and Cleaning Up Elastic-Pipeline...")
-		RunDirectDockerCommand([]string{"docker", "elastic-pipeline", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Electronic Medical Record":
-		fmt.Println("Stopping and Cleaning Up Electronic Medical Record...")
-		RunDirectDockerCommand([]string{"docker", "emr", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Health Management Information System":
-		fmt.Println("Stopping and Cleaning Up Health Management Information System...")
-		RunDirectDockerCommand([]string{"docker", "hmis", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Health Worker":
-		fmt.Println("Stopping and Cleaning Up Health Worker...")
-		RunDirectDockerCommand([]string{"docker", "healthworker", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Facility Registry":
-		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"docker", "facility", "destroy"})
-		selectDefaultInstall()
-
-	case "Stop and Cleanup Workforce":
-		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"docker", "mcsd", "destroy"})
-		selectDefaultInstall()
-
-	case "Quit":
+	if result == "Quit" {
 		quit()
-
-	case "Back":
-		selectDefaultOrCustom()
+		return nil
 	}
 
+	if result == "Back" {
+		return selectDefaultOrCustom()
+	}
+
+	return selectDefaultPackage(result)
 }
 
-func selectPackageCluster() {
+func selectDefaultPackage(action string) error {
+	var optionItems []string
+	for _, p := range cfg.Packages {
+		optionItems = append(optionItems, p.Name)
+	}
+	optionItems = append(optionItems, "All", "Back", "Quit")
 
+	prompt := promptui.Select{
+		Label: "Which package would you like to perform the action on (Packages will also invoke their dependencies automatically)",
+		Items: optionItems,
+		Size:  12,
+	}
+
+	i, result, err := prompt.Run()
+	if err != nil {
+		return errors.Wrap(err, "selectDefaultPackage() prompt failed")
+	}
+
+	fmt.Printf("You chose %q\n========================================\n", result)
+
+	if result == "All" {
+		fmt.Println("...Setting up All Packages")
+		return RunDirectDockerCommand([]string{cfg.DefaultEnvironment, action})
+	}
+
+	if result == "Quit" {
+		quit()
+		return nil
+	}
+
+	if result == "Back" {
+		return selectDefaultAction()
+	}
+
+	err = RunDirectDockerCommand([]string{cfg.DefaultEnvironment, cfg.Packages[i].ID, action})
+	if err != nil {
+		return err
+	}
+
+	return selectDefaultAction()
+}
+
+func selectPackageCluster() error {
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
 		Items: []string{"Initialise Core (Required, Start Here)", "Launch Facility Registry", "Launch Workforce", "Stop and Cleanup Core", "Stop and Cleanup Facility Registry", "Stop and Cleanup Workforce", "Stop All Services and Cleanup Kubernetes", "Quit", "Back"},
@@ -578,8 +530,7 @@ func selectPackageCluster() {
 	_, result, err := prompt.Run()
 
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		return errors.Wrap(err, "selectPackageCluster() prompt failed")
 	}
 
 	fmt.Printf("\nYou chose %q\n========================================\n", result)
@@ -587,57 +538,79 @@ func selectPackageCluster() {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		RunDirectDockerCommand([]string{"k8s", "core", "init"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "core", "init"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		RunDirectDockerCommand([]string{"k8s", "facility", "up"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "facility", "up"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
-		selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Stop All Services and Cleanup Kubernetes":
-		// composeDownCore()
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
-		RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
-		RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
-		selectPackageCluster()
-
-	// case "Developer Mode":
-	// 	selectPackageDockerDev()
-	// 	// selectPackageCluster()
+		err = RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		if err != nil {
+			return err
+		}
+		err = selectPackageCluster()
 
 	case "Quit":
 		quit()
 
 	case "Back":
-		selectSetup()
+		err = selectSetup()
 	}
 
+	return err
 }
 
-func selectFHIR() (result_url string, params *Params) {
-
+func selectFHIR() (result_url string, params *Params, err error) {
 	prompt := promptui.Select{
 		Label: "Select or enter URL for a FHIR Server",
 		Items: []string{"Docker Default", "Kubernetes Default", "Use Public HAPI Server", "Enter a Server URL", "Quit", "Back"},
@@ -646,7 +619,7 @@ func selectFHIR() (result_url string, params *Params) {
 
 	_, result, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+		return "", nil, errors.Wrap(err, "selectFHIR() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
@@ -658,20 +631,20 @@ func selectFHIR() (result_url string, params *Params) {
 		params := &Params{}
 		params.TypeAuth = "Custom"
 		params.Token = "test"
-		return result_url, params
+		return result_url, params, nil
 
 	case "Kubernetes Default":
 		result_url := "http://localhost:8080/fhir"
 		params := &Params{}
 		params.TypeAuth = "Custom"
 		params.Token = "test"
-		return result_url, params
+		return result_url, params, nil
 
 	case "Use Public HAPI Server":
 		result_url := "http://hapi.fhir.org/baseR4"
 		params := &Params{}
 		params.TypeAuth = "None"
-		return result_url, params
+		return result_url, params, nil
 
 	case "Enter a Server URL":
 		prompt := promptui.Prompt{
@@ -679,25 +652,24 @@ func selectFHIR() (result_url string, params *Params) {
 		}
 		result_url, err := prompt.Run()
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			return "", nil, errors.Wrap(err, "Server URL in selectFHIR() prompt failed")
 		}
-		// TODO: validate URL
-		// params.TypeAuth =
-		params := selectParams()
-		return result_url, params
+
+		params, err := selectParams()
+		return result_url, params, err
 
 	case "Quit":
 		quit()
 		params := &Params{}
-		return "", params
+		return "", params, nil
 
 	case "Back":
-		selectUtil()
+		err = selectUtil()
 		params := &Params{}
-		return "", params
+		return "", params, nil
 
 	}
-	return result_url, params
+	return result_url, params, nil
 
 }
 
@@ -709,8 +681,7 @@ type Params struct {
 	BasicPass string
 }
 
-func selectParams() *Params {
-
+func selectParams() (*Params, error) {
 	a := &Params{}
 
 	prompt := promptui.Select{
@@ -721,7 +692,7 @@ func selectParams() *Params {
 
 	_, result, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+		return nil, errors.Wrap(err, "selectParams() prompt failed")
 	}
 
 	fmt.Printf("You chose %q\n========================================\n", result)
@@ -729,68 +700,65 @@ func selectParams() *Params {
 
 	case "None":
 		a.TypeAuth = "None"
-		return a
+		return a, nil
 
 	case "Basic":
 		a.TypeAuth = "Basic"
 
-		// basic user
 		prompt_basic_user := promptui.Prompt{
 			Label: "Basic User",
 		}
 		result_basic_user, err := prompt_basic_user.Run()
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			return nil, errors.Wrap(err, "Case 'Basic' in selectParams() prompt failed")
 		}
 		a.BasicUser = result_basic_user
 
-		// basic pass
 		prompt_basic_pass := promptui.Prompt{
 			Label: "Basic Password",
 		}
 		result_basic_pass, err := prompt_basic_pass.Run()
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			return nil, errors.Wrap(err, "Case 'Basic' in selectParams() prompt failed")
 		}
 		a.BasicPass = result_basic_pass
 
-		return a
+		return a, nil
 
 	case "Token":
 		a.TypeAuth = "Token"
 
-		// bearer token
 		prompt_token := promptui.Prompt{
 			Label: "Bearer Token",
 		}
 		result_token, err := prompt_token.Run()
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			return nil, errors.Wrap(err, "Case 'Token' in selectParams() prompt failed")
 		}
 		a.Token = result_token
-		return a
+		return a, nil
 
 	case "Custom":
 		a.TypeAuth = "Custom"
 
-		// custom token
 		prompt_ctoken := promptui.Prompt{
 			Label: "Custom Token",
 		}
 		result_ctoken, err := prompt_ctoken.Run()
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			return nil, errors.Wrap(err, "Case 'Custom' in selectParams() prompt failed")
 		}
 		a.Token = result_ctoken
-		return a
+		return a, nil
 
 	case "Quit":
 		quit()
-		return a
+		return a, nil
 
 	case "Back":
-		selectUtil()
-		return a
+		err = selectUtil()
+		return a, nil
 	}
-	return a
+
+	return a, err
 }

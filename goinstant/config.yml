@@ -1,0 +1,23 @@
+image: openhie/instant
+defaultEnvironment: docker
+disableKubernetes: false
+disableIG: false
+packages:
+  - id: core
+    name: Core package
+  - id: client
+    name: OpenCR Client Registry
+  - id: elastic-analytics
+    name: Data Analytics package using the elastic stack
+  - id: elastic-pipeline
+    name: Data pipeline package using the elastic stack
+  - id: emr
+    name: Electronic Medical Record Package
+  - id: facility
+    name: Facility Registry
+  - id: hmis
+    name: health-management-information-system
+  - id: healthworker
+    name: healthworker
+  - id: mcsd
+    name: mCSD use case package
