@@ -26,6 +26,7 @@ type Config struct {
 	DefaultEnvironment string    `yaml:"defaultEnvironment"`
 	Packages           []Package `yaml:"packages"`
 	DisableKubernetes  bool      `yaml:"disableKubernetes"`
+	DisableIG          bool      `yaml:"disableIG"`
 }
 
 type customOption struct {
