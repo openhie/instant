@@ -135,7 +135,7 @@ func RunDirectDockerCommand(startupCommands []string) error {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = runCommand("docker", nil, commandSlice...)
+		_, err = runCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
 		if err != nil {
 			return err
 		}
@@ -210,19 +210,19 @@ func runCommand(commandName string, suppressErrors []string, commandSlice ...str
 	err = cmd.Start()
 	if err != nil {
 		if suppressErrors != nil && sliceContains(suppressErrors, strings.TrimSpace(stderr.String())) {
-			return pathToPackage, nil
-		}
 
-		return pathToPackage, errors.Wrap(err, "Error starting Cmd.")
+		} else {
+			return pathToPackage, errors.Wrap(err, "Error starting Cmd. "+stderr.String())
+		}
 	}
 
 	err = cmd.Wait()
 	if err != nil {
 		if suppressErrors != nil && sliceContains(suppressErrors, strings.TrimSpace(stderr.String())) {
-			return
-		}
 
-		return pathToPackage, errors.Wrap(err, "Error waiting for Cmd.")
+		} else {
+			return pathToPackage, errors.Wrap(err, "Error waiting for Cmd. "+stderr.String())
+		}
 	}
 
 	if commandName == "git" {
@@ -256,12 +256,12 @@ func mountCustomPackage(pathToPackage string) error {
 	} else if httpRegex.MatchString(pathToPackage) {
 		resp, err := http.Get(pathToPackage)
 		if err != nil {
-			return errors.Wrap(err, "Error in dowloading custom package")
+			return errors.Wrap(err, "Error in downloading custom package")
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			return errors.Wrapf(err, "Error in dowloading custom package - HTTP status code: %v", strconv.Itoa(resp.StatusCode))
+			return errors.Wrapf(err, "Error in downloading custom package - HTTP status code: %v", strconv.Itoa(resp.StatusCode))
 		}
 
 		if zipRegex.MatchString(pathToPackage) {
