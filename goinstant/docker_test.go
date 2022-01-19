@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"fmt"
 )
 
 /*
@@ -104,6 +105,39 @@ func TestRunDirectDockerCommand(t *testing.T) {
 				t.Log(t.Name() + " passed!\n")
 			})
 		}
+	}
+}
+
+func TestSliceContains(t *testing.T) {
+	var testCases = []struct{
+		slice	   []string
+		element  string
+		result   bool
+		testInfo string
+	}{
+		{
+			testInfo: "SliceContain test - should return true when slice contains element",
+			slice: 		[]string{"Optimus Prime", "Iron Hyde"},
+			element: 	"Optimus Prime",
+			result: 	true,
+		},
+		{
+			testInfo: "SliceContain test - should return false when slice does not contain element",
+			slice:    []string{"Optimus Prime", "Iron Hyde"},
+			element:  "Megatron",
+			result:   false,
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.testInfo, func(t *testing.T) {
+			ans := sliceContains(tt.slice, tt.element)
+
+			if ans != tt.result {
+				t.Fatal("SliceContains should return" + fmt.Sprintf("%t", tt.result) + "but returned" + fmt.Sprintf("%t", ans))
+			}
+			t.Log(tt.testInfo + " passed!")
+		})
 	}
 }
 
