@@ -451,7 +451,7 @@ func selectDefaultAction() error {
 		Label: "Great, now choose an action",
 		Items: []string{
 			"init",
-			"stop",
+			"down",
 			"destroy",
 			"up",
 			"Back",
