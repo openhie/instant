@@ -8,7 +8,7 @@ import (
 )
 
 /*
-	Instead of running the test below using the buttons (if you have extensions installed), run the test using this command instead
+	Instead of running the test below using the buttons (if you have extensions installed), run the test using this command
 	cmd:	go test -timeout 2m -v -run ^TestRunDirectDockerCommand$ github.com/openhie/instant/goinstant
 	so that the timeout can be set manually
 */
