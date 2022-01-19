@@ -109,7 +109,7 @@ func TestRunDirectDockerCommand(t *testing.T) {
 }
 
 func TestSliceContains(t *testing.T) {
-	var testCases = []struct{
+	testCases := []struct{
 		slice	   []string
 		element  string
 		result   bool
