@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"testing"
-	"fmt"
+
+	"github.com/stretchr/testify/assert"
 )
 
 /*
@@ -117,9 +119,9 @@ func TestSliceContains(t *testing.T) {
 	}{
 		{
 			testInfo: "SliceContain test - should return true when slice contains element",
-			slice: 		[]string{"Optimus Prime", "Iron Hyde"},
-			element: 	"Optimus Prime",
-			result: 	true,
+			slice:    []string{"Optimus Prime", "Iron Hyde"},
+			element:  "Optimus Prime",
+			result:   true,
 		},
 		{
 			testInfo: "SliceContain test - should return false when slice does not contain element",
@@ -152,4 +154,60 @@ func CheckOpenHIMheartbeat() bool {
 	defer resp.Body.Close()
 
 	return true
+}
+
+func Test_getPackagePaths(t *testing.T) {
+	type args struct {
+		inputArr []string
+		flags    []string
+	}
+	tests := []struct {
+		name             string
+		args             args
+		wantPackagePaths []string
+	}{
+		{
+			name: "Test 1",
+			args: args{
+				inputArr: []string{"-c=../docs", "-c=./docs"},
+				flags:    []string{"-c=", "--custom-package="},
+			},
+			wantPackagePaths: []string{"../docs", "./docs"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotPackagePaths := getPackagePaths(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantPackagePaths, gotPackagePaths) {
+				t.Errorf("getPackagePaths() = %v, want %v", gotPackagePaths, tt.wantPackagePaths)
+			}
+		})
+	}
+}
+
+func Test_getEnvironmentVariables(t *testing.T) {
+	type args struct {
+		inputArr []string
+		flags    []string
+	}
+	tests := []struct {
+		name                     string
+		args                     args
+		wantEnvironmentVariables []string
+	}{
+		{
+			name: "Test case environment variables found",
+			args: args{
+				inputArr: []string{"-e=NODE_ENV=PROD", "-e=DOMAIN_NAME=instant.com"},
+				flags:    []string{"-e=", "--env-file="},
+			},
+			wantEnvironmentVariables: []string{"-e", "NODE_ENV=PROD", "-e", "DOMAIN_NAME=instant.com"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotEnvironmentVariables := getEnvironmentVariables(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantEnvironmentVariables, gotEnvironmentVariables) {
+				t.Errorf("getEnvironmentVariables() = %v, want %v", gotEnvironmentVariables, tt.wantEnvironmentVariables)
+			}
+		})
+	}
 }
