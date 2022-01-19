@@ -129,7 +129,8 @@ func RunDirectDockerCommand(startupCommands []string) error {
 	fmt.Println("Other Flags:", otherFlags)
 	fmt.Println("InstantVersion:", instantVersion)
 
-	instantImage := cfg.Image + ":" + instantVersion
+	// instantImage := cfg.Image + ":" + instantVersion
+	instantImage := "openhie/instant:latest" // For testing
 
 	var err error
 	if deployCommand == "init" {
