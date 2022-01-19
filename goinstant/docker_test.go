@@ -28,85 +28,89 @@ type testingStruct struct {
 func TestRunDirectDockerCommand(t *testing.T) {
 	loadConfig()
 
-	testCases := []testingStruct{
-		{
-			cmds:                     []string{"docker", "core", "init"},
-			testInfo:                 "Test 1: Attempt to init OpenHIM Core",
-			heartbeatNotWantedBefore: true,
-			heartbeatWantedAfter:     true,
-		},
-		{
-			cmds:                    []string{"docker", "core", "down"},
-			testInfo:                "Test 2: Attempt to bring OpenHIM Core down",
-			heartbeatWantedBefore:   true,
-			heartbeatNotWantedAfter: true,
-		},
-		{
-			cmds:                     []string{"docker", "core", "up"},
-			testInfo:                 "Test 3: Attempt to bring OpenHIM Core up.",
-			heartbeatNotWantedBefore: true,
-			heartbeatWantedAfter:     true,
-		},
-		{
-			cmds:                    []string{"docker", "core", "destroy"},
-			testInfo:                "Test 4: Attempt to destroy OpenHIM Core.",
-			heartbeatWantedBefore:   true,
-			heartbeatNotWantedAfter: true,
-		},
-	}
-
 	type args struct {
-		startupCommands []string
+		startupCommands          []string
+		heartbeatWantedBefore    bool
+		heartbeatNotWantedBefore bool
+		heartbeatWantedAfter     bool
+		heartbeatNotWantedAfter  bool
 	}
-	for _, test := range testCases {
-		tests := []struct {
-			name    string
-			args    args
-			wantErr bool
-		}{
-			{
-				name: test.testInfo,
-				args: args{
-					startupCommands: test.cmds,
-				},
-				wantErr: false,
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Test 1: Attempt to init OpenHIM Core",
+			args: args{
+				startupCommands:          []string{"docker", "core", "init"},
+				heartbeatNotWantedBefore: true,
+				heartbeatWantedAfter:     true,
 			},
-		}
-		for _, tt := range tests {
-			os.Stdout = nil
+			wantErr: false,
+		},
+		{
+			name: "Test 2: Attempt to bring OpenHIM Core down",
+			args: args{
+				startupCommands:         []string{"docker", "core", "down"},
+				heartbeatWantedBefore:   true,
+				heartbeatNotWantedAfter: true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Test 3: Attempt to bring OpenHIM Core up.",
+			args: args{
+				startupCommands:          []string{"docker", "core", "up"},
+				heartbeatNotWantedBefore: true,
+				heartbeatWantedAfter:     true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Test 4: Attempt to destroy OpenHIM Core.",
+			args: args{
+				startupCommands:         []string{"docker", "core", "destroy"},
+				heartbeatWantedBefore:   true,
+				heartbeatNotWantedAfter: true,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		os.Stdout = nil
 
-			t.Run(tt.name, func(t *testing.T) {
-				hbCheck := CheckOpenHIMheartbeat()
-				if test.heartbeatWantedBefore {
-					if !hbCheck {
-						t.Fatal("Expected heartbeat and not found")
-					}
+		t.Run(tt.name, func(t *testing.T) {
+			hbCheck := CheckOpenHIMheartbeat()
+			if tt.args.heartbeatWantedBefore {
+				if !hbCheck {
+					t.Fatal("Expected heartbeat and not found")
 				}
-				if test.heartbeatNotWantedBefore {
-					if hbCheck {
-						t.Fatal("Heartbeat found when not expected")
-					}
+			}
+			if tt.args.heartbeatNotWantedBefore {
+				if hbCheck {
+					t.Fatal("Heartbeat found when not expected")
 				}
+			}
 
-				if err := RunDirectDockerCommand(tt.args.startupCommands); (err != nil) != tt.wantErr {
-					t.Errorf("RunDirectDockerCommand() error = %v, wantErr %v", err, tt.wantErr)
-				}
+			if err := RunDirectDockerCommand(tt.args.startupCommands); (err != nil) != tt.wantErr {
+				t.Errorf("RunDirectDockerCommand() error = %v, wantErr %v", err, tt.wantErr)
+			}
 
-				hbCheck = CheckOpenHIMheartbeat()
-				if test.heartbeatWantedAfter {
-					if !hbCheck {
-						t.Fatal("Expected heartbeat and not found")
-					}
+			hbCheck = CheckOpenHIMheartbeat()
+			if tt.args.heartbeatWantedAfter {
+				if !hbCheck {
+					t.Fatal("Expected heartbeat and not found")
 				}
-				if test.heartbeatNotWantedAfter {
-					if hbCheck {
-						t.Fatal("Heartbeat found when not expected")
-					}
+			}
+			if tt.args.heartbeatNotWantedAfter {
+				if hbCheck {
+					t.Fatal("Heartbeat found when not expected")
 				}
+			}
 
-				t.Log(t.Name() + " passed!\n")
-			})
-		}
+			t.Log(t.Name() + " passed!\n")
+		})
 	}
 }
 
