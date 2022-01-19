@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"testing"
 )
 
@@ -33,7 +34,7 @@ func TestRunDirectDockerCommand(t *testing.T) {
 		},
 		{
 			cmds:                    []string{"docker", "core", "down"},
-			testInfo:                "Test 2: Attempt to bring OpenHIM down",
+			testInfo:                "Test 2: Attempt to bring OpenHIM Core down",
 			heartbeatWantedBefore:   true,
 			heartbeatNotWantedAfter: true,
 		},
@@ -45,7 +46,7 @@ func TestRunDirectDockerCommand(t *testing.T) {
 		},
 		{
 			cmds:                    []string{"docker", "core", "destroy"},
-			testInfo:                "Test 4: Attempt to destroy OpenHIM.",
+			testInfo:                "Test 4: Attempt to destroy OpenHIM Core.",
 			heartbeatWantedBefore:   true,
 			heartbeatNotWantedAfter: true,
 		},
@@ -69,37 +70,39 @@ func TestRunDirectDockerCommand(t *testing.T) {
 			},
 		}
 		for _, tt := range tests {
-			hbCheck := CheckOpenHIMheartbeat()
-			if test.heartbeatWantedBefore {
-				if !hbCheck {
-					t.Fatal("Heartbeat not found")
-				}
-			}
-
-			if test.heartbeatNotWantedBefore {
-				if hbCheck {
-					t.Fatal("Heartbeat found when not wanted")
-				}
-			}
+			os.Stdout = nil
 
 			t.Run(tt.name, func(t *testing.T) {
+				hbCheck := CheckOpenHIMheartbeat()
+				if test.heartbeatWantedBefore {
+					if !hbCheck {
+						t.Fatal("Expected heartbeat and not found")
+					}
+				}
+				if test.heartbeatNotWantedBefore {
+					if hbCheck {
+						t.Fatal("Heartbeat found when not expected")
+					}
+				}
+
 				if err := RunDirectDockerCommand(tt.args.startupCommands); (err != nil) != tt.wantErr {
 					t.Errorf("RunDirectDockerCommand() error = %v, wantErr %v", err, tt.wantErr)
 				}
+
+				hbCheck = CheckOpenHIMheartbeat()
+				if test.heartbeatWantedAfter {
+					if !hbCheck {
+						t.Fatal("Expected heartbeat and not found")
+					}
+				}
+				if test.heartbeatNotWantedAfter {
+					if hbCheck {
+						t.Fatal("Heartbeat found when not expected")
+					}
+				}
+
+				t.Log(t.Name() + " passed!\n")
 			})
-
-			hbCheck = CheckOpenHIMheartbeat()
-			if test.heartbeatWantedAfter {
-				if !hbCheck {
-					t.Fatal("Heartbeat not found")
-				}
-			}
-
-			if test.heartbeatNotWantedAfter {
-				if hbCheck {
-					t.Fatal("Heartbeat found when not wanted")
-				}
-			}
 		}
 	}
 }
