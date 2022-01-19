@@ -48,3 +48,13 @@ bash ./buildreleases.sh
 To build releases, create an instant tag and a release, the GitHub actions will build the code after creation of the release and add the binaries to the assets of the release if the GO CLI build succeeds.
 
 Check [here](https://github.com/openhie/instant/actions/new) to review the output of the build and status of the binary deploy.
+
+### Testing
+
+For Unit testing run the command below
+
+```bash
+go test . -v
+```
+
+> The OpenHIM service is used in these tests. There should not be a running instance of the service for the tests to work.
