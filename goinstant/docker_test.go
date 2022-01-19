@@ -22,6 +22,8 @@ type testingStruct struct {
 }
 
 func TestRunDirectDockerCommand(t *testing.T) {
+	loadConfig()
+
 	testCases := []testingStruct{
 		{
 			cmds:                     []string{"docker", "core", "init"},
