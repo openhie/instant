@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 /*
@@ -118,4 +120,32 @@ func CheckOpenHIMheartbeat() bool {
 	defer resp.Body.Close()
 
 	return true
+}
+
+func Test_getPackagePaths(t *testing.T) {
+	type args struct {
+		inputArr []string
+		flags    []string
+	}
+	tests := []struct {
+		name             string
+		args             args
+		wantPackagePaths []string
+	}{
+		{
+			name: "Test 1",
+			args: args{
+				inputArr: []string{"-c=../docs", "-c=./docs"},
+				flags:    []string{"-c=", "--custom-package="},
+			},
+			wantPackagePaths: []string{"../docs", "./docs"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotPackagePaths := getPackagePaths(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantPackagePaths, gotPackagePaths) {
+				t.Errorf("getPackagePaths() = %v, want %v", gotPackagePaths, tt.wantPackagePaths)
+			}
+		})
+	}
 }
