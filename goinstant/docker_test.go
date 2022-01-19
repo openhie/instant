@@ -149,3 +149,31 @@ func Test_getPackagePaths(t *testing.T) {
 		})
 	}
 }
+
+func Test_getEnvironmentVariables(t *testing.T) {
+	type args struct {
+		inputArr []string
+		flags    []string
+	}
+	tests := []struct {
+		name                     string
+		args                     args
+		wantEnvironmentVariables []string
+	}{
+		{
+			name: "Test case environment variables found",
+			args: args{
+				inputArr: []string{"-e=NODE_ENV=PROD", "-e=DOMAIN_NAME=instant.com"},
+				flags:    []string{"-e=", "--env-file="},
+			},
+			wantEnvironmentVariables: []string{"-e", "NODE_ENV=PROD", "-e", "DOMAIN_NAME=instant.com"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotEnvironmentVariables := getEnvironmentVariables(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantEnvironmentVariables, gotEnvironmentVariables) {
+				t.Errorf("getEnvironmentVariables() = %v, want %v", gotEnvironmentVariables, tt.wantEnvironmentVariables)
+			}
+		})
+	}
+}
