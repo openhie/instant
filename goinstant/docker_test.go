@@ -114,7 +114,7 @@ func TestRunDirectDockerCommand(t *testing.T) {
 	}
 }
 
-func TestSliceContains(t *testing.T) {
+func Test_sliceContains(t *testing.T) {
 	testCases := []struct {
 		slice    []string
 		element  string
