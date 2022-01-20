@@ -171,9 +171,17 @@ func Test_getPackagePaths(t *testing.T) {
 		wantPackagePaths []string
 	}{
 		{
-			name: "Test 1",
+			name: "Test 1 - '-c' flag",
 			args: args{
 				inputArr: []string{"-c=../docs", "-c=./docs"},
+				flags:    []string{"-c=", "--custom-package="},
+			},
+			wantPackagePaths: []string{"../docs", "./docs"},
+		},
+		{
+			name: "Test 2 - '--custom-package' flag",
+			args: args{
+				inputArr: []string{"--custom-package=../docs", "--custom-package=./docs"},
 				flags:    []string{"-c=", "--custom-package="},
 			},
 			wantPackagePaths: []string{"../docs", "./docs"},
@@ -205,6 +213,14 @@ func Test_getEnvironmentVariables(t *testing.T) {
 				flags:    []string{"-e=", "--env-file="},
 			},
 			wantEnvironmentVariables: []string{"-e", "NODE_ENV=PROD", "-e", "DOMAIN_NAME=instant.com"},
+		},
+		{
+			name: "Test case environment variables file found",
+			args: args{
+				inputArr: []string{"--env-file=../test.env"},
+				flags:    []string{"-e=", "--env-file="},
+			},
+			wantEnvironmentVariables: []string{"--env-file", "../test.env"},
 		},
 	}
 	for _, tt := range tests {
