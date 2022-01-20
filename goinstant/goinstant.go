@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 //go:embed banner.txt
@@ -37,6 +37,7 @@ type customOption struct {
 	customPackageFileLocations []string
 	onlyFlag                   bool
 	instantVersion             string
+	devMode                    bool
 }
 
 var customOptions = customOption{
@@ -44,6 +45,7 @@ var customOptions = customOption{
 	envVarFileLocation: "",
 	onlyFlag:           false,
 	instantVersion:     "latest",
+	devMode:            false,
 }
 
 func stopContainer() {

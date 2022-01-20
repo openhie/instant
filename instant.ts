@@ -166,6 +166,11 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
           name: 'only',
           alias: 'o',
           type: Boolean
+        },
+        {
+          name: 'dev',
+          alias: 'd',
+          type: Boolean
         }
       ],
       { argv, stopAtFirstUnknown: true }
@@ -189,6 +194,12 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
     if (!mainOptions.only) {
       // Order the packages such that the dependencies are instantiated first
       chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    }
+
+    if (mainOptions.dev) {
+      mainOptions.mode = 'dev'
+    } else {
+      mainOptions.mode = 'prod'
     }
 
     if (['destroy', 'down'].includes(main.command)) {
@@ -216,6 +227,14 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
             'k8s.sh',
             [main.command]
           )
+        }
+        break
+      case 'swarm':
+        for (const id of chosenPackageIds) {
+          await runBashScript(`${allPackages[id].path}/`, 'swarm.sh', [
+            main.command,
+            mainOptions.mode
+          ])
         }
         break
       default:
