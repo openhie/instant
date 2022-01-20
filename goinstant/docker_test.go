@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -115,8 +117,8 @@ func TestRunDirectDockerCommand(t *testing.T) {
 }
 
 func TestSliceContains(t *testing.T) {
-	testCases := []struct{
-		slice	   []string
+	testCases := []struct {
+		slice    []string
 		element  string
 		result   bool
 		testInfo string
@@ -211,6 +213,46 @@ func Test_getEnvironmentVariables(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotEnvironmentVariables := getEnvironmentVariables(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantEnvironmentVariables, gotEnvironmentVariables) {
 				t.Errorf("getEnvironmentVariables() = %v, want %v", gotEnvironmentVariables, tt.wantEnvironmentVariables)
+			}
+		})
+	}
+}
+
+func Test_createZipFile(t *testing.T) {
+	reader := bytes.NewReader(make([]byte, 128))
+
+	type args struct {
+		file    string
+		content io.Reader
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Test case create zip file",
+			args: args{
+				file:    "test_zip.zip",
+				content: reader,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := createZipFile(tt.args.file, tt.args.content); (err != nil) != tt.wantErr {
+				t.Errorf("createZipFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			_, err := os.Stat("./")
+			if err != nil {
+				t.Error(err)
+			}
+
+			err = os.Remove(tt.args.file)
+			if err != nil {
+				t.Error(err)
 			}
 		})
 	}
