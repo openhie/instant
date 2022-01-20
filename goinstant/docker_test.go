@@ -218,6 +218,106 @@ func Test_getEnvironmentVariables(t *testing.T) {
 	}
 }
 
+func Test_extractCommands(t *testing.T) {
+	type resultStruct struct {
+		environmentVariables []string
+		deployCommand        string
+		otherFlags           []string
+		deployEnvironment    string
+		packages             []string
+		customPackagePaths   []string
+		instantVersion       string
+	}
+
+	testCases := []struct {
+		startupCommands []string
+		expectedResults resultStruct
+		testInfo        string
+	}{
+		{
+			startupCommands: []string{"init", "docker", "--instant-version=v2.0.1", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
+			expectedResults: resultStruct{
+				environmentVariables: []string{"-e", "NODE_ENV=dev"},
+				deployCommand:        "init",
+				otherFlags:           []string{"-onlyFlag"},
+				deployEnvironment:    "docker",
+				packages:             []string{"core"},
+				customPackagePaths:   []string{"../test", "../test1"},
+				instantVersion:       "v2.0.1",
+			},
+			testInfo: "Extract commands test 1 - should return the expected commands",
+		},
+		{
+			startupCommands: []string{"up", "kubernetes", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
+			expectedResults: resultStruct{
+				environmentVariables: []string{"-e", "NODE_ENV=dev"},
+				deployCommand:        "up",
+				otherFlags:           []string{"-onlyFlag"},
+				deployEnvironment:    "kubernetes",
+				packages:             []string{"core"},
+				customPackagePaths:   []string{"../test", "../test1"},
+				instantVersion:       "v2.0.2",
+			},
+			testInfo: "Extract commands test 2 - should return the expected commands",
+		},
+		{
+			startupCommands: []string{"down", "k8s", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "--env-file=../test.env", "-onlyFlag", "core", "hapi-fhir"},
+			expectedResults: resultStruct{
+				environmentVariables: []string{"--env-file", "../test.env"},
+				deployCommand:        "down",
+				otherFlags:           []string{"-onlyFlag"},
+				deployEnvironment:    "k8s",
+				packages:             []string{"core", "hapi-fhir"},
+				customPackagePaths:   []string{"../test", "../test1"},
+				instantVersion:       "v2.0.2",
+			},
+			testInfo: "Extract commands test 3 - should return the expected commands",
+		},
+		{
+			startupCommands: []string{"destroy", "swarm", "--instant-version=v2.0.2", "--custom-package=../test", "-c=../test1", "-e=NODE_ENV=dev", "--onlyFlag", "core", "hapi-fhir"},
+			expectedResults: resultStruct{
+				environmentVariables: []string{"-e", "NODE_ENV=dev"},
+				deployCommand:        "destroy",
+				otherFlags:           []string{"--onlyFlag"},
+				deployEnvironment:    "swarm",
+				packages:             []string{"core", "hapi-fhir"},
+				customPackagePaths:   []string{"../test", "../test1"},
+				instantVersion:       "v2.0.2",
+			},
+			testInfo: "Extract commands test 4 - should return the expected commands",
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.testInfo, func(t *testing.T) {
+			environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths, instantVersion := extractCommands(tt.startupCommands)
+
+			if !assert.Equal(t, environmentVariables, tt.expectedResults.environmentVariables) {
+				t.Fatal("ExtractCommands should return the correct environment variables")
+			}
+			if !assert.Equal(t, deployCommand, tt.expectedResults.deployCommand) {
+				t.Fatal("ExtractCommands should return the correct deploy command")
+			}
+			if !assert.Equal(t, otherFlags, tt.expectedResults.otherFlags) {
+				t.Fatal("ExtractCommands should return the correct 'otherFlags'")
+			}
+			if !assert.Equal(t, deployEnvironment, tt.expectedResults.deployEnvironment) {
+				t.Fatal("ExtractCommands should return the correct deployEnvironment")
+			}
+			if !assert.Equal(t, packages, tt.expectedResults.packages) {
+				t.Fatal("ExtractCommands should return the correct packages")
+			}
+			if !assert.Equal(t, customPackagePaths, tt.expectedResults.customPackagePaths) {
+				t.Fatal("ExtractCommands should return the correct custom package paths")
+			}
+			if !assert.Equal(t, instantVersion, tt.expectedResults.instantVersion) {
+				t.Fatal("ExtractCommands should return the correct instant version")
+			}
+			t.Log(tt.testInfo + " passed!")
+		})
+	}
+}
+
 func Test_createZipFile(t *testing.T) {
 	reader := bytes.NewReader(make([]byte, 128))
 
