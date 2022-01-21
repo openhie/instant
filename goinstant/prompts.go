@@ -130,6 +130,7 @@ func selectCustomOptions() error {
 			"Specify custom package locations",
 			"Toggle only flag",
 			"Specify Instant Version",
+			"Toggle dev mode (default mode is prod)",
 			"Execute with current options",
 			"View current options set",
 			"Reset to default options",
@@ -157,6 +158,8 @@ func selectCustomOptions() error {
 		err = setCustomPackages()
 	case "Toggle only flag":
 		err = toggleOnlyFlag()
+	case "Toggle dev mode (default mode is prod)":
+		err = toggleDevMode()
 	case "Specify Instant Version":
 		err = setInstantVersion()
 	case "Execute with current options":
@@ -187,6 +190,7 @@ func resetAll() {
 	customOptions.customPackageFileLocations = make([]string, 0)
 	customOptions.onlyFlag = false
 	customOptions.instantVersion = "latest"
+	customOptions.devMode = false
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nAll custom options have been reset to default.\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 }
 
@@ -244,6 +248,9 @@ func executeCommand() error {
 	if customOptions.onlyFlag {
 		startupCommands = append(startupCommands, "--only")
 	}
+	if customOptions.devMode {
+		startupCommands = append(startupCommands, "--dev")
+	}
 	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
 	return RunDirectDockerCommand(startupCommands)
 }
@@ -280,6 +287,12 @@ func printAll(loopback bool) error {
 
 	fmt.Println("Only Flag Setting:")
 	if customOptions.onlyFlag {
+		fmt.Printf("-%q\n", "On")
+	} else {
+		fmt.Printf("-%q\n", "Off")
+	}
+	fmt.Println("Dev Mode Setting:")
+	if customOptions.devMode {
 		fmt.Printf("-%q\n\n", "On")
 	} else {
 		fmt.Printf("-%q\n\n", "Off")
@@ -431,6 +444,16 @@ func toggleOnlyFlag() error {
 		fmt.Println("Only flag is now on")
 	} else {
 		fmt.Println("Only flag is now off")
+	}
+	return selectCustomOptions()
+}
+
+func toggleDevMode() error {
+	customOptions.devMode = !customOptions.devMode
+	if customOptions.devMode {
+		fmt.Println("Dev mode is now on")
+	} else {
+		fmt.Println("Dev mode is now off")
 	}
 	return selectCustomOptions()
 }

@@ -1,3 +1,4 @@
+---
 image: openhie/instant
 defaultEnvironment: docker
 disableKubernetes: false
