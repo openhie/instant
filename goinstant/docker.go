@@ -317,6 +317,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	if err != nil {
 		return "", errors.Wrap(err, "Error in unzipping file:")
 	}
+	defer archive.Close()
 
 	packageName := ""
 	for _, file := range archive.File {
@@ -334,16 +335,18 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 		if err != nil {
 			return "", errors.Wrap(err, "Error in unzipping file:")
 		}
+		defer content.Close()
 
 		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			return "", errors.Wrap(err, "Error in unzipping file:")
 		}
+		defer dest.Close()
+
 		_, err = io.Copy(dest, content)
 		if err != nil {
 			return "", errors.Wrap(err, "Error in copying unzipping file:")
 		}
-		content.Close()
 	}
 
 	// Remove temp zip file
