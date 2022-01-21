@@ -84,21 +84,21 @@ func sliceContains(slice []string, element string) bool {
 	return false
 }
 
-func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, deployEnvironment string, packages []string, customPackagePaths []string, instantVersion string) {
+func extractCommands(startupCommands []string) (environmentVariables []string, deployCommand string, otherFlags []string, packages []string, customPackagePaths []string, instantVersion string, targetLauncher string) {
 	instantVersion = "latest"
 
 	for _, option := range startupCommands {
 		switch {
 		case sliceContains([]string{"init", "up", "down", "destroy"}, option):
 			deployCommand = option
-		case sliceContains([]string{"docker", "kubernetes", "k8s", "swarm"}, option):
-			deployEnvironment = option
 		case strings.HasPrefix(option, "-c=") || strings.HasPrefix(option, "--custom-package="):
 			customPackagePaths = append(customPackagePaths, option)
 		case strings.HasPrefix(option, "-e=") || strings.HasPrefix(option, "--env-file="):
 			environmentVariables = append(environmentVariables, option)
 		case strings.HasPrefix(option, "--instant-version="):
 			instantVersion = strings.Split(option, "--instant-version=")[1]
+		case strings.HasPrefix(option, "-t="):
+			targetLauncher = strings.Split(option, "-t=")[1]
 		case strings.HasPrefix(option, "-") || strings.HasPrefix(option, "--"):
 			otherFlags = append(otherFlags, option)
 		default:
@@ -116,18 +116,18 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 	return
 }
 
-func RunDirectDockerCommand(startupCommands []string) error {
+func RunDeployCommand(startupCommands []string) error {
 	fmt.Println("Note: Initial setup takes 1-5 minutes.\nWait for the DONE message.\n--------------------------")
 
-	environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths, instantVersion := extractCommands(startupCommands)
+	environmentVariables, deployCommand, otherFlags, packages, customPackagePaths, instantVersion, targetLauncher := extractCommands(startupCommands)
 
-	fmt.Println("Environment:", deployEnvironment)
 	fmt.Println("Action:", deployCommand)
 	fmt.Println("Package IDs:", packages)
 	fmt.Println("Custom package paths:", customPackagePaths)
 	fmt.Println("Environment Variables:", environmentVariables)
 	fmt.Println("Other Flags:", otherFlags)
 	fmt.Println("InstantVersion:", instantVersion)
+	fmt.Println("Target Launcher:", targetLauncher)
 
 	instantImage := cfg.Image + ":" + instantVersion
 
@@ -153,7 +153,7 @@ func RunDirectDockerCommand(startupCommands []string) error {
 	commandSlice = append(commandSlice, environmentVariables...)
 	commandSlice = append(commandSlice, []string{instantImage, deployCommand}...)
 	commandSlice = append(commandSlice, otherFlags...)
-	commandSlice = append(commandSlice, []string{"-t", deployEnvironment}...)
+	commandSlice = append(commandSlice, []string{"-t", targetLauncher}...)
 	commandSlice = append(commandSlice, packages...)
 	_, err = runCommand("docker", nil, commandSlice...)
 	if err != nil {

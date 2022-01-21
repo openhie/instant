@@ -1,6 +1,6 @@
 ---
 image: openhie/instant
-defaultEnvironment: docker
+defaultTargetLauncher: docker
 disableKubernetes: false
 disableIG: false
 packages:
