@@ -298,6 +298,9 @@ func createZipFile(file string, content io.Reader) error {
 	if err != nil {
 		return errors.Wrap(err, "Error in copying zip file content:")
 	}
+	if bytesWritten < 1 {
+		return errors.New("File created but no content written.")
+	}
 
 	return nil
 }
