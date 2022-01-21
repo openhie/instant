@@ -22,11 +22,12 @@ type Package struct {
 }
 
 type Config struct {
-	Image                 string    `yaml:"image"`
-	DefaultTargetLauncher string    `yaml:"defaultTargetLauncher"`
-	Packages              []Package `yaml:"packages"`
-	DisableKubernetes     bool      `yaml:"disableKubernetes"`
-	DisableIG             bool      `yaml:"disableIG"`
+	Image                        string    `yaml:"image"`
+	DefaultTargetLauncher        string    `yaml:"defaultTargetLauncher"`
+	Packages                     []Package `yaml:"packages"`
+	DisableKubernetes            bool      `yaml:"disableKubernetes"`
+	DisableIG                    bool      `yaml:"disableIG"`
+	DisableCustomTargetSelection bool      `yaml:"disableCustomTargetSelection"`
 }
 
 type customOption struct {

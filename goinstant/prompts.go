@@ -120,25 +120,32 @@ func selectDefaultOrCustom() error {
 }
 
 func selectCustomOptions() error {
+	index := 1
+	items := []string{
+		"Choose deploy action (default is init)",
+		"Specify deploy packages",
+		"Specify environment variable file location",
+		"Specify environment variables",
+		"Specify custom package locations",
+		"Toggle only flag",
+		"Specify Instant Version",
+		"Toggle dev mode (default mode is prod)",
+		"Execute with current options",
+		"View current options set",
+		"Reset to default options",
+		"Quit",
+		"Back",
+	}
+
+	if !cfg.DisableCustomTargetSelection {
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Choose target launcher (default is " + cfg.DefaultTargetLauncher + ")"
+	}
+
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{
-			"Choose deploy action (default is init)",
-			"Choose target launcher (default is " + cfg.DefaultTargetLauncher + ")",
-			"Specify deploy packages",
-			"Specify environment variable file location",
-			"Specify environment variables",
-			"Specify custom package locations",
-			"Toggle only flag",
-			"Specify Instant Version",
-			"Toggle dev mode (default mode is prod)",
-			"Execute with current options",
-			"View current options set",
-			"Reset to default options",
-			"Quit",
-			"Back",
-		},
-		Size: 12,
+		Items: items,
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
