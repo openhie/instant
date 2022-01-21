@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -335,40 +335,86 @@ func Test_extractCommands(t *testing.T) {
 }
 
 func Test_createZipFile(t *testing.T) {
-	reader := bytes.NewReader(make([]byte, 128))
+	var reader io.Reader
 
 	type args struct {
 		file    string
 		content io.Reader
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name     string
+		args     args
+		wantErr  bool
+		osCreate func(name string) (*os.File, error)
+		ioCopy   func(dst io.Writer, src io.Reader) (written int64, err error)
 	}{
 		{
-			name: "Test case create zip file",
+			name: "Test case create zip file no errors",
 			args: args{
 				file:    "test_zip.zip",
 				content: reader,
 			},
 			wantErr: false,
+			osCreate: func(name string) (*os.File, error) {
+				return os.NewFile(1, ""), nil
+			},
+			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+				return 1, nil
+			},
+		},
+		{
+			name: "Test case create zip file with errors from OsCreate",
+			args: args{
+				file:    "test_zip.zip",
+				content: reader,
+			},
+			wantErr: true,
+			osCreate: func(name string) (*os.File, error) {
+				return os.NewFile(1, ""), errors.New("Test error")
+			},
+			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+				return 1, nil
+			},
+		},
+		{
+			name: "Test case create zip file with errors from IoCopy",
+			args: args{
+				file:    "test_zip.zip",
+				content: reader,
+			},
+			wantErr: true,
+			osCreate: func(name string) (*os.File, error) {
+				return os.NewFile(1, ""), nil
+			},
+			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+				return 1, errors.New("Test error")
+			},
+		},
+		{
+			name: "Test case create empty zip",
+			args: args{
+				file:    "test_zip.zip",
+				content: reader,
+			},
+			wantErr: true,
+			osCreate: func(name string) (*os.File, error) {
+				return os.NewFile(1, ""), nil
+			},
+			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+				return 0, nil
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			OsCreate = tt.osCreate
+			IoCopy = tt.ioCopy
+
 			if err := createZipFile(tt.args.file, tt.args.content); (err != nil) != tt.wantErr {
 				t.Errorf("createZipFile() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			_, err := os.Stat("./")
-			if err != nil {
-				t.Error(err)
-			}
-
-			err = os.Remove(tt.args.file)
-			if err != nil {
-				t.Error(err)
+				log.Println(tt.name, "failed!")
+			} else {
+				log.Println(tt.name, "passed!")
 			}
 		})
 	}
