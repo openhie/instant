@@ -419,3 +419,57 @@ func Test_createZipFile(t *testing.T) {
 		})
 	}
 }
+
+func Test_runCommand(t *testing.T) {
+	testCases := []struct {
+		commandName    string
+		suppressErrors []string
+		commandSlice   []string
+		pathToPackage  string
+		errorString    error
+		testInfo       string
+	}{
+		{
+			commandName:    "docker",
+			suppressErrors: nil,
+			commandSlice:   []string{"ps"},
+			pathToPackage:  "",
+			errorString:    nil,
+			testInfo:       "runCommand - run basic docker ps test",
+		},
+		{
+			commandName:    "docker",
+			suppressErrors: nil,
+			commandSlice:   []string{"volume", "rm", "test-volume"},
+			pathToPackage:  "",
+			errorString:    fmt.Errorf("Error waiting for Cmd. Error: No such volume: test-volume\n: exit status 1"),
+			testInfo:       "runCommand - remove nonexistant volume should return error",
+		},
+		{
+			commandName:    "docker",
+			suppressErrors: []string{"Error: No such volume: test-volume"},
+			commandSlice:   []string{"volume", "rm", "test-volume"},
+			pathToPackage:  "",
+			errorString:    nil,
+			testInfo:       "runCommand - remove nonexistant volume and suppress error",
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.testInfo, func(t *testing.T) {
+			pathToPackage, err := runCommand(tt.commandName, tt.suppressErrors, tt.commandSlice...)
+			if !assert.Equal(t, pathToPackage, tt.pathToPackage) {
+				t.Fatal("RunCommand failed - path to package returned is incorrect")
+			}
+			if err != nil && tt.errorString != nil && !assert.Equal(t, err.Error(), tt.errorString.Error()) {
+				t.Fatal("RunCommand failed - error returned incorrect")
+			}
+
+			if (err != nil && tt.errorString == nil) || (err == nil && tt.errorString != nil) {
+				log.Fatal("RunCommand failed - error returned incorrect")
+			}
+
+			t.Log(tt.testInfo + " passed!")
+		})
+	}
+}
