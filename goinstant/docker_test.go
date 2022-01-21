@@ -356,7 +356,7 @@ func Test_createZipFile(t *testing.T) {
 			},
 			wantErr: false,
 			osCreate: func(name string) (*os.File, error) {
-				return os.NewFile(1, ""), nil
+				return &os.File{}, nil
 			},
 			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, nil
@@ -370,7 +370,7 @@ func Test_createZipFile(t *testing.T) {
 			},
 			wantErr: true,
 			osCreate: func(name string) (*os.File, error) {
-				return os.NewFile(1, ""), errors.New("Test error")
+				return &os.File{}, errors.New("Test error")
 			},
 			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, nil
@@ -384,7 +384,7 @@ func Test_createZipFile(t *testing.T) {
 			},
 			wantErr: true,
 			osCreate: func(name string) (*os.File, error) {
-				return os.NewFile(1, ""), nil
+				return &os.File{}, nil
 			},
 			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, errors.New("Test error")
@@ -398,7 +398,7 @@ func Test_createZipFile(t *testing.T) {
 			},
 			wantErr: true,
 			osCreate: func(name string) (*os.File, error) {
-				return os.NewFile(1, ""), nil
+				return &os.File{}, nil
 			},
 			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 0, nil
