@@ -282,14 +282,19 @@ func mountCustomPackage(pathToPackage string) error {
 	return err
 }
 
+var (
+	OsCreate = os.Create
+	IoCopy   = io.Copy
+)
+
 func createZipFile(file string, content io.Reader) error {
-	output, err := os.Create(file)
+	output, err := OsCreate(file)
 	if err != nil {
 		return errors.Wrap(err, "Error in creating zip file:")
 	}
 	defer output.Close()
 
-	_, err = io.Copy(output, content)
+	bytesWritten, err := IoCopy(output, content)
 	if err != nil {
 		return errors.Wrap(err, "Error in copying zip file content:")
 	}
