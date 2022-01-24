@@ -42,15 +42,12 @@ function getInstantOHIEPackages(): PackagesMap {
 
   for (const path of paths) {
     const metadata = JSON.parse(fs.readFileSync(path).toString())
-    packages[metadata.id] = path.contains('instant.json') === true ?
+    packages[metadata.id] = 
     {
       metadata,
-      path: path.replace('instant.json', '')
-    }
-    :
-    {
-      metadata,
-      path: path.replace('package-metadata.json', '')
+      path: path.contains('instant.json') === true ?
+              path.replace('instant.json', '') :
+              path.replace('package-metadata.json', '')
     };
   }
 
