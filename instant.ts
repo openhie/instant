@@ -28,24 +28,27 @@ interface PackagesMap {
 
 function getInstantOHIEPackages(): PackagesMap {
   const packages: PackagesMap = {}
-  let pathRegex = 'instant.json'
+  let metaPathRegex = 'package-metadata.json'
+  let pathRegex = 'instant.json'//Keeping the instant.json logic to ensure backward compatibility
   let paths = []
   let nestingLevel = 0
 
   while (nestingLevel < 5) {
+    metaPathRegex = "*/" + metaPathRegex
     pathRegex = "*/" + pathRegex
-    const nestedPackages = glob.sync(pathRegex)
-    
-    paths = paths.concat(nestedPackages)
+    paths = paths.concat(glob.sync(metaPathRegex), glob.sync(pathRegex))
     nestingLevel += 1
   }
 
   for (const path of paths) {
     const metadata = JSON.parse(fs.readFileSync(path).toString())
-    packages[metadata.id] = {
+    packages[metadata.id] = 
+    {
       metadata,
-      path: path.replace('instant.json', '')
-    }
+      path: path.includes('instant.json') === true ?
+              path.replace('instant.json', '') :
+              path.replace('package-metadata.json', '')
+    };
   }
 
   return packages
