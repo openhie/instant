@@ -1,8 +1,9 @@
 ---
 image: openhie/instant
-defaultEnvironment: docker
+defaultTargetLauncher: docker
 disableKubernetes: false
 disableIG: false
+disableCustomTargetSelection: false
 packages:
   - id: core
     name: Core package

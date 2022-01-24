@@ -22,11 +22,12 @@ type Package struct {
 }
 
 type Config struct {
-	Image              string    `yaml:"image"`
-	DefaultEnvironment string    `yaml:"defaultEnvironment"`
-	Packages           []Package `yaml:"packages"`
-	DisableKubernetes  bool      `yaml:"disableKubernetes"`
-	DisableIG          bool      `yaml:"disableIG"`
+	Image                        string    `yaml:"image"`
+	DefaultTargetLauncher        string    `yaml:"defaultTargetLauncher"`
+	Packages                     []Package `yaml:"packages"`
+	DisableKubernetes            bool      `yaml:"disableKubernetes"`
+	DisableIG                    bool      `yaml:"disableIG"`
+	DisableCustomTargetSelection bool      `yaml:"disableCustomTargetSelection"`
 }
 
 type customOption struct {
@@ -37,6 +38,7 @@ type customOption struct {
 	customPackageFileLocations []string
 	onlyFlag                   bool
 	instantVersion             string
+	targetLauncher             string
 	devMode                    bool
 }
 
@@ -45,6 +47,7 @@ var customOptions = customOption{
 	envVarFileLocation: "",
 	onlyFlag:           false,
 	instantVersion:     "latest",
+	targetLauncher:     "docker",
 	devMode:            false,
 }
 
@@ -76,6 +79,9 @@ func loadConfig() {
 func main() {
 	loadConfig()
 
+	//Need to set the default here as we declare the struct before the config is loaded in.
+	customOptions.targetLauncher = cfg.DefaultTargetLauncher
+
 	data, err := f.ReadFile("banner.txt")
 	if err != nil {
 		log.Println(err)
@@ -85,7 +91,6 @@ func main() {
 	color.Cyan("Version: 1.02b")
 	color.Blue("Remember to stop applications or they will continue to run and have an adverse impact on performance.")
 
-	// mainMenu()
 	if len(os.Args) > 1 {
 		err = CLI()
 		if err != nil {

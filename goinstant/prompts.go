@@ -120,24 +120,32 @@ func selectDefaultOrCustom() error {
 }
 
 func selectCustomOptions() error {
+	index := 1
+	items := []string{
+		"Choose deploy action (default is init)",
+		"Specify deploy packages",
+		"Specify environment variable file location",
+		"Specify environment variables",
+		"Specify custom package locations",
+		"Toggle only flag",
+		"Specify Instant Version",
+		"Toggle dev mode (default mode is prod)",
+		"Execute with current options",
+		"View current options set",
+		"Reset to default options",
+		"Quit",
+		"Back",
+	}
+
+	if !cfg.DisableCustomTargetSelection {
+		items = append(items[:index+1], items[index:]...)
+		items[index] = "Choose target launcher (default is " + cfg.DefaultTargetLauncher + ")"
+	}
+
 	prompt := promptui.Select{
 		Label: "Great, now choose an action",
-		Items: []string{
-			"Choose deploy action (default is init)",
-			"Specify deploy packages",
-			"Specify environment variable file location",
-			"Specify environment variables",
-			"Specify custom package locations",
-			"Toggle only flag",
-			"Specify Instant Version",
-			"Toggle dev mode (default mode is prod)",
-			"Execute with current options",
-			"View current options set",
-			"Reset to default options",
-			"Quit",
-			"Back",
-		},
-		Size: 12,
+		Items: items,
+		Size:  12,
 	}
 
 	_, result, err := prompt.Run()
@@ -148,6 +156,8 @@ func selectCustomOptions() error {
 	switch result {
 	case "Choose deploy action (default is init)":
 		err = setStartupAction()
+	case "Choose target launcher (default is " + cfg.DefaultTargetLauncher + ")":
+		err = setTargetLauncher()
 	case "Specify deploy packages":
 		err = setStartupPackages()
 	case "Specify environment variable file location":
@@ -190,6 +200,7 @@ func resetAll() {
 	customOptions.customPackageFileLocations = make([]string, 0)
 	customOptions.onlyFlag = false
 	customOptions.instantVersion = "latest"
+	customOptions.targetLauncher = cfg.DefaultTargetLauncher
 	customOptions.devMode = false
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nAll custom options have been reset to default.\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 }
@@ -221,8 +232,35 @@ func setStartupAction() error {
 	return err
 }
 
+func setTargetLauncher() error {
+	prompt := promptui.Select{
+		Label: "Choose a target launcher",
+		Items: []string{"docker", "swarm", "kubernetes", "Quit", "Back"},
+		Size:  12,
+	}
+
+	_, result, err := prompt.Run()
+	if err != nil {
+		return errors.Wrap(err, "setTargetLauncher() prompt failed")
+	}
+
+	fmt.Printf("You chose %q\n========================================\n", result)
+
+	switch result {
+	case "docker", "swarm", "kubernetes":
+		customOptions.targetLauncher = result
+		err = selectCustomOptions()
+	case "Quit":
+		quit()
+	case "Back":
+		err = selectCustomOptions()
+	}
+
+	return err
+}
+
 func executeCommand() error {
-	startupCommands := []string{cfg.DefaultEnvironment, customOptions.startupAction}
+	startupCommands := []string{customOptions.startupAction}
 
 	if len(customOptions.startupPackages) == 0 {
 		fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
@@ -252,7 +290,8 @@ func executeCommand() error {
 		startupCommands = append(startupCommands, "--dev")
 	}
 	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
-	return RunDirectDockerCommand(startupCommands)
+	startupCommands = append(startupCommands, "-t="+customOptions.targetLauncher)
+	return RunDeployCommand(startupCommands)
 }
 
 func printSlice(slice []string) {
@@ -264,6 +303,8 @@ func printSlice(slice []string) {
 
 func printAll(loopback bool) error {
 	fmt.Println("\nCurrent Custom Options Specified\n---------------------------------")
+	fmt.Println("Target Launcher:")
+	fmt.Printf("-%q\n", customOptions.targetLauncher)
 	fmt.Println("Startup Action:")
 	fmt.Printf("-%q\n", customOptions.startupAction)
 	fmt.Println("Startup Packages:")
@@ -521,26 +562,22 @@ func selectDefaultPackage(action string) error {
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
-	if result == "All" {
+	switch result {
+	case "All":
 		fmt.Println("...Setting up All Packages")
-		return RunDirectDockerCommand([]string{cfg.DefaultEnvironment, action})
-	}
-
-	if result == "Quit" {
+		return RunDeployCommand([]string{action, "-t=" + cfg.DefaultTargetLauncher})
+	case "Quit":
 		quit()
 		return nil
-	}
-
-	if result == "Back" {
+	case "Back":
+		return selectDefaultAction()
+	default:
+		err = RunDeployCommand([]string{cfg.Packages[i].ID, action, "-t=" + cfg.DefaultTargetLauncher})
+		if err != nil {
+			return err
+		}
 		return selectDefaultAction()
 	}
-
-	err = RunDirectDockerCommand([]string{cfg.DefaultEnvironment, cfg.Packages[i].ID, action})
-	if err != nil {
-		return err
-	}
-
-	return selectDefaultAction()
 }
 
 func selectPackageCluster() error {
@@ -561,7 +598,7 @@ func selectPackageCluster() error {
 	switch result {
 	case "Launch Core (Required, Start Here)":
 		fmt.Println("...Setting up Core Package")
-		err = RunDirectDockerCommand([]string{"k8s", "core", "init"})
+		err = RunDeployCommand([]string{"core", "init", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -569,7 +606,7 @@ func selectPackageCluster() error {
 
 	case "Launch Facility Registry":
 		fmt.Println("...Setting up Facility Registry Package")
-		err = RunDirectDockerCommand([]string{"k8s", "facility", "up"})
+		err = RunDeployCommand([]string{"facility", "up", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -577,7 +614,7 @@ func selectPackageCluster() error {
 
 	case "Launch Workforce":
 		fmt.Println("...Setting up Workforce Package")
-		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "up"})
+		err = RunDeployCommand([]string{"healthworker", "up", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -585,7 +622,7 @@ func selectPackageCluster() error {
 
 	case "Stop and Cleanup Core":
 		fmt.Println("Stopping and Cleaning Up Core...")
-		err = RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		err = RunDeployCommand([]string{"core", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -593,7 +630,7 @@ func selectPackageCluster() error {
 
 	case "Stop and Cleanup Facility Registry":
 		fmt.Println("Stopping and Cleaning Up Facility Registry...")
-		err = RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		err = RunDeployCommand([]string{"facility", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -601,7 +638,7 @@ func selectPackageCluster() error {
 
 	case "Stop and Cleanup Workforce":
 		fmt.Println("Stopping and Cleaning Up Workforce...")
-		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		err = RunDeployCommand([]string{"healthworker", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
@@ -609,15 +646,15 @@ func selectPackageCluster() error {
 
 	case "Stop All Services and Cleanup Kubernetes":
 		fmt.Println("Stopping and Cleaning Up Everything...")
-		err = RunDirectDockerCommand([]string{"k8s", "core", "destroy"})
+		err = RunDeployCommand([]string{"core", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
-		err = RunDirectDockerCommand([]string{"k8s", "facility", "destroy"})
+		err = RunDeployCommand([]string{"facility", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
-		err = RunDirectDockerCommand([]string{"k8s", "healthworker", "destroy"})
+		err = RunDeployCommand([]string{"healthworker", "destroy", "-t=k8s"})
 		if err != nil {
 			return err
 		}
