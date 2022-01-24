@@ -45,7 +45,7 @@ function getInstantOHIEPackages(): PackagesMap {
     packages[metadata.id] = 
     {
       metadata,
-      path: path.contains('instant.json') === true ?
+      path: path.includes('instant.json') === true ?
               path.replace('instant.json', '') :
               path.replace('package-metadata.json', '')
     };
