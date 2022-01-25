@@ -603,6 +603,8 @@ func Test_unzipPackage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defaultMockVariables()
+
 			ZipOpenReader = tt.zipOpenReader
 			OsMkdirAll = tt.osMkdirAll
 			FilepathJoin = tt.filepathJoin
@@ -620,5 +622,14 @@ func Test_unzipPackage(t *testing.T) {
 				log.Println(tt.name, "passed!")
 			}
 		})
+	}
+}
+
+func defaultMockVariables() {
+	OsCreate = func(name string) (*os.File, error) {
+		return &os.File{}, nil
+	}
+	IoCopy = func(dst io.Writer, src io.Reader) (written int64, err error) {
+		return 1, nil
 	}
 }
