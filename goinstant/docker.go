@@ -21,6 +21,15 @@ import (
 	"golang.org/x/net/context"
 )
 
+var (
+	OsCreate      = os.Create
+	IoCopy        = io.Copy
+	ZipOpenReader = zip.OpenReader
+	OsMkdirAll    = os.MkdirAll
+	FilepathJoin  = filepath.Join
+	OsRemove      = os.Remove
+)
+
 func debugDocker() error {
 	fmt.Printf("...checking your Docker setup")
 
@@ -282,11 +291,6 @@ func mountCustomPackage(pathToPackage string) error {
 	return err
 }
 
-var (
-	OsCreate = os.Create
-	IoCopy   = io.Copy
-)
-
 func createZipFile(file string, content io.Reader) error {
 	output, err := OsCreate(file)
 	if err != nil {
@@ -313,7 +317,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	}
 
 	// Unzip file
-	archive, err := zip.OpenReader(tempZipFile)
+	archive, err := ZipOpenReader(tempZipFile)
 	if err != nil {
 		return "", errors.Wrap(err, "Error in unzipping file:")
 	}
@@ -321,13 +325,16 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 
 	packageName := ""
 	for _, file := range archive.File {
-		filePath := filepath.Join(".", file.Name)
+		filePath := FilepathJoin(".", file.Name)
 
 		if file.FileInfo().IsDir() {
 			if packageName == "" {
 				packageName = file.Name
 			}
-			os.MkdirAll(filePath, os.ModePerm)
+			err = OsMkdirAll(filePath, os.ModePerm)
+			if err != nil {
+				return "", err
+			}
 			continue
 		}
 
@@ -343,21 +350,21 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 		}
 		defer dest.Close()
 
-		_, err = io.Copy(dest, content)
+		_, err = IoCopy(dest, content)
 		if err != nil {
 			return "", errors.Wrap(err, "Error in copying unzipping file:")
 		}
 	}
 
 	// Remove temp zip file
-	tempFilePath := filepath.Join(".", tempZipFile)
+	tempFilePath := FilepathJoin(".", tempZipFile)
 	archive.Close()
-	err = os.Remove(tempFilePath)
+	err = OsRemove(tempFilePath)
 	if err != nil {
 		return "", errors.Wrap(err, "Error in deleting temp.zip file:")
 	}
 
-	return filepath.Join(".", packageName), nil
+	return FilepathJoin(".", packageName), nil
 }
 
 func untarPackage(tarContent io.ReadCloser) (pathToPackage string, err error) {
