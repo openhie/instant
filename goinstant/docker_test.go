@@ -1,9 +1,11 @@
 package main
 
 import (
+	"archive/zip"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -470,6 +472,153 @@ func Test_runCommand(t *testing.T) {
 			}
 
 			t.Log(tt.testInfo + " passed!")
+		})
+	}
+}
+
+func Test_unzipPackage(t *testing.T) {
+	// OsOpenFile and IoCopy are intentionally not tested here since they
+	// will read/write to and from the file system.
+	type args struct {
+		zipContent io.ReadCloser
+	}
+	tests := []struct {
+		name              string
+		args              args
+		wantPathToPackage string
+		wantErr           bool
+		zipOpenReader     func(name string) (*zip.ReadCloser, error)
+		osMkdirAll        func(path string, perm fs.FileMode) error
+		filepathJoin      func(elem ...string) string
+		osRemove          func(name string) error
+	}{
+		{
+			name: "Test case no errors",
+			args: args{
+				zipContent: &io.PipeReader{},
+			},
+			wantPathToPackage: "",
+			wantErr:           false,
+			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+				zReader := new(zip.ReadCloser)
+				defer zReader.Close()
+
+				file := new(zip.File)
+				file.Name = "./"
+
+				zReader.File = append(zReader.File, file)
+				return zReader, nil
+			},
+			osMkdirAll: func(path string, perm fs.FileMode) error {
+				return nil
+			},
+			filepathJoin: func(elem ...string) string {
+				return ""
+			},
+			osRemove: func(name string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from ZipOpenReader",
+			args: args{
+				zipContent: &io.PipeReader{},
+			},
+			wantPathToPackage: "",
+			wantErr:           true,
+			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+				zReader := new(zip.ReadCloser)
+				defer zReader.Close()
+
+				file := new(zip.File)
+				file.Name = "./"
+
+				zReader.File = append(zReader.File, file)
+				return zReader, errors.New("ZipOpenReader error")
+			},
+			osMkdirAll: func(path string, perm fs.FileMode) error {
+				return nil
+			},
+			filepathJoin: func(elem ...string) string {
+				return ""
+			},
+			osRemove: func(name string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from OsMkdirAll",
+			args: args{
+				zipContent: &io.PipeReader{},
+			},
+			wantPathToPackage: "",
+			wantErr:           true,
+			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+				zReader := new(zip.ReadCloser)
+				defer zReader.Close()
+
+				file := new(zip.File)
+				file.Name = "./"
+
+				zReader.File = append(zReader.File, file)
+				return zReader, nil
+			},
+			osMkdirAll: func(path string, perm fs.FileMode) error {
+				return errors.New("OsMkdirAll error")
+			},
+			filepathJoin: func(elem ...string) string {
+				return ""
+			},
+			osRemove: func(name string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from OsRemove",
+			args: args{
+				zipContent: &io.PipeReader{},
+			},
+			wantPathToPackage: "",
+			wantErr:           true,
+			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+				zReader := new(zip.ReadCloser)
+				defer zReader.Close()
+
+				file := new(zip.File)
+				file.Name = "./"
+
+				zReader.File = append(zReader.File, file)
+				return zReader, nil
+			},
+			osMkdirAll: func(path string, perm fs.FileMode) error {
+				return nil
+			},
+			filepathJoin: func(elem ...string) string {
+				return ""
+			},
+			osRemove: func(name string) error {
+				return errors.New("OsRemove error")
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ZipOpenReader = tt.zipOpenReader
+			OsMkdirAll = tt.osMkdirAll
+			FilepathJoin = tt.filepathJoin
+			OsRemove = tt.osRemove
+
+			gotPathToPackage, err := unzipPackage(tt.args.zipContent)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("unzipPackage() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotPathToPackage != tt.wantPathToPackage {
+				t.Errorf("unzipPackage() = %v, want %v", gotPathToPackage, tt.wantPathToPackage)
+				log.Println(tt.name, "failed!")
+			} else {
+				log.Println(tt.name, "passed!")
+			}
 		})
 	}
 }
