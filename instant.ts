@@ -28,24 +28,27 @@ interface PackagesMap {
 
 function getInstantOHIEPackages(): PackagesMap {
   const packages: PackagesMap = {}
-  let pathRegex = 'instant.json'
+  let metaPathRegex = 'package-metadata.json'
+  let pathRegex = 'instant.json'//Keeping the instant.json logic to ensure backward compatibility
   let paths = []
   let nestingLevel = 0
 
   while (nestingLevel < 5) {
+    metaPathRegex = "*/" + metaPathRegex
     pathRegex = "*/" + pathRegex
-    const nestedPackages = glob.sync(pathRegex)
-    
-    paths = paths.concat(nestedPackages)
+    paths = paths.concat(glob.sync(metaPathRegex), glob.sync(pathRegex))
     nestingLevel += 1
   }
 
   for (const path of paths) {
     const metadata = JSON.parse(fs.readFileSync(path).toString())
-    packages[metadata.id] = {
+    packages[metadata.id] = 
+    {
       metadata,
-      path: path.replace('instant.json', '')
-    }
+      path: path.includes('instant.json') === true ?
+              path.replace('instant.json', '') :
+              path.replace('package-metadata.json', '')
+    };
   }
 
   return packages
@@ -166,6 +169,11 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
           name: 'only',
           alias: 'o',
           type: Boolean
+        },
+        {
+          name: 'dev',
+          alias: 'd',
+          type: Boolean
         }
       ],
       { argv, stopAtFirstUnknown: true }
@@ -189,6 +197,12 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
     if (!mainOptions.only) {
       // Order the packages such that the dependencies are instantiated first
       chosenPackageIds = orderPackageIds(allPackages, chosenPackageIds)
+    }
+
+    if (mainOptions.dev) {
+      mainOptions.mode = 'dev'
+    } else {
+      mainOptions.mode = 'prod'
     }
 
     if (['destroy', 'down'].includes(main.command)) {
@@ -216,6 +230,14 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
             'k8s.sh',
             [main.command]
           )
+        }
+        break
+      case 'swarm':
+        for (const id of chosenPackageIds) {
+          await runBashScript(`${allPackages[id].path}/`, 'swarm.sh', [
+            main.command,
+            mainOptions.mode
+          ])
         }
         break
       default:

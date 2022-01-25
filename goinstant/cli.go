@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-
-	"github.com/fatih/color"
 )
 
 func CLI() error {
@@ -13,17 +11,6 @@ func CLI() error {
 
 	var err error
 	switch startupCommands[0] {
-	case "docker":
-		if len(startupCommands) < 3 {
-			return errors.New("Incorrect arguments list passed to CLI. Requires at least 3 arguments when in non-interactive mode")
-		}
-
-		err = RunDirectDockerCommand(startupCommands)
-		if err != nil {
-			return err
-		}
-	case "k8s", "kubernetes":
-		color.Red("\nKubernetes not supported for now :(")
 	case "help":
 		fmt.Println(`
 Commands: 
@@ -74,7 +61,15 @@ Commands:
 			err = loadIGpackage(startupCommands[1], startupCommands[2], params)
 		}
 	default:
-		fmt.Println("The deploy command is not recognized: ", startupCommands)
+		if len(startupCommands) < 2 {
+			fmt.Println("The deploy command is not recognized: ", startupCommands)
+			return errors.New("Incorrect arguments list passed to CLI. Requires at least 2 arguments when in non-interactive mode")
+		}
+
+		err = RunDeployCommand(startupCommands)
+		if err != nil {
+			return err
+		}
 	}
 
 	return err
