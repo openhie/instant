@@ -351,9 +351,12 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 		}
 		defer dest.Close()
 
-		_, err = IoCopy(dest, content)
+		written, err := IoCopy(dest, content)
 		if err != nil {
 			return "", errors.Wrap(err, "Error in copying unzipping file:")
+		}
+		if written < 1 {
+			return "", errors.New("No content copied")
 		}
 	}
 
