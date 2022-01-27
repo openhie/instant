@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -34,7 +38,7 @@ func theOpenHIMServiceIsDestroyed() error {
 		return err
 	}
 
-	fileList := []string{"goinstant.exe", "goinstant-linux", "goinstant-macos"}
+	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
 	for _, f := range fileList {
 		err = os.Remove(filepath.Join(".", "bin", f))
 		if err != nil {
@@ -89,23 +93,53 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 }
 
 func buildBinary() string {
-	_, err := runCommand("/bin/sh", nil, filepath.Join(".", "buildreleases.sh"))
+	loggedResults, err := runTestCommand("/bin/sh", filepath.Join(".", "features", "build-cli.sh"))
 	if err != nil {
 		panic(err)
 	}
-	_, err = os.Stat(filepath.Join(".", "bin", "goinstant-linux"))
+	fmt.Println(loggedResults)
+	_, err = os.Stat(filepath.Join(".", "features", "test-platform-linux"))
 	if err != nil {
 		panic(err)
 	}
 
 	switch runtime.GOOS {
 	case "windows":
-		return filepath.Join(".", "bin", "goinstant.exe")
+		return filepath.Join(".", "features", "test-platform.exe")
 	case "ios":
-		return filepath.Join(".", "bin", "goinstant-macos")
+		return filepath.Join(".", "features", "test-platform-macos")
 	case "linux":
-		return filepath.Join(".", "bin", "goinstant-linux")
+		return filepath.Join(".", "features", "test-platform-linux")
 	default:
 		panic(errors.New("Operating system not supported"))
 	}
+}
+
+func runTestCommand(commandName string, commandSlice ...string) (string, error) {
+	cmd := exec.Command(commandName, commandSlice...)
+	cmdReader, err := cmd.StdoutPipe()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	var loggedResults string
+	scanner := bufio.NewScanner(cmdReader)
+	go func() {
+		for scanner.Scan() {
+			loggedResults += scanner.Text()
+		}
+	}()
+
+	err = cmd.Start()
+	if err != nil {
+		return "", errors.Wrap(err, "Error starting Cmd. "+stderr.String())
+
+	}
+
+	err = cmd.Wait()
+	if err != nil {
+		return "", errors.Wrap(err, "Error waiting for Cmd. "+stderr.String())
+
+	}
+
+	return loggedResults, nil
 }
