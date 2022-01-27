@@ -27,6 +27,7 @@ var (
 	ZipOpenReader = zip.OpenReader
 	OsMkdirAll    = os.MkdirAll
 	FilepathJoin  = filepath.Join
+	OsOpenFile    = os.OpenFile
 	OsRemove      = os.Remove
 )
 
@@ -344,7 +345,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 		}
 		defer content.Close()
 
-		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		dest, err := OsOpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			return "", errors.Wrap(err, "Error in unzipping file:")
 		}
