@@ -1,5 +1,5 @@
 ---
-image: 'jembi/go-cli-test-image:latest'
+image: 'jembi/go-cli-test-image'
 defaultTargetLauncher: docker
 disableKubernetes: false
 disableIG: false
