@@ -113,6 +113,11 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 	if len(environmentVariables) > 0 {
 		environmentVariables = getEnvironmentVariables(environmentVariables, []string{"-e=", "--env-file="})
 	}
+
+	if targetLauncher == "" {
+		targetLauncher = cfg.DefaultTargetLauncher
+	}
+
 	return
 }
 
