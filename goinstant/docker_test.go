@@ -359,8 +359,9 @@ func Test_runCommand(t *testing.T) {
 }
 
 func Test_unzipPackage(t *testing.T) {
-	// OsOpenFile and IoCopy are intentionally not tested here since they
-	// will read/write to and from the file system.
+	zipFile := createTestZipFile()
+	defer zipFile.Close()
+
 	type args struct {
 		zipContent io.ReadCloser
 	}
@@ -372,6 +373,7 @@ func Test_unzipPackage(t *testing.T) {
 		zipOpenReader     func(name string) (*zip.ReadCloser, error)
 		osMkdirAll        func(path string, perm fs.FileMode) error
 		filepathJoin      func(elem ...string) string
+		osOpenFile        func(name string, flag int, perm fs.FileMode) (*os.File, error)
 		osRemove          func(name string) error
 	}{
 		{
@@ -379,23 +381,27 @@ func Test_unzipPackage(t *testing.T) {
 			args: args{
 				zipContent: &io.PipeReader{},
 			},
-			wantPathToPackage: "",
+			wantPathToPackage: "test_zip.zip",
 			wantErr:           false,
 			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
-				zReader := new(zip.ReadCloser)
-				defer zReader.Close()
+				zipReader, err := zip.OpenReader(zipFile.Name())
+				if err != nil {
+					t.Fatal(err)
+				}
 
 				file := new(zip.File)
 				file.Name = "./"
-
-				zReader.File = append(zReader.File, file)
-				return zReader, nil
+				zipReader.File = append(zipReader.File, file)
+				return zipReader, nil
+			},
+			filepathJoin: func(elem ...string) string {
+				return zipFile.Name()
 			},
 			osMkdirAll: func(path string, perm fs.FileMode) error {
 				return nil
 			},
-			filepathJoin: func(elem ...string) string {
-				return ""
+			osOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
+				return &os.File{}, nil
 			},
 			osRemove: func(name string) error {
 				return nil
@@ -404,28 +410,12 @@ func Test_unzipPackage(t *testing.T) {
 		{
 			name: "Test case receive error from ZipOpenReader",
 			args: args{
-				zipContent: &io.PipeReader{},
+				zipContent: zipFile,
 			},
 			wantPathToPackage: "",
 			wantErr:           true,
 			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
-				zReader := new(zip.ReadCloser)
-				defer zReader.Close()
-
-				file := new(zip.File)
-				file.Name = "./"
-
-				zReader.File = append(zReader.File, file)
-				return zReader, errors.New("ZipOpenReader error")
-			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
-				return nil
-			},
-			filepathJoin: func(elem ...string) string {
-				return ""
-			},
-			osRemove: func(name string) error {
-				return nil
+				return &zip.ReadCloser{}, errors.New("ZipOpenReader error")
 			},
 		},
 		{
@@ -436,23 +426,43 @@ func Test_unzipPackage(t *testing.T) {
 			wantPathToPackage: "",
 			wantErr:           true,
 			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
-				zReader := new(zip.ReadCloser)
-				defer zReader.Close()
+				zipReader := new(zip.ReadCloser)
+				defer zipReader.Close()
 
 				file := new(zip.File)
 				file.Name = "./"
-
-				zReader.File = append(zReader.File, file)
-				return zReader, nil
-			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
-				return errors.New("OsMkdirAll error")
+				zipReader.File = append(zipReader.File, file)
+				return zipReader, nil
 			},
 			filepathJoin: func(elem ...string) string {
 				return ""
 			},
-			osRemove: func(name string) error {
+			osMkdirAll: func(path string, perm fs.FileMode) error {
+				return errors.New("OsMkdirAll error")
+			},
+		},
+		{
+			name: "Test case receive error from OsOpenFile",
+			args: args{
+				zipContent: &io.PipeReader{},
+			},
+			wantPathToPackage: "",
+			wantErr:           true,
+			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+				zipReader, err := zip.OpenReader(zipFile.Name())
+				if err != nil {
+					t.Fatal(err)
+				}
+				return zipReader, nil
+			},
+			filepathJoin: func(elem ...string) string {
+				return ""
+			},
+			osMkdirAll: func(path string, perm fs.FileMode) error {
 				return nil
+			},
+			osOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
+				return &os.File{}, errors.New("OsOpenFile error")
 			},
 		},
 		{
@@ -463,17 +473,7 @@ func Test_unzipPackage(t *testing.T) {
 			wantPathToPackage: "",
 			wantErr:           true,
 			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
-				zReader := new(zip.ReadCloser)
-				defer zReader.Close()
-
-				file := new(zip.File)
-				file.Name = "./"
-
-				zReader.File = append(zReader.File, file)
-				return zReader, nil
-			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
-				return nil
+				return &zip.ReadCloser{}, nil
 			},
 			filepathJoin: func(elem ...string) string {
 				return ""
@@ -485,11 +485,14 @@ func Test_unzipPackage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			zipFileExists(zipFile.Name())
+			defer cleanFiles(zipFile.Name())
 			defaultMockVariables()
 
 			ZipOpenReader = tt.zipOpenReader
-			OsMkdirAll = tt.osMkdirAll
 			FilepathJoin = tt.filepathJoin
+			OsMkdirAll = tt.osMkdirAll
+			OsOpenFile = tt.osOpenFile
 			OsRemove = tt.osRemove
 
 			gotPathToPackage, err := unzipPackage(tt.args.zipContent)
@@ -504,6 +507,48 @@ func Test_unzipPackage(t *testing.T) {
 				log.Println(tt.name, "passed!")
 			}
 		})
+	}
+}
+
+func createTestZipFile() *os.File {
+	zipFile, err := os.Create("test_zip.zip")
+	if err != nil {
+		panic(err)
+	}
+	defer zipFile.Close()
+
+	zipWriter := zip.NewWriter(zipFile)
+	defer zipWriter.Close()
+
+	writer, err := zipWriter.Create("test_txt.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = writer.Write([]byte("test data"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = zipWriter.Flush()
+	if err != nil {
+		panic(err)
+	}
+
+	return zipFile
+}
+
+func zipFileExists(fileName string) {
+	_, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		createTestZipFile()
+	}
+}
+
+func cleanFiles(fileName string) {
+	_, err := os.Stat(fileName)
+	if !os.IsNotExist(err) {
+		os.Remove(fileName)
 	}
 }
 
