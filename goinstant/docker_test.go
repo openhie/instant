@@ -123,7 +123,7 @@ func Test_extractCommands(t *testing.T) {
 		environmentVariables []string
 		deployCommand        string
 		otherFlags           []string
-		deployEnvironment    string
+		targetLauncher       string
 		packages             []string
 		customPackagePaths   []string
 		instantVersion       string
@@ -135,12 +135,12 @@ func Test_extractCommands(t *testing.T) {
 		testInfo        string
 	}{
 		{
-			startupCommands: []string{"init", "docker", "--instant-version=v2.0.1", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
+			startupCommands: []string{"init", "-t=docker", "--instant-version=v2.0.1", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
 			expectedResults: resultStruct{
 				environmentVariables: []string{"-e", "NODE_ENV=dev"},
 				deployCommand:        "init",
 				otherFlags:           []string{"-onlyFlag"},
-				deployEnvironment:    "docker",
+				targetLauncher:       "docker",
 				packages:             []string{"core"},
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.1",
@@ -148,12 +148,12 @@ func Test_extractCommands(t *testing.T) {
 			testInfo: "Extract commands test 1 - should return the expected commands",
 		},
 		{
-			startupCommands: []string{"up", "kubernetes", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
+			startupCommands: []string{"up", "-t=kubernetes", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
 			expectedResults: resultStruct{
 				environmentVariables: []string{"-e", "NODE_ENV=dev"},
 				deployCommand:        "up",
 				otherFlags:           []string{"-onlyFlag"},
-				deployEnvironment:    "kubernetes",
+				targetLauncher:       "kubernetes",
 				packages:             []string{"core"},
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
@@ -161,12 +161,12 @@ func Test_extractCommands(t *testing.T) {
 			testInfo: "Extract commands test 2 - should return the expected commands",
 		},
 		{
-			startupCommands: []string{"down", "k8s", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "--env-file=../test.env", "-onlyFlag", "core", "hapi-fhir"},
+			startupCommands: []string{"down", "-t=k8s", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "--env-file=../test.env", "-onlyFlag", "core", "hapi-fhir"},
 			expectedResults: resultStruct{
 				environmentVariables: []string{"--env-file", "../test.env"},
 				deployCommand:        "down",
 				otherFlags:           []string{"-onlyFlag"},
-				deployEnvironment:    "k8s",
+				targetLauncher:       "k8s",
 				packages:             []string{"core", "hapi-fhir"},
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
@@ -174,12 +174,12 @@ func Test_extractCommands(t *testing.T) {
 			testInfo: "Extract commands test 3 - should return the expected commands",
 		},
 		{
-			startupCommands: []string{"destroy", "swarm", "--instant-version=v2.0.2", "--custom-package=../test", "-c=../test1", "-e=NODE_ENV=dev", "--onlyFlag", "core", "hapi-fhir"},
+			startupCommands: []string{"destroy", "-t=swarm", "--instant-version=v2.0.2", "--custom-package=../test", "-c=../test1", "-e=NODE_ENV=dev", "--onlyFlag", "core", "hapi-fhir"},
 			expectedResults: resultStruct{
 				environmentVariables: []string{"-e", "NODE_ENV=dev"},
 				deployCommand:        "destroy",
 				otherFlags:           []string{"--onlyFlag"},
-				deployEnvironment:    "swarm",
+				targetLauncher:       "swarm",
 				packages:             []string{"core", "hapi-fhir"},
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
@@ -190,7 +190,7 @@ func Test_extractCommands(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.testInfo, func(t *testing.T) {
-			environmentVariables, deployCommand, otherFlags, deployEnvironment, packages, customPackagePaths, instantVersion := extractCommands(tt.startupCommands)
+			environmentVariables, deployCommand, otherFlags, packages, customPackagePaths, instantVersion, targetLauncher := extractCommands(tt.startupCommands)
 
 			if !assert.Equal(t, environmentVariables, tt.expectedResults.environmentVariables) {
 				t.Fatal("ExtractCommands should return the correct environment variables")
@@ -201,8 +201,8 @@ func Test_extractCommands(t *testing.T) {
 			if !assert.Equal(t, otherFlags, tt.expectedResults.otherFlags) {
 				t.Fatal("ExtractCommands should return the correct 'otherFlags'")
 			}
-			if !assert.Equal(t, deployEnvironment, tt.expectedResults.deployEnvironment) {
-				t.Fatal("ExtractCommands should return the correct deployEnvironment")
+			if !assert.Equal(t, targetLauncher, tt.expectedResults.targetLauncher) {
+				t.Fatal("ExtractCommands should return the correct targetLauncher")
 			}
 			if !assert.Equal(t, packages, tt.expectedResults.packages) {
 				t.Fatal("ExtractCommands should return the correct packages")
