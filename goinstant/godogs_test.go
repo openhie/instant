@@ -199,3 +199,18 @@ func runTestCommand(commandName string, commandSlice ...string) (string, error) 
 	wg.Wait()
 	return loggedResults, nil
 }
+
+func clean() {
+	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
+	for _, f := range fileList {
+		err := os.Remove(filepath.Join(".", "features", f))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	_, err := runTestCommand("docker", "volume", "rm", "instant")
+	if err != nil {
+		fmt.Println("Volume not deleted")
+	}
+}
