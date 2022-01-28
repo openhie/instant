@@ -166,12 +166,21 @@ func buildBinary() string {
 func runTestCommand(commandName string, commandSlice ...string) (string, error) {
 	cmd := exec.Command(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
+	if err != nil {
+		return "", err
+	}
+	defer cmdReader.Close()
+
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	var loggedResults string
 	scanner := bufio.NewScanner(cmdReader)
 	go func() {
+		defer wg.Done()
 		for scanner.Scan() {
 			loggedResults += scanner.Text()
 		}
@@ -182,12 +191,11 @@ func runTestCommand(commandName string, commandSlice ...string) (string, error) 
 		return "", errors.Wrap(err, "Error starting Cmd. "+stderr.String())
 
 	}
-
 	err = cmd.Wait()
 	if err != nil {
 		return "", errors.Wrap(err, "Error waiting for Cmd. "+stderr.String())
-
 	}
 
+	wg.Wait()
 	return loggedResults, nil
 }
