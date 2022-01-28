@@ -4,100 +4,148 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
+	"sync"
 
 	"github.com/cucumber/godog"
 	"github.com/pkg/errors"
 )
 
-var binaryFilePath string
+var (
+	binaryFilePath           string
+	output                   string
+	serviceInitialisedResult string
+	serviceBroughtDownResult string
+	serviceBroughtUpResult   string
+	serviceDestroyedResult   string
+	configOptionsResult      string
+)
 
-func theOpenHIMServiceIsInitialised() error {
-	_, err := runCommand(binaryFilePath, nil, "init", "-t=docker", "core")
-	return err
-}
-
-func theOpenHIMServiceIsBroughtDown() error {
-	_, err := runCommand(binaryFilePath, nil, "down", "-t=docker", "core")
-	return err
-}
-
-func theOpenHIMServiceIsBroughtUp() error {
-	_, err := runCommand(binaryFilePath, nil, "up", "-t=docker", "core")
-	return err
-}
-
-func theOpenHIMServiceIsDestroyed() error {
-	_, err := runCommand(binaryFilePath, nil, "destroy", "-t=docker", "core")
+func theServiceIsInitialised() error {
+	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "core")
 	if err != nil {
 		return err
 	}
-
-	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
-	for _, f := range fileList {
-		err = os.Remove(filepath.Join(".", "bin", f))
-		if err != nil {
-			return err
-		}
-	}
+	serviceInitialisedResult = result
 
 	return nil
 }
 
-func theServiceShouldBeReachable() error {
-	if !CheckOpenHimStatus() {
-		return errors.New("The service is not running")
-	}
-	return nil
+func checkTheServiceIsInitialised() error {
+	return theLoggedStringsMatch(serviceInitialisedResult, "init -t docker core")
 }
 
-func theServiceShouldNotBeReachable() error {
-	if CheckOpenHimStatus() {
-		return errors.New("The service is running")
-	}
-	return nil
-}
-
-func CheckOpenHimStatus() bool {
-	resp, err := http.Get("http://localhost:9000")
-	if resp == nil || resp.StatusCode != 200 {
-		return false
-	}
+func theServiceIsBroughtUp() error {
+	result, err := runTestCommand(binaryFilePath, "up", "-t=k8s", "core")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	defer resp.Body.Close()
+	serviceBroughtUpResult = result
 
-	return true
+	return nil
 }
 
-func InitializeScenario(ctx *godog.ScenarioContext) {
-	if binaryFilePath == "" {
-		binaryFilePath = buildBinary()
-	}
+func checkTheServiceIsBroughtUp() error {
+	return theLoggedStringsMatch(serviceBroughtUpResult, "up -t k8s core")
+}
 
-	ctx.Step(`^the OpenHIM service is brought down$`, theOpenHIMServiceIsBroughtDown)
-	ctx.Step(`^the OpenHIM service is brought up$`, theOpenHIMServiceIsBroughtUp)
-	ctx.Step(`^the OpenHIM service is destroyed$`, theOpenHIMServiceIsDestroyed)
-	ctx.Step(`^the OpenHIM service is initialised$`, theOpenHIMServiceIsInitialised)
-	ctx.Step(`^the OpenHIM service is initialised and running$`, theServiceShouldBeReachable)
-	ctx.Step(`^the OpenHIM service is initialised but not running$`, theServiceShouldNotBeReachable)
-	ctx.Step(`^the OpenHIM service is not instantiated$`, theServiceShouldNotBeReachable)
-	ctx.Step(`^the service should be reachable$`, theServiceShouldBeReachable)
-	ctx.Step(`^the service should not be reachable$`, theServiceShouldNotBeReachable)
+func theServiceIsBroughtDown() error {
+	result, err := runTestCommand(binaryFilePath, "down", "-t=swarm", "opencr")
+	if err != nil {
+		return err
+	}
+	serviceBroughtDownResult = result
+
+	return nil
+}
+
+func checkTheServiceIsBroughtDown() error {
+	return theLoggedStringsMatch(serviceBroughtDownResult, "down -t swarm opencr")
+}
+
+func theServiceIsDestroyed() error {
+	result, err := runTestCommand(binaryFilePath, "destroy", "-t=k8s", "core")
+	if err != nil {
+		return err
+	}
+	serviceDestroyedResult = result
+
+	return nil
+}
+
+func checkTheServiceIsDestroyed() error {
+	return theLoggedStringsMatch(serviceDestroyedResult, "destroy -t k8s core")
+}
+
+func theServiceConfigOptionsArePassed() error {
+	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "-c=./features", "custom_package", "-e=NODE_ENV=DEV", "--onlyFlag", "--dev")
+	if err != nil {
+		return err
+	}
+	configOptionsResult = result
+
+	return nil
+}
+
+func theLoggedStringsMatch(str, strToMatch string) error {
+	if !strings.Contains(str, strToMatch) {
+		return errors.New("String '" + strToMatch + "' not matched")
+	}
+	return nil
+}
+
+func checkTheServiceConfigOptionsArePassed() error {
+	err := theLoggedStringsMatch(configOptionsResult, "init --onlyFlag --dev -t docker custom_package")
+	if err != nil {
+		return err
+	}
+	return theLoggedStringsMatch(configOptionsResult, "NODE_ENV=DEV")
+}
+
+func InitializeScenario(sc *godog.ScenarioContext) {
+	suite := &godog.TestSuite{
+		TestSuiteInitializer: func(s *godog.TestSuiteContext) {
+			s.AfterSuite(clean)
+		},
+		ScenarioInitializer: func(sc *godog.ScenarioContext) {
+			if binaryFilePath == "" {
+				binaryFilePath = buildBinary()
+			}
+
+			sc.Step(`^the service is initialised$`, theServiceIsInitialised)
+			sc.Step(`^the service is brought up$`, theServiceIsBroughtUp)
+			sc.Step(`^the service is brought down$`, theServiceIsBroughtDown)
+			sc.Step(`^the service is destroyed$`, theServiceIsDestroyed)
+			sc.Step(`^the service config options are passed$`, theServiceConfigOptionsArePassed)
+
+			sc.Step(`^check the service is initialised$`, checkTheServiceIsInitialised)
+			sc.Step(`^check the service is brought up$`, checkTheServiceIsBroughtUp)
+			sc.Step(`^check the service is brought down$`, checkTheServiceIsBroughtDown)
+			sc.Step(`^check the service is destroyed$`, checkTheServiceIsDestroyed)
+			sc.Step(`^check the service config options are passed$`, checkTheServiceConfigOptionsArePassed)
+		},
+	}
+	// suite.ScenarioInitializer(sc)
+	// suite.TestSuiteInitializer = func(s *godog.TestSuiteContext) {
+	// 	s.AfterSuite(clean)
+	// }
+
+	if suite.Run() != 0 {
+		fmt.Println("Tests failed")
+		os.Exit(1)
+	}
+	os.Exit(0)
 }
 
 func buildBinary() string {
-	loggedResults, err := runTestCommand("/bin/sh", filepath.Join(".", "features", "build-cli.sh"))
+	_, err := runTestCommand("/bin/sh", filepath.Join(".", "features", "build-cli.sh"))
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(loggedResults)
 	_, err = os.Stat(filepath.Join(".", "features", "test-platform-linux"))
 	if err != nil {
 		panic(err)
