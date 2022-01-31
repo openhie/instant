@@ -16,69 +16,24 @@ import (
 )
 
 var (
-	binaryFilePath           string
-	output                   string
-	serviceInitialisedResult string
-	serviceBroughtDownResult string
-	serviceBroughtUpResult   string
-	serviceDestroyedResult   string
-	configOptionsResult      string
+	binaryFilePath string
+	cmdResult      string
 )
 
-func theServiceIsInitialised() error {
-	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "core")
+func theCommandIsRun(command string) error {
+	res, err := runTestCommand(binaryFilePath, strings.Split(command, " ")...)
 	if err == nil {
-		serviceInitialisedResult = result
+		cmdResult = res
 	}
-	return err
+	return nil
 }
 
-func checkTheServiceIsInitialised() error {
-	return theLoggedStringsMatch(serviceInitialisedResult, "init -t docker core")
-}
-
-func theServiceIsBroughtUp() error {
-	result, err := runTestCommand(binaryFilePath, "up", "-t=k8s", "core")
-	if err == nil {
-		serviceBroughtUpResult = result
+func checkTheCLIOutputIs(command string) error {
+	err := theLoggedStringsMatch(cmdResult, command)
+	if err != nil {
+		return err
 	}
-	return err
-}
-
-func checkTheServiceIsBroughtUp() error {
-	return theLoggedStringsMatch(serviceBroughtUpResult, "up -t k8s core")
-}
-
-func theServiceIsBroughtDown() error {
-	result, err := runTestCommand(binaryFilePath, "down", "-t=swarm", "opencr")
-	if err == nil {
-		serviceBroughtDownResult = result
-	}
-	return err
-}
-
-func checkTheServiceIsBroughtDown() error {
-	return theLoggedStringsMatch(serviceBroughtDownResult, "down -t swarm opencr")
-}
-
-func theServiceIsDestroyed() error {
-	result, err := runTestCommand(binaryFilePath, "destroy", "-t=k8s", "core")
-	if err == nil {
-		serviceDestroyedResult = result
-	}
-	return err
-}
-
-func checkTheServiceIsDestroyed() error {
-	return theLoggedStringsMatch(serviceDestroyedResult, "destroy -t k8s core")
-}
-
-func theServiceConfigOptionsArePassed() error {
-	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "-c=./features", "custom_package", "-e=NODE_ENV=DEV", "--onlyFlag", "--dev")
-	if err == nil {
-		configOptionsResult = result
-	}
-	return err
+	return nil
 }
 
 func theLoggedStringsMatch(str, strToMatch string) error {
@@ -88,35 +43,17 @@ func theLoggedStringsMatch(str, strToMatch string) error {
 	return nil
 }
 
-func checkTheServiceConfigOptionsArePassed() error {
-	err := theLoggedStringsMatch(configOptionsResult, "init --onlyFlag --dev -t docker custom_package")
-	if err != nil {
-		return err
-	}
-	return theLoggedStringsMatch(configOptionsResult, "NODE_ENV=DEV")
-}
-
 func InitializeScenario(sc *godog.ScenarioContext) {
 	suite := &godog.TestSuite{
 		TestSuiteInitializer: func(s *godog.TestSuiteContext) {
-			s.AfterSuite(clean)
+			s.AfterSuite(cleanBinaries)
 		},
 		ScenarioInitializer: func(sc *godog.ScenarioContext) {
 			if binaryFilePath == "" {
 				binaryFilePath = buildBinary()
 			}
-
-			sc.Step(`^the service is initialised$`, theServiceIsInitialised)
-			sc.Step(`^the service is brought up$`, theServiceIsBroughtUp)
-			sc.Step(`^the service is brought down$`, theServiceIsBroughtDown)
-			sc.Step(`^the service is destroyed$`, theServiceIsDestroyed)
-			sc.Step(`^the service config options are passed$`, theServiceConfigOptionsArePassed)
-
-			sc.Step(`^check the service is initialised$`, checkTheServiceIsInitialised)
-			sc.Step(`^check the service is brought up$`, checkTheServiceIsBroughtUp)
-			sc.Step(`^check the service is brought down$`, checkTheServiceIsBroughtDown)
-			sc.Step(`^check the service is destroyed$`, checkTheServiceIsDestroyed)
-			sc.Step(`^check the service config options are passed$`, checkTheServiceConfigOptionsArePassed)
+			sc.Step(`^check the CLI output is "([^"]*)"$`, checkTheCLIOutputIs)
+			sc.Step(`^the command "([^"]*)" is run$`, theCommandIsRun)
 		},
 	}
 
@@ -186,7 +123,7 @@ func runTestCommand(commandName string, commandSlice ...string) (string, error) 
 	return loggedResults, nil
 }
 
-func clean() {
+func cleanBinaries() {
 	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
 	for _, f := range fileList {
 		err := os.Remove(filepath.Join(".", "features", f))
