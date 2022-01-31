@@ -29,6 +29,7 @@ var (
 	FilepathJoin  = filepath.Join
 	OsOpenFile    = os.OpenFile
 	OsRemove      = os.Remove
+	execCommand   = exec.Command
 )
 
 func debugDocker() error {
@@ -197,7 +198,7 @@ func RunDeployCommand(startupCommands []string) error {
 }
 
 func runCommand(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
-	cmd := exec.Command(commandName, commandSlice...)
+	cmd := execCommand(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
