@@ -129,10 +129,6 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 			sc.Step(`^check the service config options are passed$`, checkTheServiceConfigOptionsArePassed)
 		},
 	}
-	// suite.ScenarioInitializer(sc)
-	// suite.TestSuiteInitializer = func(s *godog.TestSuiteContext) {
-	// 	s.AfterSuite(clean)
-	// }
 
 	if suite.Run() != 0 {
 		fmt.Println("Tests failed")
