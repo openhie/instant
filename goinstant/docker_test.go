@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -306,44 +307,61 @@ func Test_createZipFile(t *testing.T) {
 
 func Test_runCommand(t *testing.T) {
 	testCases := []struct {
-		commandName    string
-		suppressErrors []string
-		commandSlice   []string
-		pathToPackage  string
-		errorString    error
-		testInfo       string
+		commandName     string
+		suppressErrors  []string
+		commandSlice    []string
+		pathToPackage   string
+		errorString     error
+		testInfo        string
+		execCommandMock func(commandName string, commandSlice ...string) *exec.Cmd
 	}{
 		{
-			commandName:    "docker",
-			suppressErrors: nil,
-			commandSlice:   []string{"ps"},
-			pathToPackage:  "",
-			errorString:    nil,
-			testInfo:       "runCommand - run basic docker ps test",
+			commandName:     "docker",
+			suppressErrors:  nil,
+			commandSlice:    []string{"ps"},
+			pathToPackage:   "",
+			errorString:     nil,
+			testInfo:        "runCommand - run basic docker ps test",
+			execCommandMock: exec.Command,
 		},
 		{
-			commandName:    "docker",
-			suppressErrors: nil,
-			commandSlice:   []string{"volume", "rm", "test-volume"},
-			pathToPackage:  "",
-			errorString:    fmt.Errorf("Error waiting for Cmd. Error: No such volume: test-volume\n: exit status 1"),
-			testInfo:       "runCommand - remove nonexistant volume should return error",
+			commandName:     "docker",
+			suppressErrors:  nil,
+			commandSlice:    []string{"volume", "rm", "test-volume"},
+			pathToPackage:   "",
+			errorString:     fmt.Errorf("Error waiting for Cmd. Error: No such volume: test-volume\n: exit status 1"),
+			testInfo:        "runCommand - removing nonexistant volume should return error",
+			execCommandMock: exec.Command,
 		},
 		{
-			commandName:    "docker",
-			suppressErrors: []string{"Error: No such volume: test-volume"},
-			commandSlice:   []string{"volume", "rm", "test-volume"},
-			pathToPackage:  "",
+			commandName:     "docker",
+			suppressErrors:  []string{"Error: No such volume: test-volume"},
+			commandSlice:    []string{"volume", "rm", "test-volume"},
+			pathToPackage:   "",
+			errorString:     nil,
+			testInfo:        "runCommand - error thrown should be suppressed",
+			execCommandMock: exec.Command,
+		},
+		{
+			commandName:    "git",
+			suppressErrors: nil,
+			commandSlice:   []string{"clone", "git@github.com:testhie/test.git"},
+			pathToPackage:  "test",
 			errorString:    nil,
-			testInfo:       "runCommand - remove nonexistant volume and suppress error",
+			testInfo:       "runCommand - clone a custom package and return its location",
+			execCommandMock: func(commandName string, commandSlice ...string) *exec.Cmd {
+				cmd := exec.Command("pwd")
+				return cmd
+			},
 		},
 	}
 
 	for _, tt := range testCases {
 		t.Run(tt.testInfo, func(t *testing.T) {
+			execCommand = tt.execCommandMock
 			pathToPackage, err := runCommand(tt.commandName, tt.suppressErrors, tt.commandSlice...)
 			if !assert.Equal(t, pathToPackage, tt.pathToPackage) {
-				t.Fatal("RunCommand failed - path to package returned is incorrect")
+				t.Fatal("RunCommand failed - path to package returned is incorrect " + pathToPackage)
 			}
 			if err != nil && tt.errorString != nil && !assert.Equal(t, err.Error(), tt.errorString.Error()) {
 				t.Fatal("RunCommand failed - error returned incorrect")
