@@ -1,4 +1,8 @@
-Feature: configure service
-  Scenario: configure the service
-    When the service config options are passed
-    Then check the service config options are passed
+Feature: Test Deploy Options Commands
+  Scenario: Initialise Core Service in Dev Mode
+    When the command "init core -t=docker --dev" is run
+    Then check the CLI output is "init -t docker core --dev"
+
+  Scenario: Initialise Custom Service in Dev Mode
+    When the command "init core -t=docker --dev" is run
+    Then check the CLI output is "init -t docker core --dev"
