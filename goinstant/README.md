@@ -51,7 +51,13 @@ Check [here](https://github.com/openhie/instant/actions/new) to review the outpu
 
 ### Testing
 
-The [godog library](https://github.com/cucumber/godog), which provides us with the [Cucumber Framework](https://cucumber.io/) is used for functional tests of the Go CLI. To run the tests install godog and then navigate to the `goinstant` root folder and run the command below.
+The [godog library](https://github.com/cucumber/godog), which provides us with the [Cucumber Framework](https://cucumber.io/) is used for functional tests of the Go CLI. To run the tests, you'll need to [install godog](https://github.com/cucumber/godog#install).
+
+```bash
+go install github.com/cucumber/godog/cmd/godog@v0.12.0
+```
+
+Then, navigate to the `goinstant` root folder and run the command below.
 
 ```bash
 godog
