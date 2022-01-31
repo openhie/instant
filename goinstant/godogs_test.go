@@ -27,12 +27,10 @@ var (
 
 func theServiceIsInitialised() error {
 	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "core")
-	if err != nil {
-		return err
+	if err == nil {
+		serviceInitialisedResult = result
 	}
-	serviceInitialisedResult = result
-
-	return nil
+	return err
 }
 
 func checkTheServiceIsInitialised() error {
@@ -41,12 +39,10 @@ func checkTheServiceIsInitialised() error {
 
 func theServiceIsBroughtUp() error {
 	result, err := runTestCommand(binaryFilePath, "up", "-t=k8s", "core")
-	if err != nil {
-		return err
+	if err == nil {
+		serviceBroughtUpResult = result
 	}
-	serviceBroughtUpResult = result
-
-	return nil
+	return err
 }
 
 func checkTheServiceIsBroughtUp() error {
@@ -55,12 +51,10 @@ func checkTheServiceIsBroughtUp() error {
 
 func theServiceIsBroughtDown() error {
 	result, err := runTestCommand(binaryFilePath, "down", "-t=swarm", "opencr")
-	if err != nil {
-		return err
+	if err == nil {
+		serviceBroughtDownResult = result
 	}
-	serviceBroughtDownResult = result
-
-	return nil
+	return err
 }
 
 func checkTheServiceIsBroughtDown() error {
@@ -69,12 +63,10 @@ func checkTheServiceIsBroughtDown() error {
 
 func theServiceIsDestroyed() error {
 	result, err := runTestCommand(binaryFilePath, "destroy", "-t=k8s", "core")
-	if err != nil {
-		return err
+	if err == nil {
+		serviceDestroyedResult = result
 	}
-	serviceDestroyedResult = result
-
-	return nil
+	return err
 }
 
 func checkTheServiceIsDestroyed() error {
@@ -83,12 +75,10 @@ func checkTheServiceIsDestroyed() error {
 
 func theServiceConfigOptionsArePassed() error {
 	result, err := runTestCommand(binaryFilePath, "init", "-t=docker", "-c=./features", "custom_package", "-e=NODE_ENV=DEV", "--onlyFlag", "--dev")
-	if err != nil {
-		return err
+	if err == nil {
+		configOptionsResult = result
 	}
-	configOptionsResult = result
-
-	return nil
+	return err
 }
 
 func theLoggedStringsMatch(str, strToMatch string) error {
