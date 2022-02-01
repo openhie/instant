@@ -22,14 +22,15 @@ import (
 )
 
 var (
-	OsCreate      = os.Create
-	IoCopy        = io.Copy
-	ZipOpenReader = zip.OpenReader
-	OsMkdirAll    = os.MkdirAll
-	FilepathJoin  = filepath.Join
-	OsOpenFile    = os.OpenFile
-	OsRemove      = os.Remove
-	execCommand   = exec.Command
+	OsCreate         = os.Create
+	IoCopy           = io.Copy
+	ZipOpenReader    = zip.OpenReader
+	OsMkdirAll       = os.MkdirAll
+	FilepathJoin     = filepath.Join
+	OsOpenFile       = os.OpenFile
+	OsRemove         = os.Remove
+	execCommand      = exec.Command
+	runDeployCommand = RunDeployCommand
 )
 
 func debugDocker() error {

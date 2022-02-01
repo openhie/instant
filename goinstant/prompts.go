@@ -293,7 +293,7 @@ func executeCommand() error {
 	}
 	DeployCommands = append(DeployCommands, "--instant-version="+customOptions.instantVersion)
 	DeployCommands = append(DeployCommands, "-t="+customOptions.targetLauncher)
-	return RunDeployCommand(DeployCommands)
+	return runDeployCommand(DeployCommands)
 }
 
 func printSlice(slice []string) {
