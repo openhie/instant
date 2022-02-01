@@ -21,3 +21,11 @@ Feature: Test Deploy Options Commands
       | covid19-immunization-tracking-package | https://github.com/jembi/covid19-immunization-tracking-package.git |
       | who-covid19-surveillance-package | https://github.com/jembi/who-covid19-surveillance-package.git |
     Then check the CLI output is "init -t docker covid19immunization client covid19surveillance"
+
+  Scenario: Initialise Core Service with .env file
+    When the command "init core -t=docker --env-file=features/.env.test" is run
+    Then check the CLI output is "--env-file features/.env.test"
+
+  Scenario: Initialise Core Service with Environment Variable
+    When the command "init core -t=docker -e=TEST=ME" is run
+    Then check the CLI output is "-e TEST=ME"
