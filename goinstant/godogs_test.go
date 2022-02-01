@@ -46,7 +46,7 @@ func compareStrings(inputLogs, expectedOutput string) error {
 func InitializeScenario(sc *godog.ScenarioContext) {
 	suite := &godog.TestSuite{
 		TestSuiteInitializer: func(s *godog.TestSuiteContext) {
-			s.AfterSuite(cleanBinaries)
+			s.AfterSuite(cleanUp)
 		},
 		ScenarioInitializer: func(sc *godog.ScenarioContext) {
 			if binaryFilePath == "" {
@@ -123,7 +123,7 @@ func runTestCommand(commandName string, commandSlice ...string) (string, error) 
 	return loggedResults, nil
 }
 
-func cleanBinaries() {
+func cleanUp() {
 	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
 	for _, f := range fileList {
 		err := os.Remove(filepath.Join(".", "features", f))
