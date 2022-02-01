@@ -29,16 +29,16 @@ func theCommandIsRun(command string) error {
 }
 
 func checkTheCLIOutputIs(command string) error {
-	err := theLoggedStringsMatch(cmdResult, command)
+	err := compareStrings(cmdResult, command)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func theLoggedStringsMatch(str, strToMatch string) error {
-	if !strings.Contains(str, strToMatch) {
-		return errors.New("String '" + strToMatch + "' not matched")
+func compareStrings(inputLogs, expectedOutput string) error {
+	if !strings.Contains(inputLogs, expectedOutput) {
+		return errors.New("Logs received: '" + inputLogs + "\nSubstring expected: " + expectedOutput)
 	}
 	return nil
 }
