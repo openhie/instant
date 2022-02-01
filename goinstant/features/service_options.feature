@@ -3,6 +3,10 @@ Feature: Test Deploy Options Commands
     When the command "init core -t=docker --dev" is run
     Then check the CLI output is "init --dev -t docker core"
 
+  Scenario: Down only Core Service
+    When the command "init core -t=docker --only" is run
+    Then check the CLI output is "init --only -t docker core"
+
   Scenario: Initialise Template Custom Service
     When the command "init template -t=docker -c=https://github.com/jembi/instant-openhie-template-package.git" is run
     Then check that the CLI added custom packages
