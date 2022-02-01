@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -11,6 +10,7 @@ import (
 	"os/exec"
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -576,5 +576,158 @@ func defaultMockVariables() {
 	}
 	IoCopy = func(dst io.Writer, src io.Reader) (written int64, err error) {
 		return 1, nil
+	}
+}
+
+func TestRunDeployCommand(t *testing.T) {
+	type args struct {
+		startupCommands []string
+	}
+	tests := []struct {
+		name                   string
+		args                   args
+		wantErr                bool
+		mockRunCommand         func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
+		mockMountCustomPackage func(pathToPackage string) error
+	}{
+		{
+			name: "Test case expect no errors",
+			args: args{
+				startupCommands: []string{"init", "core", "-c=./local/cPack", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: false,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", nil
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from first call to RunCommand()",
+			args: args{
+				startupCommands: []string{"init", "core", "-c=./local/cPack", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: true,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", errors.New("test error")
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from second call to RunCommand()",
+			args: args{
+				startupCommands: []string{"down", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: true,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", errors.New("test error")
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from third call to RunCommand()",
+			args: args{
+				startupCommands: []string{"down", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: true,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				if commandSlice[0] == "start" {
+					return "", errors.New("test error")
+				}
+				return "", nil
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from final call to RunCommand()",
+			args: args{
+				startupCommands: []string{"destroy", "core", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: true,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				var match bool
+				for i, cs := range commandSlice {
+					if cs != []string{"volume", "rm", "instant"}[i] {
+						return "", nil
+					} else {
+						match = true
+					}
+				}
+				if match {
+					return "", errors.New("test error")
+				}
+				return "", nil
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case verify commandSlice append",
+			args: args{
+				startupCommands: []string{"up", "hmis", "mcsd", "--env-file=./home/bin", "-e=NODE_ENV=DEV",
+					"-e=DOMAIN_NAME=instant.com", "-c=./usr/local/cPack", "--only", "--dev", "--instant-version=v1.03a", "-t=k8s"},
+			},
+			wantErr: false,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				if commandSlice[0] != "create" {
+					return "", nil
+				}
+
+				expectedCommandSlice := []string{
+					"create",
+					"--rm",
+					"--mount=type=volume,src=instant,dst=/instant",
+					"--name", "instant-openhie",
+					"-v", "/var/run/docker.sock:/var/run/docker.sock",
+					"--network", "host",
+					"--env-file", "./home/bin", "-e", "NODE_ENV=DEV", "-e", "DOMAIN_NAME=instant.com",
+					":v1.03a", "up", "--only", "--dev",
+					"-t", "k8s", "hmis", "mcsd",
+				}
+
+				var mismatch bool
+				for i, cs := range commandSlice {
+					if cs != expectedCommandSlice[i] && !mismatch {
+						mismatch = true
+						t.Errorf("commandSlice not matched, got %v, expected %v", commandSlice, expectedCommandSlice)
+					}
+				}
+				return "", nil
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return nil
+			},
+		},
+		{
+			name: "Test case receive error from MountCustomPackage()",
+			args: args{
+				startupCommands: []string{"init", "core", "-c=./local/cPack", "--instant-version=latest", "-t=docker"},
+			},
+			wantErr: true,
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", nil
+			},
+			mockMountCustomPackage: func(pathToPackage string) error {
+				return errors.New("test error")
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			RunCommand = tt.mockRunCommand
+			MountCustomPackage = tt.mockMountCustomPackage
+
+			if err := RunDeployCommand(tt.args.startupCommands); (err != nil) != tt.wantErr {
+				t.Errorf("RunDeployCommand() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
