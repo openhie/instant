@@ -123,14 +123,17 @@ func runTestCommand(commandName string, commandSlice ...string) (string, error) 
 	return loggedResults, nil
 }
 
-func cleanUp() {
-	fileList := []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"}
-	for _, f := range fileList {
-		err := os.Remove(filepath.Join(".", "features", f))
+func deleteContentAtFilePath(filePath []string, content []string) {
+	for _, c := range content {
+		err := os.RemoveAll(filepath.Join(filepath.Join(filePath...), c))
 		if err != nil {
 			panic(err)
 		}
 	}
+}
+
+func cleanUp() {
+	deleteContentAtFilePath([]string{".", "features"}, []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"})
 
 	_, err := runTestCommand("docker", "volume", "rm", "instant")
 	if err != nil {
