@@ -134,7 +134,7 @@ func deleteContentAtFilePath(filePath []string, content []string) {
 
 func cleanUp() {
 	deleteContentAtFilePath([]string{".", "features"}, []string{"test-platform.exe", "test-platform-linux", "test-platform-macos"})
-
+	deleteContentAtFilePath([]string{"."}, []string{"instant-openhie-template-package"})
 	_, err := runTestCommand("docker", "volume", "rm", "instant")
 	if err != nil {
 		fmt.Println("Volume not deleted")
