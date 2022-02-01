@@ -17,19 +17,19 @@ import (
 
 var (
 	binaryFilePath string
-	cmdResult      string
+	logs           string
 )
 
 func theCommandIsRun(command string) error {
 	res, err := runTestCommand(binaryFilePath, strings.Split(command, " ")...)
 	if err == nil {
-		cmdResult = res
+		logs = res
 	}
 	return nil
 }
 
-func checkTheCLIOutputIs(command string) error {
-	err := compareStrings(cmdResult, command)
+func checkTheCLIOutputIs(expectedOutput string) error {
+	err := compareStrings(logs, expectedOutput)
 	if err != nil {
 		return err
 	}
