@@ -29,3 +29,7 @@ Feature: Test Deploy Options Commands
   Scenario: Initialise Core Service with Environment Variable
     When the command "init core -t=docker -e=TEST=ME" is run
     Then check the CLI output is "-e TEST=ME"
+
+  Scenario: Initialise Core Service on specific image version
+    When the command "init core -t=docker --instant-version=alt-v" is run
+    Then check the CLI output is "InstantVersion: alt-v"
