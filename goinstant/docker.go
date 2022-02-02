@@ -197,7 +197,7 @@ func RunDeployCommand(startupCommands []string) error {
 	return err
 }
 
-func runCommand(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+var runCommand = func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 	cmd := execCommand(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
@@ -311,7 +311,7 @@ func createZipFile(file string, content io.Reader) error {
 	return nil
 }
 
-func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
+var unzipPackage = func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	tempZipFile := "temp.zip"
 	err = createZipFile(tempZipFile, zipContent)
 	if err != nil {
@@ -372,7 +372,7 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	return FilepathJoin(".", packageName), nil
 }
 
-func untarPackage(tarContent io.ReadCloser) (pathToPackage string, err error) {
+var untarPackage = func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 	packageName := ""
 	gzipReader, err := gzip.NewReader(tarContent)
 	if err != nil {
