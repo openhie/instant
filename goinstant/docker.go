@@ -22,14 +22,17 @@ import (
 )
 
 var (
-	OsCreate      = os.Create
-	IoCopy        = io.Copy
-	ZipOpenReader = zip.OpenReader
-	OsMkdirAll    = os.MkdirAll
-	FilepathJoin  = filepath.Join
-	OsOpenFile    = os.OpenFile
-	OsRemove      = os.Remove
-	execCommand   = exec.Command
+	OsCreate           = os.Create
+	IoCopy             = io.Copy
+	ZipOpenReader      = zip.OpenReader
+	OsMkdirAll         = os.MkdirAll
+	FilepathJoin       = filepath.Join
+	OsOpenFile         = os.OpenFile
+	OsRemove           = os.Remove
+	execCommand        = exec.Command
+	runDeployCommand   = RunDeployCommand
+	RunCommand         = runCommand
+	MountCustomPackage = mountCustomPackage
 )
 
 func debugDocker() error {
@@ -146,7 +149,7 @@ func RunDeployCommand(startupCommands []string) error {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = runCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
+		_, err = RunCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
 		if err != nil {
 			return err
 		}
@@ -166,7 +169,7 @@ func RunDeployCommand(startupCommands []string) error {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", targetLauncher}...)
 	commandSlice = append(commandSlice, packages...)
-	_, err = runCommand("docker", nil, commandSlice...)
+	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
 		return err
 	}
@@ -175,7 +178,7 @@ func RunDeployCommand(startupCommands []string) error {
 
 	for _, c := range customPackagePaths {
 		fmt.Print("- " + c)
-		err = mountCustomPackage(c)
+		err = MountCustomPackage(c)
 		if err != nil {
 			return err
 		}
@@ -183,7 +186,7 @@ func RunDeployCommand(startupCommands []string) error {
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	_, err = runCommand("docker", nil, commandSlice...)
+	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
 		return err
 	}
@@ -191,7 +194,7 @@ func RunDeployCommand(startupCommands []string) error {
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = runCommand("docker", nil, commandSlice...)
+		_, err = RunCommand("docker", nil, commandSlice...)
 	}
 
 	return err

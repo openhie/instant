@@ -259,8 +259,10 @@ func setTargetLauncher() error {
 	return err
 }
 
+var DeployCommands []string
+
 func executeCommand() error {
-	startupCommands := []string{customOptions.startupAction}
+	DeployCommands = []string{customOptions.startupAction}
 
 	if len(customOptions.startupPackages) == 0 {
 		fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
@@ -268,30 +270,30 @@ func executeCommand() error {
 			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 	}
 
-	startupCommands = append(startupCommands, customOptions.startupPackages...)
+	DeployCommands = append(DeployCommands, customOptions.startupPackages...)
 
 	if customOptions.envVarFileLocation != "" && len(customOptions.envVarFileLocation) > 0 {
-		startupCommands = append(startupCommands, "--env-file="+customOptions.envVarFileLocation)
+		DeployCommands = append(DeployCommands, "--env-file="+customOptions.envVarFileLocation)
 	}
 	if customOptions.envVars != nil && len(customOptions.envVars) > 0 {
 		for _, e := range customOptions.envVars {
-			startupCommands = append(startupCommands, "-e="+e)
+			DeployCommands = append(DeployCommands, "-e="+e)
 		}
 	}
 	if customOptions.customPackageFileLocations != nil && len(customOptions.customPackageFileLocations) > 0 {
 		for _, c := range customOptions.customPackageFileLocations {
-			startupCommands = append(startupCommands, "-c="+c)
+			DeployCommands = append(DeployCommands, "-c="+c)
 		}
 	}
 	if customOptions.onlyFlag {
-		startupCommands = append(startupCommands, "--only")
+		DeployCommands = append(DeployCommands, "--only")
 	}
 	if customOptions.devMode {
-		startupCommands = append(startupCommands, "--dev")
+		DeployCommands = append(DeployCommands, "--dev")
 	}
-	startupCommands = append(startupCommands, "--instant-version="+customOptions.instantVersion)
-	startupCommands = append(startupCommands, "-t="+customOptions.targetLauncher)
-	return RunDeployCommand(startupCommands)
+	DeployCommands = append(DeployCommands, "--instant-version="+customOptions.instantVersion)
+	DeployCommands = append(DeployCommands, "-t="+customOptions.targetLauncher)
+	return runDeployCommand(DeployCommands)
 }
 
 func printSlice(slice []string) {
