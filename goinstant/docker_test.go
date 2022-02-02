@@ -9,9 +9,11 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func Test_sliceContains(t *testing.T) {
@@ -374,6 +376,219 @@ func Test_runCommand(t *testing.T) {
 			t.Log(tt.testInfo + " passed!")
 		})
 	}
+}
+
+func Test_mountPackage(t *testing.T) {
+	defer gock.Off()
+	defer resetMountPackageMocks(runCommand, unzipPackage, untarPackage)
+
+	testCases := []struct {
+		pathToPackage    string
+		mockServer       func()
+		testInfo         string
+		wantErr          bool
+		errorString      string
+		runCommandMock   func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
+		unzipPackageMock func(zipContent io.ReadCloser) (pathToPackage string, err error)
+		untarPackageMock func(tarContent io.ReadCloser) (pathToPackage string, err error)
+	}{
+		{
+			pathToPackage:  "http://test:8080/test",
+			mockServer:     func() {},
+			errorString:    "Error in downloading custom package",
+			wantErr:        true,
+			testInfo:       "mountPackage - should return error when downloading custom package fails",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "git@github.com:test/test.git",
+			mockServer:    func() {},
+			errorString:   "Error in git cloning",
+			wantErr:       true,
+			testInfo:      "mountPackage - should return error when 'git cloning' a custom package fails",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", errors.New("Error in git cloning")
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "http://test.com/test.zip",
+			mockServer: func() {
+				gock.New("http://test.com").
+					Get("/test.zip").
+					Reply(200).
+					BodyString("Zip File Content")
+			},
+			errorString: "Error in unzipping package",
+			wantErr:     true,
+			testInfo:    "mountPackage - should return error when unziping the custom package fails",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", errors.New("Error in unzipping package")
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "http://test.com/test.tar.gz",
+			mockServer: func() {
+				gock.New("http://test.com").
+					Get("/test.tar.gz").
+					Reply(200).
+					BodyString("Tar File Content")
+			},
+			errorString: "Error in untarring package",
+			wantErr:     true,
+			testInfo:    "mountPackage - should return error when untarring the custom package fails",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", errors.New("Error in untarring package")
+			},
+		},
+		{
+			pathToPackage: "http://test.com/test.tar.gz",
+			mockServer: func() {
+				gock.New("http://test.com").
+					Get("/test.tar.gz").
+					Reply(200).
+					BodyString("Tar File Content")
+			},
+			errorString: "Error in copying package",
+			wantErr:     true,
+			testInfo:    "mountPackage - should return error when copying the custom package to the instant docker container fails",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				return "", errors.New("Error in copying package")
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "git@github.com:test/test.git",
+			mockServer: func() {},
+			errorString: "",
+			wantErr:     false,
+			testInfo:    "mountPackage - should git clone custom package and copy it to the instant docker container",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				pathToPackage = "./test"
+				if commandName == "git" {
+					return pathToPackage, nil
+				}
+				if commandName == "docker" && commandSlice[1] != pathToPackage {
+					t.Fatal("Path to package returned is incorrect")
+				}
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "http://test.com/test1.zip",
+			mockServer: func() {
+				gock.New("http://test.com").
+					Get("/test1.zip").
+					Reply(200).
+					BodyString("Zip File Content")
+			},
+			errorString: "",
+			wantErr:     false,
+			testInfo:    "mountPackage - should unzip custom package and copy it to the instant docker container",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				pathToPackage = "./test1"
+
+				if commandName == "docker" && commandSlice[1] != pathToPackage {
+					t.Fatal("Path to custom package returned is incorrect")
+				}
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "./test1", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+		},
+		{
+			pathToPackage: "http://test.com/test2.tar.gz",
+			mockServer: func() {
+				gock.New("http://test.com").
+					Get("/test2.tar.gz").
+					Reply(200).
+					BodyString("Tar File Content")
+			},
+			errorString: "",
+			wantErr:     false,
+			testInfo:    "mountPackage - should untar custom package and copy it to the instant docker container",
+			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+				pathToPackage = "./test2"
+
+				if commandName == "docker" && commandSlice[1] != pathToPackage {
+					t.Fatal("Path to custom package returned is incorrect")
+				}
+				return "", nil
+			},
+			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+				return "", nil
+			},
+			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+				return "./test2", nil
+			},
+		},
+	}
+
+	for _, tt := range testCases {
+		runCommand = tt.runCommandMock
+		tt.mockServer()
+		unzipPackage = tt.unzipPackageMock
+		untarPackage = tt.untarPackageMock
+
+		t.Run(tt.testInfo, func(t *testing.T) {
+			err := mountCustomPackage(tt.pathToPackage)
+			if err == nil && tt.wantErr {
+				t.Fatal("Expected error - '" + tt.errorString + "' but got nil")
+			}
+			if tt.wantErr {
+				if !strings.Contains(err.Error(), tt.errorString) {
+					t.Fatal(err.Error())
+				}
+			}
+			t.Log(tt.testInfo + " passed!")
+		})
+	}
+}
+
+func resetMountPackageMocks(originalRunCommand func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error), originalUnzip func(zipContent io.ReadCloser) (pathToPackage string, err error), originalUntar func(tarContent io.ReadCloser) (pathToPackage string, err error)) {
+	runCommand = originalRunCommand
+	unzipPackage = originalUnzip
+	untarPackage = originalUntar
 }
 
 func Test_unzipPackage(t *testing.T) {
