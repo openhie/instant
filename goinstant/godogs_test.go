@@ -30,7 +30,7 @@ func theCommandIsRun(command string) error {
 }
 
 func checkTheCLIOutputIs(expectedOutput string) error {
-	err := compareStrings(logs, expectedOutput)
+	err := compareLogsAndOutputs(logs, expectedOutput)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func checkCustomPackages(packages *godog.Table) error {
 			case "directory":
 				directoryNames = append(directoryNames, cell.Value)
 			case "location":
-				err := compareStrings(logs, cell.Value)
+				err := compareLogsAndOutputs(logs, cell.Value)
 				if err != nil {
 					return err
 				}
@@ -57,12 +57,10 @@ func checkCustomPackages(packages *godog.Table) error {
 		}
 	}
 
-	// Cleanup downloaded packages post test
-	deleteContentAtFilePath([]string{".", "features"}, directoryNames)
 	return nil
 }
 
-func compareStrings(inputLogs, expectedOutput string) error {
+func compareLogsAndOutputs(inputLogs, expectedOutput string) error {
 	if !strings.Contains(inputLogs, expectedOutput) {
 		return errors.New("Logs received: '" + inputLogs + "\nSubstring expected: " + expectedOutput)
 	}
@@ -93,10 +91,6 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 
 func buildBinary() string {
 	_, err := runTestCommand("/bin/sh", filepath.Join(".", "features", "build-cli.sh"))
-	if err != nil {
-		panic(err)
-	}
-	_, err = os.Stat(filepath.Join(".", "features", "test-platform-linux"))
 	if err != nil {
 		panic(err)
 	}
