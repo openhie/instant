@@ -315,7 +315,7 @@ func Test_runCommand(t *testing.T) {
 		pathToPackage   string
 		errorString     error
 		testInfo        string
-		execCommandMock func(commandName string, commandSlice ...string) *exec.Cmd
+		mockExecCommand func(commandName string, commandSlice ...string) *exec.Cmd
 	}{
 		{
 			commandName:     "docker",
@@ -324,7 +324,7 @@ func Test_runCommand(t *testing.T) {
 			pathToPackage:   "",
 			errorString:     nil,
 			testInfo:        "runCommand - run basic docker ps test",
-			execCommandMock: exec.Command,
+			mockExecCommand: exec.Command,
 		},
 		{
 			commandName:     "docker",
@@ -333,7 +333,7 @@ func Test_runCommand(t *testing.T) {
 			pathToPackage:   "",
 			errorString:     fmt.Errorf("Error waiting for Cmd. Error: No such volume: test-volume\n: exit status 1"),
 			testInfo:        "runCommand - removing nonexistant volume should return error",
-			execCommandMock: exec.Command,
+			mockExecCommand: exec.Command,
 		},
 		{
 			commandName:     "docker",
@@ -342,7 +342,7 @@ func Test_runCommand(t *testing.T) {
 			pathToPackage:   "",
 			errorString:     nil,
 			testInfo:        "runCommand - error thrown should be suppressed",
-			execCommandMock: exec.Command,
+			mockExecCommand: exec.Command,
 		},
 		{
 			commandName:    "git",
@@ -351,7 +351,7 @@ func Test_runCommand(t *testing.T) {
 			pathToPackage:  "test",
 			errorString:    nil,
 			testInfo:       "runCommand - clone a custom package and return its location",
-			execCommandMock: func(commandName string, commandSlice ...string) *exec.Cmd {
+			mockExecCommand: func(commandName string, commandSlice ...string) *exec.Cmd {
 				cmd := exec.Command("pwd")
 				return cmd
 			},
@@ -360,7 +360,7 @@ func Test_runCommand(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.testInfo, func(t *testing.T) {
-			execCommand = tt.execCommandMock
+			execCommand = tt.mockExecCommand
 			pathToPackage, err := runCommand(tt.commandName, tt.suppressErrors, tt.commandSlice...)
 			if !assert.Equal(t, pathToPackage, tt.pathToPackage) {
 				t.Fatal("RunCommand failed - path to package returned is incorrect " + pathToPackage)
@@ -388,17 +388,17 @@ func Test_mountPackage(t *testing.T) {
 		testInfo         string
 		wantErr          bool
 		errorString      string
-		runCommandMock   func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
+		mockRunCommand   func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
 		unzipPackageMock func(zipContent io.ReadCloser) (pathToPackage string, err error)
 		untarPackageMock func(tarContent io.ReadCloser) (pathToPackage string, err error)
 	}{
 		{
-			pathToPackage:  "http://test:8080/test",
-			mockServer:     func() {},
-			errorString:    "Error in downloading custom package",
-			wantErr:        true,
-			testInfo:       "mountPackage - should return error when downloading custom package fails",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			pathToPackage: "http://test:8080/test",
+			mockServer:    func() {},
+			errorString:   "Error in downloading custom package",
+			wantErr:       true,
+			testInfo:      "mountPackage - should return error when downloading custom package fails",
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
 			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
@@ -414,7 +414,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString:   "Error in git cloning",
 			wantErr:       true,
 			testInfo:      "mountPackage - should return error when 'git cloning' a custom package fails",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in git cloning")
 			},
 			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
@@ -435,7 +435,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString: "Error in unzipping package",
 			wantErr:     true,
 			testInfo:    "mountPackage - should return error when unziping the custom package fails",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
 			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
@@ -456,7 +456,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString: "Error in untarring package",
 			wantErr:     true,
 			testInfo:    "mountPackage - should return error when untarring the custom package fails",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
 			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
@@ -477,7 +477,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString: "Error in copying package",
 			wantErr:     true,
 			testInfo:    "mountPackage - should return error when copying the custom package to the instant docker container fails",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in copying package")
 			},
 			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
@@ -489,11 +489,11 @@ func Test_mountPackage(t *testing.T) {
 		},
 		{
 			pathToPackage: "git@github.com:test/test.git",
-			mockServer: func() {},
-			errorString: "",
-			wantErr:     false,
-			testInfo:    "mountPackage - should git clone custom package and copy it to the instant docker container",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockServer:    func() {},
+			errorString:   "",
+			wantErr:       false,
+			testInfo:      "mountPackage - should git clone custom package and copy it to the instant docker container",
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test"
 				if commandName == "git" {
 					return pathToPackage, nil
@@ -521,7 +521,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString: "",
 			wantErr:     false,
 			testInfo:    "mountPackage - should unzip custom package and copy it to the instant docker container",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test1"
 
 				if commandName == "docker" && commandSlice[1] != pathToPackage {
@@ -547,7 +547,7 @@ func Test_mountPackage(t *testing.T) {
 			errorString: "",
 			wantErr:     false,
 			testInfo:    "mountPackage - should untar custom package and copy it to the instant docker container",
-			runCommandMock: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test2"
 
 				if commandName == "docker" && commandSlice[1] != pathToPackage {
@@ -565,7 +565,7 @@ func Test_mountPackage(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		runCommand = tt.runCommandMock
+		runCommand = tt.mockRunCommand
 		tt.mockServer()
 		unzipPackage = tt.unzipPackageMock
 		untarPackage = tt.untarPackageMock
