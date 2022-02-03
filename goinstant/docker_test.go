@@ -18,33 +18,33 @@ import (
 
 func Test_sliceContains(t *testing.T) {
 	testCases := []struct {
-		slice    []string
-		element  string
-		result   bool
-		testInfo string
+		slice   []string
+		element string
+		result  bool
+		name    string
 	}{
 		{
-			testInfo: "SliceContain test - should return true when slice contains element",
-			slice:    []string{"Optimus Prime", "Iron Hyde"},
-			element:  "Optimus Prime",
-			result:   true,
+			name:    "SliceContain test - should return true when slice contains element",
+			slice:   []string{"Optimus Prime", "Iron Hyde"},
+			element: "Optimus Prime",
+			result:  true,
 		},
 		{
-			testInfo: "SliceContain test - should return false when slice does not contain element",
-			slice:    []string{"Optimus Prime", "Iron Hyde"},
-			element:  "Megatron",
-			result:   false,
+			name:    "SliceContain test - should return false when slice does not contain element",
+			slice:   []string{"Optimus Prime", "Iron Hyde"},
+			element: "Megatron",
+			result:  false,
 		},
 	}
 
 	for _, tt := range testCases {
-		t.Run(tt.testInfo, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			ans := sliceContains(tt.slice, tt.element)
 
 			if ans != tt.result {
 				t.Fatal("SliceContains should return" + fmt.Sprintf("%t", tt.result) + "but returned" + fmt.Sprintf("%t", ans))
 			}
-			t.Log(tt.testInfo + " passed!")
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -135,7 +135,7 @@ func Test_extractCommands(t *testing.T) {
 	testCases := []struct {
 		startupCommands []string
 		expectedResults resultStruct
-		testInfo        string
+		name            string
 	}{
 		{
 			startupCommands: []string{"init", "-t=docker", "--instant-version=v2.0.1", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
@@ -148,7 +148,7 @@ func Test_extractCommands(t *testing.T) {
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.1",
 			},
-			testInfo: "Extract commands test 1 - should return the expected commands",
+			name: "Extract commands test 1 - should return the expected commands",
 		},
 		{
 			startupCommands: []string{"up", "-t=kubernetes", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "-e=NODE_ENV=dev", "-onlyFlag", "core"},
@@ -161,7 +161,7 @@ func Test_extractCommands(t *testing.T) {
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
 			},
-			testInfo: "Extract commands test 2 - should return the expected commands",
+			name: "Extract commands test 2 - should return the expected commands",
 		},
 		{
 			startupCommands: []string{"down", "-t=k8s", "--instant-version=v2.0.2", "-c=../test", "-c=../test1", "--env-file=../test.env", "-onlyFlag", "core", "hapi-fhir"},
@@ -174,7 +174,7 @@ func Test_extractCommands(t *testing.T) {
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
 			},
-			testInfo: "Extract commands test 3 - should return the expected commands",
+			name: "Extract commands test 3 - should return the expected commands",
 		},
 		{
 			startupCommands: []string{"destroy", "-t=swarm", "--instant-version=v2.0.2", "--custom-package=../test", "-c=../test1", "-e=NODE_ENV=dev", "--onlyFlag", "core", "hapi-fhir"},
@@ -187,12 +187,12 @@ func Test_extractCommands(t *testing.T) {
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
 			},
-			testInfo: "Extract commands test 4 - should return the expected commands",
+			name: "Extract commands test 4 - should return the expected commands",
 		},
 	}
 
 	for _, tt := range testCases {
-		t.Run(tt.testInfo, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			environmentVariables, deployCommand, otherFlags, packages, customPackagePaths, instantVersion, targetLauncher := extractCommands(tt.startupCommands)
 
 			if !assert.Equal(t, environmentVariables, tt.expectedResults.environmentVariables) {
@@ -216,7 +216,7 @@ func Test_extractCommands(t *testing.T) {
 			if !assert.Equal(t, instantVersion, tt.expectedResults.instantVersion) {
 				t.Fatal("ExtractCommands should return the correct instant version")
 			}
-			t.Log(tt.testInfo + " passed!")
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -314,7 +314,7 @@ func Test_runCommand(t *testing.T) {
 		commandSlice    []string
 		pathToPackage   string
 		errorString     error
-		testInfo        string
+		name            string
 		mockExecCommand func(commandName string, commandSlice ...string) *exec.Cmd
 	}{
 		{
@@ -323,7 +323,7 @@ func Test_runCommand(t *testing.T) {
 			commandSlice:    []string{"ps"},
 			pathToPackage:   "",
 			errorString:     nil,
-			testInfo:        "runCommand - run basic docker ps test",
+			name:            "runCommand - run basic docker ps test",
 			mockExecCommand: exec.Command,
 		},
 		{
@@ -332,7 +332,7 @@ func Test_runCommand(t *testing.T) {
 			commandSlice:    []string{"volume", "rm", "test-volume"},
 			pathToPackage:   "",
 			errorString:     fmt.Errorf("Error waiting for Cmd. Error: No such volume: test-volume\n: exit status 1"),
-			testInfo:        "runCommand - removing nonexistant volume should return error",
+			name:            "runCommand - removing nonexistant volume should return error",
 			mockExecCommand: exec.Command,
 		},
 		{
@@ -341,7 +341,7 @@ func Test_runCommand(t *testing.T) {
 			commandSlice:    []string{"volume", "rm", "test-volume"},
 			pathToPackage:   "",
 			errorString:     nil,
-			testInfo:        "runCommand - error thrown should be suppressed",
+			name:            "runCommand - error thrown should be suppressed",
 			mockExecCommand: exec.Command,
 		},
 		{
@@ -350,7 +350,7 @@ func Test_runCommand(t *testing.T) {
 			commandSlice:   []string{"clone", "git@github.com:testhie/test.git"},
 			pathToPackage:  "test",
 			errorString:    nil,
-			testInfo:       "runCommand - clone a custom package and return its location",
+			name:           "runCommand - clone a custom package and return its location",
 			mockExecCommand: func(commandName string, commandSlice ...string) *exec.Cmd {
 				cmd := exec.Command("pwd")
 				return cmd
@@ -359,7 +359,7 @@ func Test_runCommand(t *testing.T) {
 	}
 
 	for _, tt := range testCases {
-		t.Run(tt.testInfo, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			execCommand = tt.mockExecCommand
 			pathToPackage, err := runCommand(tt.commandName, tt.suppressErrors, tt.commandSlice...)
 			if !assert.Equal(t, pathToPackage, tt.pathToPackage) {
@@ -373,7 +373,7 @@ func Test_runCommand(t *testing.T) {
 				log.Fatal("RunCommand failed - error returned incorrect")
 			}
 
-			t.Log(tt.testInfo + " passed!")
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -385,7 +385,7 @@ func Test_mountPackage(t *testing.T) {
 	testCases := []struct {
 		pathToPackage    string
 		mockServer       func()
-		testInfo         string
+		name             string
 		wantErr          bool
 		errorString      string
 		mockRunCommand   func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
@@ -397,7 +397,7 @@ func Test_mountPackage(t *testing.T) {
 			mockServer:    func() {},
 			errorString:   "Error in downloading custom package",
 			wantErr:       true,
-			testInfo:      "mountPackage - should return error when downloading custom package fails",
+			name:          "mountPackage - should return error when downloading custom package fails",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
@@ -413,7 +413,7 @@ func Test_mountPackage(t *testing.T) {
 			mockServer:    func() {},
 			errorString:   "Error in git cloning",
 			wantErr:       true,
-			testInfo:      "mountPackage - should return error when 'git cloning' a custom package fails",
+			name:          "mountPackage - should return error when 'git cloning' a custom package fails",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in git cloning")
 			},
@@ -434,7 +434,7 @@ func Test_mountPackage(t *testing.T) {
 			},
 			errorString: "Error in unzipping package",
 			wantErr:     true,
-			testInfo:    "mountPackage - should return error when unziping the custom package fails",
+			name:        "mountPackage - should return error when unziping the custom package fails",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
@@ -455,7 +455,7 @@ func Test_mountPackage(t *testing.T) {
 			},
 			errorString: "Error in untarring package",
 			wantErr:     true,
-			testInfo:    "mountPackage - should return error when untarring the custom package fails",
+			name:        "mountPackage - should return error when untarring the custom package fails",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
@@ -476,7 +476,7 @@ func Test_mountPackage(t *testing.T) {
 			},
 			errorString: "Error in copying package",
 			wantErr:     true,
-			testInfo:    "mountPackage - should return error when copying the custom package to the instant docker container fails",
+			name:        "mountPackage - should return error when copying the custom package to the instant docker container fails",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in copying package")
 			},
@@ -492,7 +492,7 @@ func Test_mountPackage(t *testing.T) {
 			mockServer:    func() {},
 			errorString:   "",
 			wantErr:       false,
-			testInfo:      "mountPackage - should git clone custom package and copy it to the instant docker container",
+			name:          "mountPackage - should git clone custom package and copy it to the instant docker container",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test"
 				if commandName == "git" {
@@ -520,7 +520,7 @@ func Test_mountPackage(t *testing.T) {
 			},
 			errorString: "",
 			wantErr:     false,
-			testInfo:    "mountPackage - should unzip custom package and copy it to the instant docker container",
+			name:        "mountPackage - should unzip custom package and copy it to the instant docker container",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test1"
 
@@ -546,7 +546,7 @@ func Test_mountPackage(t *testing.T) {
 			},
 			errorString: "",
 			wantErr:     false,
-			testInfo:    "mountPackage - should untar custom package and copy it to the instant docker container",
+			name:        "mountPackage - should untar custom package and copy it to the instant docker container",
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				pathToPackage = "./test2"
 
@@ -570,7 +570,7 @@ func Test_mountPackage(t *testing.T) {
 		unzipPackage = tt.unzipPackageMock
 		untarPackage = tt.untarPackageMock
 
-		t.Run(tt.testInfo, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			err := mountCustomPackage(tt.pathToPackage)
 			if err == nil && tt.wantErr {
 				t.Fatal("Expected error - '" + tt.errorString + "' but got nil")
@@ -580,7 +580,7 @@ func Test_mountPackage(t *testing.T) {
 					t.Fatal(err.Error())
 				}
 			}
-			t.Log(tt.testInfo + " passed!")
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
