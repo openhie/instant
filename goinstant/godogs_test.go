@@ -26,15 +26,11 @@ func theCommandIsRun(command string) error {
 	if err == nil {
 		logs = res
 	}
-	return nil
+	return err
 }
 
 func checkTheCLIOutputIs(expectedOutput string) error {
-	err := compareLogsAndOutputs(logs, expectedOutput)
-	if err != nil {
-		return err
-	}
-	return nil
+	return compareLogsAndOutputs(logs, expectedOutput)
 }
 
 func checkCustomPackages(packages *godog.Table) error {
