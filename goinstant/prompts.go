@@ -389,7 +389,7 @@ func setCustomPackages() error {
 	newCustomPackages := strings.Split(customPackageList, ",")
 
 	for _, cp := range newCustomPackages {
-		if strings.Contains(cp, "http") || strings.Contains(cp, "git") {
+		if strings.HasPrefix(cp, "http") || strings.HasPrefix(cp, "git") {
 			if !sliceContains(customOptions.customPackageFileLocations, cp) {
 				customOptions.customPackageFileLocations = append(customOptions.customPackageFileLocations, cp)
 			} else {
