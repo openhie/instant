@@ -83,3 +83,8 @@ typings/
 
 # vscode config
 .vscode
+
+# test binaries
+/goinstant/features/test-platform-linux
+/goinstant/features/test-platform-macos
+/goinstant/features/test-platform.exe

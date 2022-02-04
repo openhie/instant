@@ -48,3 +48,19 @@ bash ./buildreleases.sh
 To build releases, create an instant tag and a release, the GitHub actions will build the code after creation of the release and add the binaries to the assets of the release if the GO CLI build succeeds.
 
 Check [here](https://github.com/openhie/instant/actions/new) to review the output of the build and status of the binary deploy.
+
+### Testing
+
+The [godog library](https://github.com/cucumber/godog), which provides us with the [Cucumber Framework](https://cucumber.io/) is used for functional tests of the Go CLI. To run the tests, you'll need to [install godog](https://github.com/cucumber/godog#install).
+
+```bash
+go install github.com/cucumber/godog/cmd/godog@v0.12.0
+```
+
+Then, navigate to the `goinstant` root folder and run the command below.
+
+```bash
+godog
+```
+
+> These functional tests can only be run when the `instant` docker volume does not exist on the machine being used for running the tests. These tests make use of the mock image of the instant project `jembi/go-cli-test-image`.
