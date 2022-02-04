@@ -230,11 +230,11 @@ func Test_createZipFile(t *testing.T) {
 		content io.Reader
 	}
 	tests := []struct {
-		name     string
-		args     args
-		wantErr  bool
-		osCreate func(name string) (*os.File, error)
-		ioCopy   func(dst io.Writer, src io.Reader) (written int64, err error)
+		name         string
+		args         args
+		wantErr      bool
+		mockOsCreate func(name string) (*os.File, error)
+		mockIoCopy   func(dst io.Writer, src io.Reader) (written int64, err error)
 	}{
 		{
 			name: "Test case create zip file no errors",
@@ -243,10 +243,10 @@ func Test_createZipFile(t *testing.T) {
 				content: reader,
 			},
 			wantErr: false,
-			osCreate: func(name string) (*os.File, error) {
+			mockOsCreate: func(name string) (*os.File, error) {
 				return &os.File{}, nil
 			},
-			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+			mockIoCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, nil
 			},
 		},
@@ -257,10 +257,10 @@ func Test_createZipFile(t *testing.T) {
 				content: reader,
 			},
 			wantErr: true,
-			osCreate: func(name string) (*os.File, error) {
+			mockOsCreate: func(name string) (*os.File, error) {
 				return &os.File{}, errors.New("Test error")
 			},
-			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+			mockIoCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, nil
 			},
 		},
@@ -271,10 +271,10 @@ func Test_createZipFile(t *testing.T) {
 				content: reader,
 			},
 			wantErr: true,
-			osCreate: func(name string) (*os.File, error) {
+			mockOsCreate: func(name string) (*os.File, error) {
 				return &os.File{}, nil
 			},
-			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+			mockIoCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 1, errors.New("Test error")
 			},
 		},
@@ -285,18 +285,18 @@ func Test_createZipFile(t *testing.T) {
 				content: reader,
 			},
 			wantErr: true,
-			osCreate: func(name string) (*os.File, error) {
+			mockOsCreate: func(name string) (*os.File, error) {
 				return &os.File{}, nil
 			},
-			ioCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
+			mockIoCopy: func(dst io.Writer, src io.Reader) (written int64, err error) {
 				return 0, nil
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			OsCreate = tt.osCreate
-			IoCopy = tt.ioCopy
+			OsCreate = tt.mockOsCreate
+			IoCopy = tt.mockIoCopy
 
 			if err := createZipFile(tt.args.file, tt.args.content); (err != nil) != tt.wantErr {
 				t.Fatalf("createZipFile() error = %v, wantErr %v", err, tt.wantErr)
@@ -388,8 +388,8 @@ func Test_mountPackage(t *testing.T) {
 		wantErr          bool
 		errorString      string
 		mockRunCommand   func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error)
-		unzipPackageMock func(zipContent io.ReadCloser) (pathToPackage string, err error)
-		untarPackageMock func(tarContent io.ReadCloser) (pathToPackage string, err error)
+		mockUnzipPackage func(zipContent io.ReadCloser) (pathToPackage string, err error)
+		mockUntarPackage func(tarContent io.ReadCloser) (pathToPackage string, err error)
 	}{
 		{
 			pathToPackage: "http://test:8080/test",
@@ -400,10 +400,10 @@ func Test_mountPackage(t *testing.T) {
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -416,10 +416,10 @@ func Test_mountPackage(t *testing.T) {
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in git cloning")
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -437,10 +437,10 @@ func Test_mountPackage(t *testing.T) {
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", errors.New("Error in unzipping package")
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -458,10 +458,10 @@ func Test_mountPackage(t *testing.T) {
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", errors.New("Error in untarring package")
 			},
 		},
@@ -479,10 +479,10 @@ func Test_mountPackage(t *testing.T) {
 			mockRunCommand: func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
 				return "", errors.New("Error in copying package")
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -502,10 +502,10 @@ func Test_mountPackage(t *testing.T) {
 				}
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -528,10 +528,10 @@ func Test_mountPackage(t *testing.T) {
 				}
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "./test1", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
 		},
@@ -554,10 +554,10 @@ func Test_mountPackage(t *testing.T) {
 				}
 				return "", nil
 			},
-			unzipPackageMock: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUnzipPackage: func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 				return "", nil
 			},
-			untarPackageMock: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
+			mockUntarPackage: func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 				return "./test2", nil
 			},
 		},
@@ -566,8 +566,8 @@ func Test_mountPackage(t *testing.T) {
 	for _, tt := range testCases {
 		runCommand = tt.mockRunCommand
 		tt.mockServer()
-		unzipPackage = tt.unzipPackageMock
-		untarPackage = tt.untarPackageMock
+		unzipPackage = tt.mockUnzipPackage
+		untarPackage = tt.mockUntarPackage
 
 		t.Run(tt.name, func(t *testing.T) {
 			err := mountCustomPackage(tt.pathToPackage)
@@ -600,11 +600,11 @@ func Test_unzipPackage(t *testing.T) {
 		args              args
 		wantPathToPackage string
 		wantErr           bool
-		zipOpenReader     func(name string) (*zip.ReadCloser, error)
-		osMkdirAll        func(path string, perm fs.FileMode) error
-		filepathJoin      func(elem ...string) string
-		osOpenFile        func(name string, flag int, perm fs.FileMode) (*os.File, error)
-		osRemove          func(name string) error
+		mockZipOpenReader func(name string) (*zip.ReadCloser, error)
+		mockOsMkdirAll    func(path string, perm fs.FileMode) error
+		mockFilepathJoin  func(elem ...string) string
+		mockOsOpenFile    func(name string, flag int, perm fs.FileMode) (*os.File, error)
+		mockOsRemove      func(name string) error
 	}{
 		{
 			name: "Test case no errors",
@@ -613,7 +613,7 @@ func Test_unzipPackage(t *testing.T) {
 			},
 			wantPathToPackage: "test_zip.zip",
 			wantErr:           false,
-			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+			mockZipOpenReader: func(name string) (*zip.ReadCloser, error) {
 				zipReader, err := zip.OpenReader(zipFile.Name())
 				if err != nil {
 					t.Fatal(err)
@@ -624,16 +624,16 @@ func Test_unzipPackage(t *testing.T) {
 				zipReader.File = append(zipReader.File, file)
 				return zipReader, nil
 			},
-			filepathJoin: func(elem ...string) string {
+			mockFilepathJoin: func(elem ...string) string {
 				return zipFile.Name()
 			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
+			mockOsMkdirAll: func(path string, perm fs.FileMode) error {
 				return nil
 			},
-			osOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
+			mockOsOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
 				return &os.File{}, nil
 			},
-			osRemove: func(name string) error {
+			mockOsRemove: func(name string) error {
 				return nil
 			},
 		},
@@ -644,7 +644,7 @@ func Test_unzipPackage(t *testing.T) {
 			},
 			wantPathToPackage: "",
 			wantErr:           true,
-			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+			mockZipOpenReader: func(name string) (*zip.ReadCloser, error) {
 				return &zip.ReadCloser{}, errors.New("ZipOpenReader error")
 			},
 		},
@@ -655,7 +655,7 @@ func Test_unzipPackage(t *testing.T) {
 			},
 			wantPathToPackage: "",
 			wantErr:           true,
-			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+			mockZipOpenReader: func(name string) (*zip.ReadCloser, error) {
 				zipReader := new(zip.ReadCloser)
 				defer zipReader.Close()
 
@@ -664,10 +664,10 @@ func Test_unzipPackage(t *testing.T) {
 				zipReader.File = append(zipReader.File, file)
 				return zipReader, nil
 			},
-			filepathJoin: func(elem ...string) string {
+			mockFilepathJoin: func(elem ...string) string {
 				return ""
 			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
+			mockOsMkdirAll: func(path string, perm fs.FileMode) error {
 				return errors.New("OsMkdirAll error")
 			},
 		},
@@ -678,20 +678,20 @@ func Test_unzipPackage(t *testing.T) {
 			},
 			wantPathToPackage: "",
 			wantErr:           true,
-			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+			mockZipOpenReader: func(name string) (*zip.ReadCloser, error) {
 				zipReader, err := zip.OpenReader(zipFile.Name())
 				if err != nil {
 					t.Fatal(err)
 				}
 				return zipReader, nil
 			},
-			filepathJoin: func(elem ...string) string {
+			mockFilepathJoin: func(elem ...string) string {
 				return ""
 			},
-			osMkdirAll: func(path string, perm fs.FileMode) error {
+			mockOsMkdirAll: func(path string, perm fs.FileMode) error {
 				return nil
 			},
-			osOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
+			mockOsOpenFile: func(name string, flag int, perm fs.FileMode) (*os.File, error) {
 				return &os.File{}, errors.New("OsOpenFile error")
 			},
 		},
@@ -702,13 +702,13 @@ func Test_unzipPackage(t *testing.T) {
 			},
 			wantPathToPackage: "",
 			wantErr:           true,
-			zipOpenReader: func(name string) (*zip.ReadCloser, error) {
+			mockZipOpenReader: func(name string) (*zip.ReadCloser, error) {
 				return &zip.ReadCloser{}, nil
 			},
-			filepathJoin: func(elem ...string) string {
+			mockFilepathJoin: func(elem ...string) string {
 				return ""
 			},
-			osRemove: func(name string) error {
+			mockOsRemove: func(name string) error {
 				return errors.New("OsRemove error")
 			},
 		},
@@ -719,11 +719,11 @@ func Test_unzipPackage(t *testing.T) {
 			defer cleanFiles(zipFile.Name())
 			defaultMockVariables()
 
-			ZipOpenReader = tt.zipOpenReader
-			FilepathJoin = tt.filepathJoin
-			OsMkdirAll = tt.osMkdirAll
-			OsOpenFile = tt.osOpenFile
-			OsRemove = tt.osRemove
+			ZipOpenReader = tt.mockZipOpenReader
+			FilepathJoin = tt.mockFilepathJoin
+			OsMkdirAll = tt.mockOsMkdirAll
+			OsOpenFile = tt.mockOsOpenFile
+			OsRemove = tt.mockOsRemove
 
 			gotPathToPackage, err := unzipPackage(tt.args.zipContent)
 			if (err != nil) != tt.wantErr {
