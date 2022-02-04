@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -42,7 +41,7 @@ func Test_sliceContains(t *testing.T) {
 			ans := sliceContains(tt.slice, tt.element)
 
 			if ans != tt.result {
-				t.Fatal("SliceContains should return" + fmt.Sprintf("%t", tt.result) + "but returned" + fmt.Sprintf("%t", ans))
+				t.Fatal("SliceContains should return " + fmt.Sprintf("%t", tt.result) + " but returned " + fmt.Sprintf("%t", ans))
 			}
 			t.Log(tt.name + " passed!")
 		})
@@ -79,8 +78,9 @@ func Test_getPackagePaths(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotPackagePaths := getPackagePaths(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantPackagePaths, gotPackagePaths) {
-				t.Errorf("getPackagePaths() = %v, want %v", gotPackagePaths, tt.wantPackagePaths)
+				t.Fatalf("getPackagePaths() = %v, want %v", gotPackagePaths, tt.wantPackagePaths)
 			}
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -115,8 +115,9 @@ func Test_getEnvironmentVariables(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotEnvironmentVariables := getEnvironmentVariables(tt.args.inputArr, tt.args.flags); !assert.Equal(t, tt.wantEnvironmentVariables, gotEnvironmentVariables) {
-				t.Errorf("getEnvironmentVariables() = %v, want %v", gotEnvironmentVariables, tt.wantEnvironmentVariables)
+				t.Fatalf("getEnvironmentVariables() = %v, want %v", gotEnvironmentVariables, tt.wantEnvironmentVariables)
 			}
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -298,11 +299,9 @@ func Test_createZipFile(t *testing.T) {
 			IoCopy = tt.ioCopy
 
 			if err := createZipFile(tt.args.file, tt.args.content); (err != nil) != tt.wantErr {
-				t.Errorf("createZipFile() error = %v, wantErr %v", err, tt.wantErr)
-				log.Println(tt.name, "failed!")
-			} else {
-				log.Println(tt.name, "passed!")
+				t.Fatalf("createZipFile() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			t.Log(tt.name + " passed!")
 		})
 	}
 }
@@ -370,7 +369,7 @@ func Test_runCommand(t *testing.T) {
 			}
 
 			if (err != nil && tt.errorString == nil) || (err == nil && tt.errorString != nil) {
-				log.Fatal("RunCommand failed - error returned incorrect")
+				t.Fatal("RunCommand failed - error returned incorrect")
 			}
 
 			t.Log(tt.name + " passed!")
@@ -575,10 +574,8 @@ func Test_mountPackage(t *testing.T) {
 			if err == nil && tt.wantErr {
 				t.Fatal("Expected error - '" + tt.errorString + "' but got nil")
 			}
-			if tt.wantErr {
-				if !strings.Contains(err.Error(), tt.errorString) {
-					t.Fatal(err.Error())
-				}
+			if tt.wantErr && !strings.Contains(err.Error(), tt.errorString) {
+				t.Fatal(err.Error())
 			}
 			t.Log(tt.name + " passed!")
 		})
@@ -730,15 +727,12 @@ func Test_unzipPackage(t *testing.T) {
 
 			gotPathToPackage, err := unzipPackage(tt.args.zipContent)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("unzipPackage() error = %v, wantErr %v", err, tt.wantErr)
-				return
+				t.Fatalf("unzipPackage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if gotPathToPackage != tt.wantPathToPackage {
-				t.Errorf("unzipPackage() = %v, want %v", gotPathToPackage, tt.wantPathToPackage)
-				log.Println(tt.name, "failed!")
-			} else {
-				log.Println(tt.name, "passed!")
+				t.Fatalf("unzipPackage() = %v, want %v", gotPathToPackage, tt.wantPathToPackage)
 			}
+			t.Log(tt.name, " passed!")
 		})
 	}
 }
@@ -908,13 +902,10 @@ func TestRunDeployCommand(t *testing.T) {
 					"-t", "k8s", "hmis", "mcsd",
 				}
 
-				var mismatch bool
-				for i, cs := range commandSlice {
-					if cs != expectedCommandSlice[i] && !mismatch {
-						mismatch = true
-						t.Errorf("commandSlice not matched, got %v, expected %v", commandSlice, expectedCommandSlice)
-					}
+				if !assert.Equal(t, expectedCommandSlice, commandSlice) {
+					t.Fatal("commandSlice not matched")
 				}
+
 				return "", nil
 			},
 			mockMountCustomPackage: func(pathToPackage string) error {
@@ -941,8 +932,9 @@ func TestRunDeployCommand(t *testing.T) {
 			MountCustomPackage = tt.mockMountCustomPackage
 
 			if err := RunDeployCommand(tt.args.startupCommands); (err != nil) != tt.wantErr {
-				t.Errorf("RunDeployCommand() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("RunDeployCommand() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			t.Log(tt.name, " passed!")
 		})
 	}
 }
