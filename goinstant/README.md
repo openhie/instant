@@ -37,6 +37,14 @@ Therefore, this app is not meant to be used for container and cluster management
 
 For development, run the app using `go run *.go`.
 
+### Testing
+
+To run the unit tests, do
+
+```
+go test . -v
+```
+
 ### Building
 
 ```sh
