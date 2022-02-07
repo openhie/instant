@@ -210,25 +210,25 @@ func Test_extractCommands(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			environmentVariables, deployCommand, otherFlags, packages, customPackagePaths, instantVersion, targetLauncher := extractCommands(tt.startupCommands)
 
-			if !assert.Equal(t, environmentVariables, tt.expectedResults.environmentVariables) {
+			if !assert.Equal(t, tt.expectedResults.environmentVariables, environmentVariables) {
 				t.Fatal("ExtractCommands should return the correct environment variables")
 			}
-			if !assert.Equal(t, deployCommand, tt.expectedResults.deployCommand) {
+			if !assert.Equal(t, tt.expectedResults.deployCommand, deployCommand) {
 				t.Fatal("ExtractCommands should return the correct deploy command")
 			}
-			if !assert.Equal(t, otherFlags, tt.expectedResults.otherFlags) {
+			if !assert.Equal(t, tt.expectedResults.otherFlags, otherFlags) {
 				t.Fatal("ExtractCommands should return the correct 'otherFlags'")
 			}
-			if !assert.Equal(t, targetLauncher, tt.expectedResults.targetLauncher) {
+			if !assert.Equal(t, tt.expectedResults.targetLauncher, targetLauncher) {
 				t.Fatal("ExtractCommands should return the correct targetLauncher")
 			}
-			if !assert.Equal(t, packages, tt.expectedResults.packages) {
+			if !assert.Equal(t, tt.expectedResults.packages, packages) {
 				t.Fatal("ExtractCommands should return the correct packages")
 			}
-			if !assert.Equal(t, customPackagePaths, tt.expectedResults.customPackagePaths) {
+			if !assert.Equal(t, tt.expectedResults.customPackagePaths, customPackagePaths) {
 				t.Fatal("ExtractCommands should return the correct custom package paths")
 			}
-			if !assert.Equal(t, instantVersion, tt.expectedResults.instantVersion) {
+			if !assert.Equal(t, tt.expectedResults.instantVersion, instantVersion) {
 				t.Fatal("ExtractCommands should return the correct instant version")
 			}
 			t.Log(tt.name + " passed!")
@@ -375,10 +375,10 @@ func Test_runCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			execCommand = tt.mockExecCommand
 			pathToPackage, err := runCommand(tt.commandName, tt.suppressErrors, tt.commandSlice...)
-			if !assert.Equal(t, pathToPackage, tt.pathToPackage) {
+			if !assert.Equal(t, tt.pathToPackage, pathToPackage) {
 				t.Fatal("RunCommand failed - path to package returned is incorrect " + pathToPackage)
 			}
-			if err != nil && tt.errorString != nil && !assert.Equal(t, err.Error(), tt.errorString.Error()) {
+			if err != nil && tt.errorString != nil && !assert.Equal(t, tt.errorString.Error(), err.Error()) {
 				t.Fatal("RunCommand failed - error returned incorrect")
 			}
 
