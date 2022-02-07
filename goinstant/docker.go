@@ -129,7 +129,7 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 	}
 
 	if targetLauncher == "" {
-		targetLauncher = cfg.DefaultTargetLauncher
+		targetLauncher = customOptions.targetLauncher
 	}
 
 	return
