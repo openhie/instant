@@ -123,6 +123,7 @@ func Test_getEnvironmentVariables(t *testing.T) {
 }
 
 func Test_extractCommands(t *testing.T) {
+	customOptions.targetLauncher = "docker"
 	type resultStruct struct {
 		environmentVariables []string
 		deployCommand        string
@@ -184,6 +185,19 @@ func Test_extractCommands(t *testing.T) {
 				deployCommand:        "destroy",
 				otherFlags:           []string{"--onlyFlag"},
 				targetLauncher:       "swarm",
+				packages:             []string{"core", "hapi-fhir"},
+				customPackagePaths:   []string{"../test", "../test1"},
+				instantVersion:       "v2.0.2",
+			},
+			name: "Extract commands test 4 - should return the expected commands",
+		},
+		{
+			startupCommands: []string{"destroy", "--instant-version=v2.0.2", "--custom-package=../test", "-c=../test1", "-e=NODE_ENV=dev", "--onlyFlag", "core", "hapi-fhir"},
+			expectedResults: resultStruct{
+				environmentVariables: []string{"-e", "NODE_ENV=dev"},
+				deployCommand:        "destroy",
+				otherFlags:           []string{"--onlyFlag"},
+				targetLauncher:       "docker",
 				packages:             []string{"core", "hapi-fhir"},
 				customPackagePaths:   []string{"../test", "../test1"},
 				instantVersion:       "v2.0.2",
