@@ -39,7 +39,7 @@ For development, run the app using `go run *.go`.
 
 ### Testing
 
-To run the unit tests, do
+To run the unit tests, ensure you're in the goinstant directory, then do
 
 ```
 go test . -v
