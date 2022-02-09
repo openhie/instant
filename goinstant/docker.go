@@ -21,6 +21,20 @@ import (
 	"golang.org/x/net/context"
 )
 
+var (
+	OsCreate           = os.Create
+	IoCopy             = io.Copy
+	ZipOpenReader      = zip.OpenReader
+	OsMkdirAll         = os.MkdirAll
+	FilepathJoin       = filepath.Join
+	OsOpenFile         = os.OpenFile
+	OsRemove           = os.Remove
+	execCommand        = exec.Command
+	runDeployCommand   = RunDeployCommand
+	RunCommand         = runCommand
+	MountCustomPackage = mountCustomPackage
+)
+
 func debugDocker() error {
 	fmt.Printf("...checking your Docker setup")
 
@@ -115,7 +129,7 @@ func extractCommands(startupCommands []string) (environmentVariables []string, d
 	}
 
 	if targetLauncher == "" {
-		targetLauncher = cfg.DefaultTargetLauncher
+		targetLauncher = customOptions.targetLauncher
 	}
 
 	return
@@ -140,7 +154,7 @@ func RunDeployCommand(startupCommands []string) error {
 	if deployCommand == "init" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = runCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
+		_, err = RunCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
 		if err != nil {
 			return err
 		}
@@ -160,7 +174,7 @@ func RunDeployCommand(startupCommands []string) error {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", targetLauncher}...)
 	commandSlice = append(commandSlice, packages...)
-	_, err = runCommand("docker", nil, commandSlice...)
+	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
 		return err
 	}
@@ -169,7 +183,7 @@ func RunDeployCommand(startupCommands []string) error {
 
 	for _, c := range customPackagePaths {
 		fmt.Print("- " + c)
-		err = mountCustomPackage(c)
+		err = MountCustomPackage(c)
 		if err != nil {
 			return err
 		}
@@ -177,7 +191,7 @@ func RunDeployCommand(startupCommands []string) error {
 
 	fmt.Println("\nRun Instant OpenHIE Installer Container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
-	_, err = runCommand("docker", nil, commandSlice...)
+	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
 		return err
 	}
@@ -185,14 +199,14 @@ func RunDeployCommand(startupCommands []string) error {
 	if deployCommand == "destroy" {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = runCommand("docker", nil, commandSlice...)
+		_, err = RunCommand("docker", nil, commandSlice...)
 	}
 
 	return err
 }
 
-func runCommand(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
-	cmd := exec.Command(commandName, commandSlice...)
+var runCommand = func(commandName string, suppressErrors []string, commandSlice ...string) (pathToPackage string, err error) {
+	cmd := execCommand(commandName, commandSlice...)
 	cmdReader, err := cmd.StdoutPipe()
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -288,21 +302,24 @@ func mountCustomPackage(pathToPackage string) error {
 }
 
 func createZipFile(file string, content io.Reader) error {
-	output, err := os.Create(file)
+	output, err := OsCreate(file)
 	if err != nil {
 		return errors.Wrap(err, "Error in creating zip file:")
 	}
 	defer output.Close()
 
-	_, err = io.Copy(output, content)
+	bytesWritten, err := IoCopy(output, content)
 	if err != nil {
 		return errors.Wrap(err, "Error in copying zip file content:")
+	}
+	if bytesWritten < 1 {
+		return errors.New("File created but no content written.")
 	}
 
 	return nil
 }
 
-func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
+var unzipPackage = func(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	tempZipFile := "temp.zip"
 	err = createZipFile(tempZipFile, zipContent)
 	if err != nil {
@@ -310,20 +327,24 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 	}
 
 	// Unzip file
-	archive, err := zip.OpenReader(tempZipFile)
+	archive, err := ZipOpenReader(tempZipFile)
 	if err != nil {
 		return "", errors.Wrap(err, "Error in unzipping file:")
 	}
+	defer archive.Close()
 
 	packageName := ""
 	for _, file := range archive.File {
-		filePath := filepath.Join(".", file.Name)
+		filePath := FilepathJoin(".", file.Name)
 
 		if file.FileInfo().IsDir() {
 			if packageName == "" {
 				packageName = file.Name
 			}
-			os.MkdirAll(filePath, os.ModePerm)
+			err = OsMkdirAll(filePath, os.ModePerm)
+			if err != nil {
+				return "", err
+			}
 			continue
 		}
 
@@ -331,30 +352,35 @@ func unzipPackage(zipContent io.ReadCloser) (pathToPackage string, err error) {
 		if err != nil {
 			return "", errors.Wrap(err, "Error in unzipping file:")
 		}
+		defer content.Close()
 
-		dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		dest, err := OsOpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			return "", errors.Wrap(err, "Error in unzipping file:")
 		}
-		_, err = io.Copy(dest, content)
+		defer dest.Close()
+
+		written, err := IoCopy(dest, content)
 		if err != nil {
 			return "", errors.Wrap(err, "Error in copying unzipping file:")
 		}
-		content.Close()
+		if written < 1 {
+			return "", errors.New("No content copied")
+		}
 	}
 
 	// Remove temp zip file
-	tempFilePath := filepath.Join(".", tempZipFile)
+	tempFilePath := FilepathJoin(".", tempZipFile)
 	archive.Close()
-	err = os.Remove(tempFilePath)
+	err = OsRemove(tempFilePath)
 	if err != nil {
 		return "", errors.Wrap(err, "Error in deleting temp.zip file:")
 	}
 
-	return filepath.Join(".", packageName), nil
+	return FilepathJoin(".", packageName), nil
 }
 
-func untarPackage(tarContent io.ReadCloser) (pathToPackage string, err error) {
+var untarPackage = func(tarContent io.ReadCloser) (pathToPackage string, err error) {
 	packageName := ""
 	gzipReader, err := gzip.NewReader(tarContent)
 	if err != nil {
