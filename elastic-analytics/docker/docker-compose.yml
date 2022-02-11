@@ -32,5 +32,3 @@ services:
 
 volumes:
   es-data:
-  instant:
-    external: true
