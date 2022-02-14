@@ -10,7 +10,19 @@ goinstant
 
 # Docs
 docs
+kubernetes.md
+README.md
 
 # Dependency directories
 node_modules/
 .editorconfig
+.prettierrc.json
+cov
+
+# Git stuff
+.git
+.github
+.gitignore
+
+# env files
+.env*
