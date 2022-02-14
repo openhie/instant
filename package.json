@@ -12,6 +12,7 @@
     "command-line-args": "^5.1.1",
     "env-cmd": "^10.1.0",
     "glob": "^7.1.6",
+    "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.0.0",
+    "@types/rimraf": "^3.0.2",
     "axios": "^0.21.4",
     "chai": "^4.2.0",
     "prettier": "^2.0.5"

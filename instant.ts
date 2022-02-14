@@ -3,6 +3,7 @@
 import * as commandLineArgs from 'command-line-args'
 import * as glob from 'glob'
 import * as fs from 'fs'
+import * as rimraf from 'rimraf'
 import * as child from 'child_process'
 import * as util from 'util'
 import * as path from 'path'
@@ -133,6 +134,8 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
 
 // Main script execution
 ;(async () => {
+  await updateInstantVolume()
+
   const allPackages = getInstantOHIEPackages()
   console.log(
     `Found ${Object.keys(allPackages).length} packages: ${Object.values(
@@ -288,3 +291,14 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
     }
   }
 })()
+
+function updateInstantVolume() {
+  fs.readdirSync('.', { withFileTypes: true })
+    .filter(item => item.isDirectory())
+    .forEach(item => {
+      if (item.name !== 'node_modules' && fs.existsSync('../packages')) {
+        rimraf.sync(item.name)
+      }
+    })
+    return exec('cp -r ../packages/. .')
+}
