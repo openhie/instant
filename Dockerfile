@@ -1,5 +1,6 @@
 FROM node:fermium-buster AS base
 
+RUN mkdir packages
 WORKDIR /instant
 
 # install curl
@@ -38,3 +39,4 @@ ENTRYPOINT [ "yarn", "instant" ]
 FROM base as instant-build
 # Add default instant OpenHIE packages
 ADD . .
+RUN cp -r . ../packages
