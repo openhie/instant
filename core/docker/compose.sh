@@ -26,6 +26,11 @@ if [ "$1" == "init" ]; then
     sed -i "s/{{OPENHIM_CLIENT_TOKEN}}/${OPENHIM_CLIENT_TOKEN-test}/g" "$composeFilePath"/importer/volume/openhim-import.json
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml $devComposeParam up -d
+
+    echo "Sleep 30s to allow config importer to complete"
+    sleep 30
+
+    docker rm core-config-importer
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose-mongo.yml $devComposeMongoParam up -d
 

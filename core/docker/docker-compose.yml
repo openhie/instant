@@ -31,10 +31,6 @@ services:
       - hapi.fhir.bulk_export_enabled=true
       - JAVA_TOOL_OPTIONS=-Xmx2g
       - CATALINA_OPTS=-Xmx2g
-    volumes:
-      - type: volume
-        source: instant
-        target: /instant
     depends_on:
       - hapi-db
     restart: unless-stopped
@@ -52,5 +48,3 @@ services:
 
 volumes:
   hapi-db-volume:
-  instant:
-    external: true
