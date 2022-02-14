@@ -27,7 +27,7 @@ if [ "$1" == "init" ]; then
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml $devComposeParam up -d
 
-    echo "Sleep 30s to allow config importer to complete"
+    echo "Sleep 30s to allow core config importer to complete"
     sleep 30
 
     docker rm core-config-importer

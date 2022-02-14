@@ -12,6 +12,11 @@ if [ "$1" == "init" ]; then
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 
+    echo "Sleep 30s to allow client config importer to complete"
+    sleep 30
+
+    docker rm client-openhim-config-importer
+
 elif [ "$1" == "up" ]; then
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
