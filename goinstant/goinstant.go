@@ -76,6 +76,41 @@ func loadConfig() {
 	}
 }
 
+func getHelpText(interactive bool) string {
+	if interactive {
+		return ``
+	} else {
+		return `Commands: 
+		help 		this menu
+		install		install fhir npm package on fhir server
+					usage: install <ig_url> <fhir_server> <authtype> <user/token> <pass>
+
+					examples:
+					install https://intrahealth.github.io/simple-hiv-ig/ http://hapi.fhir.org/baseR4 none
+					install <ig_url> <fhir_server> basic smith stuff
+					install <ig_url> <fhir_server> token "123"
+					install <ig_url> <fhir_server> custom test
+		init/up/destroy/down	the deploy command you want to run (brief description below)
+					deploy commands:
+						init:
+						up:
+						destroy:
+						down:
+					custom flags:
+						only:
+						-t:
+						-c:
+						--dev:
+						-e:
+						--env-file:
+					usage:
+						<deploy command> <custom flags> <package names>
+					examples:
+						init -t=swarm --dev interoperability-layer-openhim
+		`
+	}
+}
+
 func main() {
 	loadConfig()
 
