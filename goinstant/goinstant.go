@@ -76,9 +76,53 @@ func loadConfig() {
 	}
 }
 
-func getHelpText(interactive bool) string {
+func getHelpText(interactive bool, options string) string {
 	if interactive {
-		return ``
+		switch (options) {
+		case "Deploy Commands":
+			return `Commands:
+				init/up/destroy/down	the deploy command you want to run (brief description below)
+					deploy commands:
+						init:	 for initializing a service
+						up:	 for starting up a service that has been shut down or updating a service
+						destroy: for destroying a service
+						down:	 for  bringing down a running service
+			`
+		case "Custom Options":
+			return `Commands:
+				Choose deploy action - for choosing the deploy action
+
+				Choose target launcher - for choosing the deploy target. Can be a docker swarm, kubernetes or docker
+
+				Specify deploy packages - for choosing the packages you want to use
+
+				Specify environment variable file location - for specifying environment variables file location
+
+				Specify environment variables - for specifying environment variables
+
+				Specify custom package locations - for specifying the location or url to the custom packages you want to operate on
+
+				Toggle only flag - for specifying the only flag, which specifies that actions are to be taken on a single package and not on its dependencies
+
+				Specify Instant Version - for specifying the version of the instant or platform image to use. Default is latest
+
+				Toggle dev mode - for enabling the development mode in which the service ports are exposed
+
+				Execute with current options - this executes the options that have been specified
+
+				View current options set - for viewing the options that have been specified
+
+				Reset to default options - for resetting to default options
+			`
+		default:
+			return `Commands:
+				Use Docker on your PC - this is for deploying packages to either docker or docker swarm
+
+				Use a kubernetes Cluster - this is for deploying packages to a kubernetes cluster
+
+				Install FHIR package - this is for installing FHIR IGs hosted remotely
+			`
+		}
 	} else {
 		return `Commands: 
 		help 		this menu
@@ -92,21 +136,21 @@ func getHelpText(interactive bool) string {
 					install <ig_url> <fhir_server> custom test
 		init/up/destroy/down	the deploy command you want to run (brief description below)
 					deploy commands:
-						init:
-						up:
-						destroy:
-						down:
+						init:	 for initializing a service
+						up:	 for starting up a service that has been shut down or updating a service
+						destroy: for destroying a service
+						down:	 for  bringing down a running service
 					custom flags:
-						only:
-						-t:
-						-c:
-						--dev:
-						-e:
-						--env-file:
+						only:		used to specify a single service for services that have dependencies. For cases where one wants to shut down or destroy a service without affecting its dependencies
+						-t:	        specifies the target to deploy to. Options are docker, swarm (docker swarm) and k8s (kubernetes)
+						-c:	        specifies path or url to a custom package. Git ssh urls are supported
+						--dev:          specifies the development mode in which all service ports are exposed
+						-e:	        for specifying an environment variable
+						--env-file: for specifying the environment variables file
 					usage:
 						<deploy command> <custom flags> <package names>
 					examples:
-						init -t=swarm --dev interoperability-layer-openhim
+						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../packageName" -c="<git_url>"  interoperability-layer-openhim
 		`
 	}
 }
