@@ -151,7 +151,7 @@ func RunDeployCommand(startupCommands []string) error {
 	instantImage := cfg.Image + ":" + instantVersion
 
 	var err error
-	if deployCommand == "init" {
+	if deployCommand == "init" || deployCommand == "up" {
 		fmt.Println("\n\nDelete a pre-existing instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		_, err = RunCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
