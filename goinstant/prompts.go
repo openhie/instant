@@ -567,7 +567,11 @@ func selectDefaultPackage(action string) error {
 	switch result {
 	case "All":
 		fmt.Println("...Setting up All Packages")
-		return RunDeployCommand([]string{action, "-t=" + cfg.DefaultTargetLauncher})
+		err = RunDeployCommand([]string{action, "-t=" + cfg.DefaultTargetLauncher})
+		if err != nil {
+			return err
+		}
+		return selectDefaultAction()
 	case "Quit":
 		quit()
 		return nil

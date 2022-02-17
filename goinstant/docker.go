@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/client"
+	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
@@ -189,11 +190,13 @@ func RunDeployCommand(startupCommands []string) error {
 		}
 	}
 
-	fmt.Println("\nRun Instant OpenHIE Installer Container")
+	fmt.Println("\nRunning orchestration container")
 	commandSlice = []string{"start", "-a", "instant-openhie"}
 	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
-		return err
+		color.Red("\nError: Failed while running orchestration container. Look for error output above.\n")
+		// ignore error and return user to prompt
+		return nil
 	}
 
 	if deployCommand == "destroy" {
