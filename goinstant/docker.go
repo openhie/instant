@@ -194,7 +194,7 @@ func RunDeployCommand(startupCommands []string) error {
 	commandSlice = []string{"start", "-a", "instant-openhie"}
 	_, err = RunCommand("docker", nil, commandSlice...)
 	if err != nil {
-		color.Red("\nError: Failed while running orchestration container. Look for error output above.\n")
+		color.Red("\nError: Failed while running orchestration container, check output from Orchestration container above. (Underlying error: " + err.Error() + ")")
 		// ignore error and return user to prompt
 		return nil
 	}
