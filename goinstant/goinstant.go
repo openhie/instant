@@ -150,7 +150,8 @@ func getHelpText(interactive bool, options string) string {
 					usage:
 						<deploy command> <custom flags> <package ids>
 					examples:
-						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../testPackage1" -c="<git@github.com/testPackage2>"  interoperability-layer-openhim testPackage1_id testPackage2_id
+						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../customPackage1" -c="<git@github.com/customPackage2>"  interoperability-layer-openhim customPackage1_id customPackage2_id
+						down -t=docker only elastic_analytics
 		`
 	}
 }
