@@ -28,7 +28,6 @@ func selectSetup() error {
 	if !cfg.DisableIG {
 		items = append(items[:index+1], items[index:]...)
 		items[index] = "Install FHIR package"
-		index++
 	}
 
 	prompt := promptui.Select{
@@ -545,18 +544,15 @@ func selectDefaultAction() error {
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
-	if result == "Quit" {
-		quit()
-		return nil
-	}
-
-	if result == "Help" {
+	switch result {
+	case "Help":
 		fmt.Println(getHelpText(true, "Deploy Commands"))
 		return selectDefaultAction()
-	}
-
-	if result == "Back" {
+	case "Back":
 		return selectDefaultOrCustom()
+	case "Quit":
+		quit()
+		return nil
 	}
 
 	return selectDefaultPackage(result)
