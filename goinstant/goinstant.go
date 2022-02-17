@@ -148,9 +148,9 @@ func getHelpText(interactive bool, options string) string {
 						-e:	        for specifying an environment variable
 						--env-file: for specifying the path to an environment variables file
 					usage:
-						<deploy command> <custom flags> <package names>
+						<deploy command> <custom flags> <package ids>
 					examples:
-						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../packageName" -c="<git_url>"  interoperability-layer-openhim
+						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../testPackage1" -c="<git@github.com/testPackage2>"  interoperability-layer-openhim testPackage1_id testPackage2_id
 		`
 	}
 }
