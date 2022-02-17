@@ -96,7 +96,7 @@ func getHelpText(interactive bool, options string) string {
 
 				Specify deploy packages - for choosing the packages you want to use (core and custom packages)
 
-				Specify environment variable file location - for specifying environment variables file location
+				Specify environment variable file location - for specifying the file path to an environment variables file
 
 				Specify environment variables - for specifying environment variables
 
