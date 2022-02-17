@@ -139,7 +139,7 @@ func getHelpText(interactive bool, options string) string {
 						init:	 for initializing a service
 						up:	 for starting up a service that has been shut down or updating a service
 						destroy: for destroying a service
-						down:	 for  bringing down a running service
+						down:	 for bringing down a running service
 					custom flags:
 						only:		used to specify a single service for services that have dependencies. For cases where one wants to shut down or destroy a service without affecting its dependencies
 						-t:	        specifies the target to deploy to. Options are docker, swarm (docker swarm) and k8s (kubernetes)
