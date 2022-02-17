@@ -94,7 +94,7 @@ func getHelpText(interactive bool, options string) string {
 
 				Choose target launcher - for choosing the deploy target. Can be a docker swarm, kubernetes or docker
 
-				Specify deploy packages - for choosing the packages you want to use
+				Specify deploy packages - for choosing the packages you want to use (core and custom packages)
 
 				Specify environment variable file location - for specifying environment variables file location
 
