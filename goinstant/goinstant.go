@@ -146,7 +146,7 @@ func getHelpText(interactive bool, options string) string {
 						-c:	        specifies path or url to a custom package. Git ssh urls are supported
 						--dev:          specifies the development mode in which all service ports are exposed
 						-e:	        for specifying an environment variable
-						--env-file: for specifying the environment variables file
+						--env-file: for specifying the path to an environment variables file
 					usage:
 						<deploy command> <custom flags> <package names>
 					examples:
