@@ -86,7 +86,7 @@ func getHelpText(interactive bool, options string) string {
 						init:	 for initializing a service
 						up:	 for starting up a service that has been shut down or updating a service
 						destroy: for destroying a service
-						down:	 for  bringing down a running service
+						down:	 for bringing down a running service
 			`
 		case "Custom Options":
 			return `Commands:
