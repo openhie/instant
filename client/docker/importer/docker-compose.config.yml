@@ -5,7 +5,6 @@ services:
   client-openhim-config-importer:
     container_name: client-openhim-config-importer
     image: jembi/instantohie-config-importer
-    restart: on-failure
     environment:
       OPENHIM_API_HOSTNAME: 'openhim-core'
       OPENHIM_API_PORT: 8080
