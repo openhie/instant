@@ -141,17 +141,19 @@ func getHelpText(interactive bool, options string) string {
 						destroy: for destroying a service
 						down:	 for bringing down a running service
 					custom flags:
-						only:		used to specify a single service for services that have dependencies. For cases where one wants to shut down or destroy a service without affecting its dependencies
-						-t:	        specifies the target to deploy to. Options are docker, swarm (docker swarm) and k8s (kubernetes)
-						-c:	        specifies path or url to a custom package. Git ssh urls are supported
-						--dev:          specifies the development mode in which all service ports are exposed
-						-e:	        for specifying an environment variable
-						--env-file: for specifying the path to an environment variables file
+						--only, -o:							used to specify a single service for services that have dependencies. For cases where one wants to shut down or destroy a service without affecting its dependencies
+						-t:											specifies the target to deploy to. Options are docker, swarm (docker swarm) and k8s (kubernetes) - project dependant.
+						--custom-package, -c:		specifies path or url to a custom package. Git ssh urls are supported
+						--dev:									specifies the development mode in which all service ports are exposed
+						-e:											for specifying an environment variable
+						--env-file: 						for specifying the path to an environment variables file
+						--instant-version:			the version of the project used for the deploy. Defaults to 'latest'
+						-*, --*:								unrecognised flags are passed through uninterpreted
 					usage:
 						<deploy command> <custom flags> <package ids>
 					examples:
-						init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../customPackage1" -c="<git@github.com/customPackage2>"  interoperability-layer-openhim customPackage1_id customPackage2_id
-						down -t=docker only elastic_analytics
+						{your_binary_file} init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../customPackage1" -c="<git@github.com/customPackage2>"  interoperability-layer-openhim customPackage1_id customPackage2_id
+						{your_binary_file} down -t=docker --only elastic_analytics
 		`
 	}
 }
