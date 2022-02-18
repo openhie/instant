@@ -16,7 +16,7 @@ func quit() {
 }
 
 func selectSetup() error {
-	items := []string{"Use Docker on your PC", "Quit"}
+	items := []string{"Use Docker on your PC", "Help", "Quit"}
 
 	index := 1
 	if !cfg.DisableKubernetes {
@@ -60,6 +60,10 @@ func selectSetup() error {
 
 	case "Install FHIR package":
 		err = selectUtil()
+
+	case "Help":
+		fmt.Println(getHelpText(true, ""))
+		selectSetup()
 
 	case "Quit":
 		quit()
@@ -133,6 +137,7 @@ func selectCustomOptions() error {
 		"Execute with current options",
 		"View current options set",
 		"Reset to default options",
+		"Help",
 		"Quit",
 		"Back",
 	}
@@ -183,6 +188,9 @@ func selectCustomOptions() error {
 	case "Reset to default options":
 		resetAll()
 		err = printAll(true)
+	case "Help":
+		fmt.Println(getHelpText(true, "Custom Options"))
+		return selectCustomOptions()
 	case "Quit":
 		quit()
 	case "Back":
@@ -208,7 +216,7 @@ func resetAll() {
 func setStartupAction() error {
 	prompt := promptui.Select{
 		Label: "Great, now choose a deploy action",
-		Items: []string{"init", "destroy", "up", "down", "test", "Quit", "Back"},
+		Items: []string{"init", "destroy", "up", "down", "test", "Help", "Quit", "Back"},
 		Size:  12,
 	}
 
@@ -223,6 +231,9 @@ func setStartupAction() error {
 	case "init", "destroy", "up", "down", "test":
 		customOptions.startupAction = result
 		err = selectCustomOptions()
+	case "Help":
+		fmt.Println(getHelpText(true, "Deploy Commands"))
+		return setStartupAction()
 	case "Quit":
 		quit()
 	case "Back":
@@ -520,6 +531,7 @@ func selectDefaultAction() error {
 			"down",
 			"destroy",
 			"up",
+			"Help",
 			"Back",
 			"Quit",
 		},
@@ -532,13 +544,15 @@ func selectDefaultAction() error {
 
 	fmt.Printf("You chose %q\n========================================\n", result)
 
-	if result == "Quit" {
+	switch result {
+	case "Help":
+		fmt.Println(getHelpText(true, "Deploy Commands"))
+		return selectDefaultAction()
+	case "Back":
+		return selectDefaultOrCustom()
+	case "Quit":
 		quit()
 		return nil
-	}
-
-	if result == "Back" {
-		return selectDefaultOrCustom()
 	}
 
 	return selectDefaultPackage(result)
