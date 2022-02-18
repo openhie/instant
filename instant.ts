@@ -132,7 +132,7 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
 }
 
 // Main script execution
-;(async () => {
+const main = async () => {
   const allPackages = getInstantOHIEPackages()
   console.log(
     `Found ${Object.keys(allPackages).length} packages: ${Object.values(
@@ -287,4 +287,13 @@ const logPackageDetails = (packageInfo: PackageInfo) => {
       await runTests(features)
     }
   }
-})()
+}
+
+// Entry point IIFE with base error handling
+;(async () => {
+  try {
+  await main()
+} catch (error) {
+  console.log(error)
+  process.exit(1)
+}})()
