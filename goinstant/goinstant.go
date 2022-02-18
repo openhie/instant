@@ -126,14 +126,6 @@ func getHelpText(interactive bool, options string) string {
 	} else {
 		return `Commands: 
 		help 		this menu
-		install		install fhir npm package on fhir server
-					usage: install <ig_url> <fhir_server> <authtype> <user/token> <pass>
-
-					examples:
-					install https://intrahealth.github.io/simple-hiv-ig/ http://hapi.fhir.org/baseR4 none
-					install <ig_url> <fhir_server> basic smith stuff
-					install <ig_url> <fhir_server> token "123"
-					install <ig_url> <fhir_server> custom test
 		init/up/destroy/down	the deploy command you want to run (brief description below)
 					deploy commands:
 						init:	 for initializing a service
@@ -154,6 +146,14 @@ func getHelpText(interactive bool, options string) string {
 					examples:
 						{your_binary_file} init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../customPackage1" -c="<git@github.com/customPackage2>"  interoperability-layer-openhim customPackage1_id customPackage2_id
 						{your_binary_file} down -t=docker --only elastic_analytics
+		install		install fhir npm package on fhir server
+					usage: install <ig_url> <fhir_server> <authtype> <user/token> <pass>
+
+					examples:
+					install https://intrahealth.github.io/simple-hiv-ig/ http://hapi.fhir.org/baseR4 none
+					install <ig_url> <fhir_server> basic smith stuff
+					install <ig_url> <fhir_server> token "123"
+					install <ig_url> <fhir_server> custom test
 		`
 	}
 }
