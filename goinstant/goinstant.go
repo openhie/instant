@@ -92,7 +92,7 @@ func getHelpText(interactive bool, options string) string {
 			return `Commands:
 				Choose deploy action - for choosing the deploy action
 
-				Choose target launcher - for choosing the deploy target. Can be a docker swarm, kubernetes or docker
+				Choose target launcher - for choosing the deploy target. Can be a docker swarm, kubernetes or docker (Project specific)
 
 				Specify deploy packages - for choosing the packages you want to use (core and custom packages)
 
