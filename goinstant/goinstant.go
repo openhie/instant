@@ -78,7 +78,7 @@ func loadConfig() {
 
 func getHelpText(interactive bool, options string) string {
 	if interactive {
-		switch (options) {
+		switch options {
 		case "Deploy Commands":
 			return `Commands:
 				init/up/destroy/down	the deploy command you want to run (brief description below)
@@ -126,6 +126,7 @@ func getHelpText(interactive bool, options string) string {
 	} else {
 		return `Commands: 
 		help 		this menu
+
 		init/up/destroy/down	the deploy command you want to run (brief description below)
 					deploy commands:
 						init:	 for initializing a service
@@ -146,6 +147,7 @@ func getHelpText(interactive bool, options string) string {
 					examples:
 						{your_binary_file} init -t=swarm --dev -e="NODE_ENV=prod" --env-file="../env.dev" -c="../customPackage1" -c="<git@github.com/customPackage2>"  interoperability-layer-openhim customPackage1_id customPackage2_id
 						{your_binary_file} down -t=docker --only elastic_analytics
+
 		install		install fhir npm package on fhir server
 					usage: install <ig_url> <fhir_server> <authtype> <user/token> <pass>
 
