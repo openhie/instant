@@ -83,10 +83,10 @@ func getHelpText(interactive bool, options string) string {
 			return `Commands:
 				init/up/destroy/down	the deploy command you want to run (brief description below)
 					deploy commands:
-						init:	 for initializing a service
-						up:	 for starting up a service that has been shut down or updating a service
-						destroy: for destroying a service
-						down:	 for bringing down a running service
+						init:			for initializing a service
+						up:				for starting up a service that has been shut down or updating a service
+						destroy:	for destroying a service
+						down:			for bringing down a running service
 			`
 		case "Custom Options":
 			return `Commands:
