@@ -151,16 +151,6 @@ func RunDeployCommand(startupCommands []string) error {
 
 	instantImage := cfg.Image + ":" + instantVersion
 
-	var err error
-	if deployCommand == "init" || deployCommand == "up" {
-		fmt.Println("\n\nDelete a pre-existing instant volume...")
-		commandSlice := []string{"volume", "rm", "instant"}
-		_, err = RunCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
-		if err != nil {
-			return err
-		}
-	}
-
 	fmt.Println("Creating fresh instant container with volumes...")
 	commandSlice := []string{
 		"create",
@@ -175,7 +165,7 @@ func RunDeployCommand(startupCommands []string) error {
 	commandSlice = append(commandSlice, otherFlags...)
 	commandSlice = append(commandSlice, []string{"-t", targetLauncher}...)
 	commandSlice = append(commandSlice, packages...)
-	_, err = RunCommand("docker", nil, commandSlice...)
+	_, err := RunCommand("docker", nil, commandSlice...)
 	if err != nil {
 		return err
 	}
@@ -203,6 +193,13 @@ func RunDeployCommand(startupCommands []string) error {
 		fmt.Println("Delete instant volume...")
 		commandSlice := []string{"volume", "rm", "instant"}
 		_, err = RunCommand("docker", nil, commandSlice...)
+	}
+
+	fmt.Println("\n\nRemoving instant volume...")
+	commandSlice = []string{"volume", "rm", "instant"}
+	_, err = RunCommand("docker", []string{"Error: No such volume: instant"}, commandSlice...)
+	if err != nil {
+		return err
 	}
 
 	return err
