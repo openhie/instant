@@ -1,0 +1,14 @@
+language: go
+
+go:
+  - 1.17.x
+  - 1.16.x
+
+before_install:
+  - apt-get update; apt-get install -y curl
+  - curl -sSL https://get.docker.com/ | sh
+  - go install github.com/cucumber/godog/cmd/godog@v0.12.0
+
+script:
+  - go test .
+  - godog
