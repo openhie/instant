@@ -853,7 +853,7 @@ func TestRunDeployCommand(t *testing.T) {
 			},
 		},
 		{
-			name: "Test case receive error from third call to RunCommand()",
+			name: "Test case ignore error from third call to RunCommand()",
 			args: args{
 				startupCommands: []string{"down", "--instant-version=latest", "-t=docker"},
 			},
