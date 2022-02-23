@@ -1,0 +1,27 @@
+name: Run Go CLI unit tests and Godog functional tests
+
+on:
+  push:
+    branches:  
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Working Branch 
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Run Go CLI unit tests
+      run: cd ./goinstant && go test . 
+
+    - name: Install Godog
+      run: cd ./goinstant && go get github.com/cucumber/godog/cmd/godog
+
+    - name: Run Godog tests
+      run: cd ./goinstant && godog
