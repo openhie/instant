@@ -38,7 +38,8 @@ services:
     volumes:
       - openmrs-referenceapplication-data:/usr/local/tomcat/.OpenMRS/
       - openmrs-modules:/usr/local/tomcat/.OpenMRS/modules/ # do not store modules in data
-      - /usr/local/tomcat/.OpenMRS/owa/ # do not store owa in data
+      - openmrs-owa:/usr/local/tomcat/.OpenMRS/owa/ # do not store owa in data
+      - openmrs-ssl:/ssl/  #SSL certs for the EMR-LIS comunication
  
 volumes:
    openmrs-referenceapplication-mysql-data:
@@ -47,3 +48,7 @@ volumes:
     external: true
    openmrs-modules:
     external: true 
+   openmrs-owa:
+    external: true
+   openmrs-ssl:
+    external: true    

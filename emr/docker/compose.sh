@@ -11,6 +11,14 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/modules/. openmrs-server-helper:/modules/
     docker rm openmrs-server-helper
 
+    docker create --name openmrs-owa-helper -v openmrs-owa:/owa busybox
+    docker cp "$composeFilePath"/importer/volume/owa/. openmrs-owa-helper:/owa/
+    docker rm openmrs-owa-helper
+
+    docker create --name openmrs-ssl-helper -v openmrs-ssl:/ssl busybox
+    docker cp "$composeFilePath"/importer/volume/ssl/. openmrs-ssl-helper:/ssl/
+    docker rm openmrs-ssl-helper
+
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
 
 elif [ "$1" == "up" ]; then
