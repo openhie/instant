@@ -53,19 +53,14 @@ services:
            
     fhir.openelis.org:
         container_name: external-fhir-api
-        image: hapiproject/hapi:v5.4.0
+        image: hapiproject/hapi:v5.5.1
         ports:
             - "8081:8080"
           # - "8444:8443"
         restart: always
         environment:
-          - hapi.fhir.enable_index_missing_fields=true
             - hapi.fhir.auto_create_placeholder_reference_targets=true
-            - hapi.fhir.allow_contains_searches=true
-            - hapi.fhir.allow_external_references=true
             - hapi.fhir.allow_placeholder_references=true
-            - hapi.fhir.default_pretty_print=false
-            - hapi.fhir.default_page_size=100
         #   TZ: Africa/Nairobi
 
         #   JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/openelis-global/truststore 
