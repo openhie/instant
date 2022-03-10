@@ -10,10 +10,10 @@ import (
 )
 
 //go:embed banner.txt
+//go:embed version
 var f embed.FS
 
 //go:embed config.yml
-//go:embed version
 var yamlConfig []byte
 var cfg Config
 
