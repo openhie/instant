@@ -13,6 +13,7 @@ import (
 var f embed.FS
 
 //go:embed config.yml
+//go:embed version
 var yamlConfig []byte
 var cfg Config
 
@@ -172,7 +173,12 @@ func main() {
 	}
 	color.Green(string(data))
 
-	color.Cyan("Version: 1.02b")
+	version, err := f.ReadFile("version")
+	if err != nil {
+		log.Println(err)
+	}
+
+	color.Cyan("Version: " + string(version))
 	color.Blue("Remember to stop applications or they will continue to run and have an adverse impact on performance.")
 
 	if len(os.Args) > 1 {
