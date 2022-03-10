@@ -13,6 +13,7 @@ func CLI() error {
 	switch startupCommands[0] {
 	case "help":
 		fmt.Println(getHelpText(false, ""))
+	case "version":
 	case "install":
 		params := &Params{}
 		switch startupCommands[3] {
