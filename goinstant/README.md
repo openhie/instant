@@ -35,7 +35,7 @@ Therefore, this app is not meant to be used for container and cluster management
 
 ### Running
 
-For development, run the app using `go run *.go`.
+For development, run the app using `go run .`.
 
 ### Testing
 
