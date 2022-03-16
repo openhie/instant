@@ -26,7 +26,7 @@ if [ "$1" == "init" ]; then
     docker cp "$composeFilePath"/importer/volume/tomcat/fhir_server/conf/. external-fhir-api-helper:/tomcat/ 
     docker rm external-fhir-api-helper
 
-    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d
+    docker-compose -p instant -f "$composeFilePath"/docker-compose.yml -f "$composeFilePath"/importer/docker-compose.config.yml up -d
 
 elif [ "$1" == "up" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d

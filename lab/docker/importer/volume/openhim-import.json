@@ -26,12 +26,12 @@
           "type": "http",
           "status": "enabled",
           "forwardAuthHeader": true,
-          "name": "Facility Registry Endpoint",
+          "name": "LIS Endpoint",
           "secured": false,
-          "host": "gofr",
-          "port": 4000,
+          "host": "fhir.openelis.org.remote",
+          "port": 8080,
           "path": "",
-          "pathTransform": "s/facility/fhir/g",
+          "pathTransform": "s/lis/fhir/g",
           "primary": true,
           "username": "",
           "password": ""
@@ -40,8 +40,8 @@
       "requestBody": true,
       "responseBody": true,
       "rewriteUrlsConfig": [],
-      "name": "Facility Registry",
-      "urlPattern": "/facility|auth/.*",
+      "name": "LIS",
+      "urlPattern": "/lis/.*",
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
@@ -54,7 +54,7 @@
         "name": "Super User"
       },
       "alerts": [],
-      "priority": 3
+      "priority": 4
     }
   ]
 }

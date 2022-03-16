@@ -54,24 +54,25 @@ services:
     fhir.openelis.org:
         container_name: external-fhir-api
         image: hapiproject/hapi:v5.5.1
+        # ports:
+            # - "8081:8080"
+          # - "8444:8443"
+        restart: always
+        environment:
+            - hapi.fhir.auto_create_placeholder_reference_targets=true
+            - hapi.fhir.allow_placeholder_references=true
+
+    fhir.openelis.org.remote:
+        container_name: openelis-remote-source
+        image: hapiproject/hapi:v5.5.1
         ports:
             - "8081:8080"
           # - "8444:8443"
         restart: always
         environment:
             - hapi.fhir.auto_create_placeholder_reference_targets=true
-            - hapi.fhir.allow_placeholder_references=true
-        #   TZ: Africa/Nairobi
+            - hapi.fhir.allow_placeholder_references=true        
 
-        #   JAVA_OPTS: "-Djavax.net.ssl.trustStore=/etc/openelis-global/truststore 
-        #               -Djavax.net.ssl.trustStorePassword=tspass
-        #               -Djavax.net.ssl.trustStoreType=pkcs12 
-        #               -Djavax.net.ssl.keyStore=/etc/openelis-global/keystore 
-        #               -Djavax.net.ssl.keyStorePassword=kspass 
-        #               -Djavax.net.ssl.keyStoreType=pkcs12"                 
-        # volumes:
-        #     -  cert-volume:/etc/openelis-global
-        #     -  openelis-fhir-data:/usr/local/tomcat/conf/
    
 volumes:
   db-data:
