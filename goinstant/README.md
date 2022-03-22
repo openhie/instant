@@ -35,7 +35,7 @@ Therefore, this app is not meant to be used for container and cluster management
 
 ### Running
 
-For development, run the app using `go run *.go`.
+For development, run the app using `go run .`.
 
 ### Testing
 
@@ -52,6 +52,8 @@ bash ./buildreleases.sh
 ```
 
 ### Deploying
+
+If any changes have been made to the Go CLI, update the version in `./version`
 
 To build releases, create an instant tag and a release, the GitHub actions will build the code after creation of the release and add the binaries to the assets of the release if the GO CLI build succeeds.
 
