@@ -1,10 +1,6 @@
 # docker volume data folders
 **/data
 
-# cli client
-goinstant
-./deploy.sh
-
 # vscode config
 .vscode
 
@@ -14,3 +10,6 @@ docs
 # Dependency directories
 node_modules/
 .editorconfig
+
+# Don't override base image package.json
+package.json
