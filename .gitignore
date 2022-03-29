@@ -85,6 +85,6 @@ typings/
 .vscode
 
 # test binaries
-/goinstant/features/test-platform-linux
-/goinstant/features/test-platform-macos
-/goinstant/features/test-platform.exe
+/goinstant-linux
+/goinstant-macos
+/goinstant.exe
