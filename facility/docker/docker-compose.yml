@@ -41,7 +41,7 @@ services:
 
   gofr:
     container_name: gofr
-    image: intrahealth/gofr:latest
+    image: intrahealth/gofr:7e892dd6
     environment:
       - mCSD__server__protocal=http
       - mCSD__server__host=fhir
