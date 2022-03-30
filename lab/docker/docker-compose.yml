@@ -61,6 +61,7 @@ services:
         environment:
             - hapi.fhir.auto_create_placeholder_reference_targets=true
             - hapi.fhir.allow_placeholder_references=true
+            - hapi.fhir.allow_external_references=true
 
     fhir.openelis.org.remote:
         container_name: openelis-remote-source
@@ -71,7 +72,8 @@ services:
         restart: always
         environment:
             - hapi.fhir.auto_create_placeholder_reference_targets=true
-            - hapi.fhir.allow_placeholder_references=true        
+            - hapi.fhir.allow_placeholder_references=true   
+            - hapi.fhir.allow_external_references=true     
 
    
 volumes:
