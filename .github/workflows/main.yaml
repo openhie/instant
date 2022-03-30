@@ -29,3 +29,5 @@ jobs:
           ./goinstant-linux
           ./goinstant-macos
           ./goinstant.exe
+          ./config.yml
+          ./banner.txt
