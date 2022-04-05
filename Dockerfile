@@ -1,4 +1,4 @@
-FROM openhie/package-base as instant-build
+FROM openhie/package-base:0.1.0
 # Add default instant OpenHIE packages
 ADD . .
 
