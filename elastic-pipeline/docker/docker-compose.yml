@@ -9,11 +9,15 @@ services:
       - logstash-config:/usr/share/logstash/config/
 
   fhir-extractor:
-    image: jembi/fhir-extractor:latest
+    image: jembi/fhir-extractor:v1.0.0
     container_name: fhir-extractor
     environment:
       - GET_URL=http://hapi-fhir:8080/fhir
       - POST_URL=http://logstash:5055/fhir
+      - TRUST_SELF_SIGNED=true
+      - OPENHIM_PASSWORD=instant101
+      - OPENHIM_USERNAME=root@openhim.org
+      - OPENHIM_URL=https://openhim-core:8080
 
 volumes:
   logstash-pipeline:

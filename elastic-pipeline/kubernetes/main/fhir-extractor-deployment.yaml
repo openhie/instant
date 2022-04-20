@@ -29,7 +29,7 @@ spec:
               value: http://hapi-fhir-server-service:8080/fhir
             - name: POST_URL
               value: http://logstash:5055/fhir
-          image: jembi/fhir-extractor:latest
+          image: jembi/fhir-extractor:v2.0.0
           name: fhir-extractor
           resources: {}
       restartPolicy: Always

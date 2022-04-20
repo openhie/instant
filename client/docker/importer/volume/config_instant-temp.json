@@ -10,7 +10,7 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "instant101",
+      "password": "{{OPENHIM_API_PASSWORD}}",
       "apiURL": "https://openhim-core:8080",
       "trustSelfSigned": true,
       "urn": ""
