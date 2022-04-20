@@ -19,7 +19,7 @@ The Instant OpenHIE architecture, codebase, and documentation are under active d
 
 Instant OpenHIE is, by design, easily downloaded and run by anyone on any platform. It works on Linux, macOS and Windows.
 
-To get started, install Docker, Docker Compose and Kubectl for Kubernetes support. Instant OpenHIE uses Docker Compose to manage all the necessary services and applications. The links below will help guide the set up on your platform.
+To get started, install Docker, Docker Compose and Kubectl for Kubernetes support. Instant OpenHIE uses Docker Compose to manage all the necessary services and applications. The links above will help guide the set up on your platform.
 
 For Windows and macOS:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
@@ -44,11 +44,35 @@ Now, you are ready to continue.
 
 1. Download the latest Instant OpenHIE executable from our [GitHub releases page](https://github.com/openhie/instant/releases). Find the executable in the assets section of the latest release for your platform.
 
-2. Move the Instant OpenHIE download somewhere memorable. Open up the terminal (or Powershell in Windows) and run the executable to get the command-line interface:
+1. Move the Instant OpenHIE download somewhere memorable. Open up the terminal or (command prompt in Windows) and run the executable to get the command-line interface:
 
-3. Use the arrow keys to navigate the interface and select "Use Docker on your PC" and thereafter choose between a default or custom installation.
+    ```sh
+    ./goinstant-linux
 
-More information on the default and custom installation options can be found <a target="_blank" href="../how-to/setup-instant-with-gocli">here</a>.
+    Use the arrow keys to navigate: ↓ ↑ → ←
+    ? Choose Start Instant OpenHIE if this is your first time:
+      ▸ Start Instant OpenHIE
+        Stop Instant OpenHIE
+        Debug
+        Help
+        Quit
+    ```
+
+    ```sh
+    goinstant.exe
+
+    Use the arrow keys to navigate: j k l h
+    ? Choose Start Instant OpenHIE if this is your first time:
+    > Start Instant OpenHIE
+      Stop Instant OpenHIE
+      Debug
+      Help
+      Quit
+    ```
+
+1. Use the arrow keys (on windows you need to use j k l h) to navigate the interface and choose '**Start Instant OpenHIE**'.
+
+    This will start the default OpenHIE packages under docker. After the images download, the script will start up the packages and a web page will open with links to the started services/application as well as their corresponding documentation.
 
     > All available packages are listed here in the sidebar under **Existing Packages**. Each package includes several services/applications. These will be expanded over time.
 

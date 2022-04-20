@@ -4,25 +4,5 @@
   "description": "",
   "type": "infrastructure",
   "version": "v0.0.1",
-  "dependencies": ["core"],
-  "environmentVariables": {
-    "IHRIS_FHIR__BASE": "http://hapi-fhir:8080/fhir",
-    "IHRIS_REDIS__URL": "redis://redis",
-    "IHRIS_ELASTICSEARCH__BASE": "http://es:9200",
-    "IHRIS_KIBANA__BASE": "http://kibana:5601",
-    "profiles.active": "r4",
-    "spring.datasource.url": "jdbc:postgresql://hapi-postgres:5432/hapi",
-    "spring.datasource.username": "admin",
-    "spring.datasource.password": "admin",
-    "spring.datasource.driverClassName": "org.postgresql.Driver",
-    "POSTGRES_PASSWORD": "admin",
-    "POSTGRES_USER": "admin",
-    "POSTGRES_DB": "hapi",
-    "node.name": "es01",
-    "discovery.type": "single-node",
-    "bootstrap.memory_lock": "true",
-    "ES_JAVA_OPTS": "-Xms512m -Xmx512m",
-    "ELASTICSEARCH_URL": "http://es:9200",
-    "ELASTICSEARCH_HOSTS": "http://es:9200"
-  }
+  "dependencies": ["core"]
 }

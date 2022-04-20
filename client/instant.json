@@ -1,18 +1,8 @@
 {
   "id": "client",
-  "name": "OpenCR Client Registry",
+  "name": "client",
   "description": "",
   "type": "infrastructure",
   "version": "v0.0.1",
-  "dependencies": ["core"],
-  "environmentVariables": {
-    "NODE_ENV": "instant",
-    "HAPI_FHIR_URL": "http://hapi-fhir:8080/fhir/metadata",
-    "fhirServer__baseURL": "http://hapi-fhir:8080/fhir",
-    "node.name": "es01",
-    "discovery.type": "single-node",
-    "bootstrap.memory_lock": "true",
-    "ES_JAVA_OPTS": "-Xms512m -Xmx512m",
-    "OPENHIM_ROOT_PASSWORD": "instant101"
-  }
+  "dependencies": ["core"]
 }

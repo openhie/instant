@@ -191,12 +191,11 @@ configMapGenerator:
   - name: example-endpoint-importer-configmap
     files:
       - ./volume/endpoint.js
-      - ./volume/example-endpoint.json
 resources:
   - ./example-endpoint-importer-job.yaml
 ```
 
-This config generates a Kubernetes `configMap` for the `example-endpoint-importer` job based on the contents of the volume folder.
+This config generates a Kubernetes `configMap` for the `example-endpoint-importer` job based on the contents of the `example-endpoint-importer-job.yaml` Kubernetes file.
 
 Finally, update the `k8s.sh` file with the following script:
 

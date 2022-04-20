@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <title>Instant OpenHIE</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="main.js"></script>
+
+</head>
+
+<body>
+    <img class="icon" src="logo.png" />
+    <p></p>
+    <button class="button"
+        onclick="window.open('https://wiki.ohie.org/display/resources/Instant+OpenHIE', '_blank')">Project</button>
+    <button class="button buttonblue"
+        onclick="window.open('https://openhie.github.io/instant/', '_blank')">Docs</button>
+    <button class="button buttonblack"
+        onclick="window.open('https://github.com/openhie/instant', '_blank')">Code</button>
+    <hr>
+    <h2>Step Two: Select a Package to Launch with Kubernetes (One Only)</h1>
+    <hr>
+
+    <h3>Core (OpenHIM and HAPI FHIR)</h2>
+    <p>Default user is root@openhim.org and password is openhim-password</p>
+    <button class="button" id='onefunc' onclick="OneFunc('k8s', 'core', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('k8s', 'core', 'destroy')">Remove</button>
+    <button class="button buttonblack" onclick="window.open('http://localhost:9000/', '_blank')">Go to OpenHIM</button>
+    <button class="button buttonorange" onclick="window.open('http://localhost:3447/', '_blank')">Go
+        to HAPI FHIR </button>
+    <hr>
+
+    <h3>Facility Registry (GOFR)</h2>
+    <p>Default user is root@gofr.org and password is gofr</p>
+    <button class="button" id='onefunc' onclick="OneFunc('k8s', 'facility', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('k8s', 'facility', 'destroy')">Remove</button>
+    <button class="button buttongray" onclick="window.open('http://localhost:3000', '_blank')">Go to GOFR</button>
+    <hr>
+
+    <h3>Health Worker Registry (iHRIS)</h2>
+    <p>Default user is admin@ihris.org and password is ihris. The port is 3001, not the default (3000)</p>
+    <button class="button" id='onefunc' onclick="OneFunc('k8s', 'healthworker', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('k8s', 'healthworker', 'destroy')">Remove</button>
+    <button class="button buttonblue" onclick="window.open('http://localhost:3001/', '_blank')">Go to iHRIS</button>
+    <!-- <button class="button buttonorange" onclick="window.open('http://localhost:8080', '_blank')">Go to HAPI FHIR </button> -->
+    <hr>
+
+    <h3>Client Registry (OpenCR)</h2>
+    <p>Default user is root@intrahealth.org and password is intrahealth. The port is 3003, not the default (3000)</p>
+    <button class="button" id='onefunc' onclick="OneFunc('k8s', 'client', 'up')">Launch</button>
+    <button class="button buttonred" id='onefunc' onclick="OneFunc('k8s', 'client', 'destroy')">Remove</button>
+    <button class="button buttonyellow" onclick="window.open('https://localhost:3003/crux', '_blank')">Go to OpenCR</button>
+    <!-- <button class="button buttonorange" onclick="window.open('http://localhost:8080', '_blank')">Go to HAPI FHIR </button> -->
+    <hr>
+
+    <h3>Console</h2>
+
+    <div id="console"
+        style="font-size: 14px; background-color: #9fc4c6; width: 600px; height: 200px; padding: 10px; margin: 10px; overflow-y: scroll; overscroll-behavior-y: contain; scroll-snap-type: y mandatory;">
+    </div>
+
+    <h2>Debug</h2>
+
+    <button class="button buttonblack" id='setup' onclick="Setup()">Debug Setup</button>
+    <button class="button buttonblack" id='debugdocker' onclick="DebugKubernetes()">Debug
+        Kubernetes</button>
+    <!-- <button class="button buttonblack" id='listdocker' onclick="ListKubernetes()">List Docker Containers</button> -->
+
+</body>
+
+</html>

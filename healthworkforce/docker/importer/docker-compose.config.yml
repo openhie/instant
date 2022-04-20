@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   # container for executing config import scripts for setting up initial config
-  healthworkforce-config-importer:
+  openhim-config-importer:
     container_name: openhim-config-importer
     image: jembi/instantohie-config-importer
     restart: on-failure
@@ -10,7 +10,7 @@ services:
       OPENHIM_API_HOSTNAME: 'openhim-core'
       OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
-      OPENHIM_API_PASSWORD: ${OPENHIM_ROOT_PASSWORD-instant101}
+      OPENHIM_API_PASSWORD: 'instant101'
       # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:
@@ -21,7 +21,7 @@ services:
     command: sh -c "wait-on -t 60000 https-get://openhim-core:8080/heartbeat && node /instant/healthworkforce/docker/importer/volume/openhimConfig.js"
 
   # container for executing config import scripts for setting up initial config
-  mcsd-mapper-endpoint-config-importer:
+  mcsd-config-importer:
     container_name: mcsd-config-importer
     image: jembi/instantohie-config-importer
     restart: on-failure

@@ -1,16 +1,8 @@
 {
   "id": "facility",
-  "name": "Facility Registry",
+  "name": "facility",
   "description": "",
   "type": "infrastructure",
   "version": "v0.0.1",
-  "dependencies": ["core"],
-  "environmentVariables": {
-    "mongodb__url": "mongodb://mongo/hearth-dev",
-    "logger__level": "warning",
-    "authentication__type": "disabled",
-    "HEARTH_URL": "http://hearth:3447",
-    "REDIS_HOST": "redis",
-    "DB_HOST": "mongo"
-  }
+  "dependencies": ["core"]
 }

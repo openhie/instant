@@ -8,8 +8,8 @@
       "surname": "User",
       "email": "root@openhim.org",
       "passwordAlgorithm": "sha512",
-      "passwordHash": "{{PASSWORD_HASH}}",
-      "passwordSalt": "{{PASSWORD_SALT}}",
+      "passwordHash": "ea3824f17cf1379eb118a36bc7c8cf0f45712e2af7748567fca5313dec6fa66d61064e82a5e5cb88e998486ee3c7d0dac235bbeda8c341d6edc1c77406be2ab6",
+      "passwordSalt": "d4f622c0404f09bd959bfb263efa3452",
       "expiry": null,
       "locked": false,
       "token": null,
@@ -21,9 +21,9 @@
       "roles": [
         "instant"
       ],
-      "customTokenID": "{{OPENHIM_CLIENT_TOKEN}}",
-      "clientID": "instant-client",
-      "name": "Instant Client"
+      "customTokenID": "test",
+      "clientID": "test",
+      "name": "Test Client"
     }
   ],
   "Channels": [

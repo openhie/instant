@@ -3,12 +3,5 @@
   "name": "health-management-information-system",
   "description": "Installs and starts up an instance of DHIS2",
   "type": "infrastructure",
-  "version": "v1.0.0",
-  "environmentVariables": {
-    "PGDATA": "/var/lib/postgresql/data/pgdata",
-    "POSTGRES_DB": "dhis2",
-    "POSTGRES_USER": "dhis",
-    "POSTGRES_PASSWORD": "dhis",
-    "WAIT_FOR_DB_CONTAINER": "dhis-postgres:5432 -t 0"
-  }
+  "version": "v1.0.0"
 }

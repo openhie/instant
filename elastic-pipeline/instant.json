@@ -4,16 +4,5 @@
   "description": "",
   "type": "use-case",
   "version": "v0.1.0",
-  "dependencies": ["elastic-analytics", "core"],
-  "environmentVariables": {
-    "GET_URL": "http://hapi-fhir:8080/fhir",
-    "POST_URL": "http://logstash:5055/fhir",
-    "TRUST_SELF_SIGNED": "true",
-    "OPENHIM_PASSWORD": "instant101",
-    "OPENHIM_USERNAME": "root@openhim.org",
-    "OPENHIM_URL": "https://openhim-core:8080",
-    "OPENHIM_API_HOSTNAME": "openhim-core",
-    "OPENHIM_API_PORT": "8080",
-    "NODE_TLS_REJECT_UNAUTHORIZED": "0"
-  }
+  "dependencies": ["elastic-analytics", "core"]
 }

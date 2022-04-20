@@ -10,7 +10,7 @@ services:
       OPENHIM_API_HOSTNAME: 'openhim-core'
       OPENHIM_API_PORT: 8080
       OPENHIM_API_USERNAME: 'root@openhim.org'
-      OPENHIM_API_PASSWORD: ${OPENHIM_ROOT_PASSWORD-instant101}
+      OPENHIM_API_PASSWORD: 'instant101'
       # Reject unauthorised is only needed if the OpenHIM's SSL is not setup
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     volumes:

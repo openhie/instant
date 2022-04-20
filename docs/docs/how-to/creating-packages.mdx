@@ -13,7 +13,7 @@ description: How to create an Instant OpenHIE package
 The Instant OpenHIE architecture, codebase, and documentation are under active development and are subject to change. While we encourage adoption and extension of the Instant OpenHIE framework, we do not consider this ready for production use at this stage.
 :::
 
-Packages are a way of allowing a group of applications to be setup and configured to enable a particular set of functionality. Each package **MUST** include the following:
+Packages are a way of allowing a group of applications to be setup and configured to enable a particular set of functionality. Each package **MUST** include a the following:
 
 1. `docker-compose.*.yml` files to setup and configure the necessary applications in Docker Compose
 2. Deployment and service resource files (and any other necessary resource files) to setup and configure the necessary applications in Kubernetes
@@ -46,10 +46,6 @@ This file should be in the root directory of the package and provide metadata ab
   "type": "use-case", // options: infrastructure | use-case
   "version": "v0.0.1",
   "dependencies": ["core", "healthworkforce"] // list of package ids
-  "environmentVariables": { // List of environment variables used in the package
-￼   "NODE_ENV": "instant",
-    "url": "http://test.org"
-  }
 }
 ```
 
@@ -184,7 +180,7 @@ If you had downloaded the [who-covid19-surveillance-package](https://github.com/
 yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
 ```
 
-Once a custom package has been added to the project, it does not need to be referenced in future commands as the data has been persisted in the shared volume.
+Once a custom package has been added to the project, it does not need to be references in future commands as the data has been persisted in the shared volume.
 The examples below continue on from the previous covid19 package initialisation.
 
 - `yarn docker:instant down core covid19surveillance`

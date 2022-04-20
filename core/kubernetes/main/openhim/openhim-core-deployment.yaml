@@ -30,7 +30,7 @@ spec:
               mountPath: /usr/src/app/config
           env:
             - name: NODE_ENV
-              value: production
+              value: development
       volumes:
         - name: core-openhim-core-volume
           configMap:
