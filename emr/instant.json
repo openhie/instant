@@ -4,5 +4,18 @@
   "description": "Installs and starts up an instance of OpenMRS",
   "type": "infrastructure",
   "version": "v0.0.1",
-  "dependencies": ["core"]
+  "dependencies": ["core"],
+  "environmentVariables": {
+    "MYSQL_DATABASE": "${MYSQL_DB:-openmrs}",
+    "MYSQL_ROOT_PASSWORD": "${MYSQL_ROOT_PASSWORD:-Admin123}",
+    "MYSQL_USER": "${MYSQL_USER:-openmrs}",
+    "MYSQL_PASSWORD": "${MYSQL_PASSWORD:-Admin123}",
+    "DB_DATABASE": "${MYSQL_DB:-openmrs}",
+    "DB_HOST": "openmrs-referenceapplication-mysql",
+    "DB_USERNAME": "${MYSQL_USER:-openmrs}",
+    "DB_PASSWORD": "${MYSQL_PASSWORD:-Admin123}",
+    "DB_CREATE_TABLES": "true",
+    "DB_AUTO_UPDATE": "true",
+    "MODULE_WEB_ADMIN": "true"
+  }
 }

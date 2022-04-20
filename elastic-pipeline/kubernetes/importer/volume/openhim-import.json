@@ -36,7 +36,7 @@
       "responseBody": true,
       "rewriteUrlsConfig": [],
       "name": "Poll FHIR Extractor",
-      "pollingSchedule": "10 seconds",
+      "pollingSchedule": "0 * * * *",
       "urlPattern": "^/fhir-extractor$",
       "matchContentRegex": null,
       "matchContentXpath": null,

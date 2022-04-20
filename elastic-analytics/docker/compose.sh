@@ -9,8 +9,6 @@ export ES_REMOTE_MONITORING_USER=${ES_REMOTE_MONITORING_USER:-dev_password_only}
 export ES_ELASTIC=${ES_ELASTIC:-dev_password_only}
 export ES_KIBANA_SYSTEM=${ES_KIBANA_SYSTEM:-dev_password_only}
 export ES_BEATS_SYSTEM=${ES_BEATS_SYSTEM:-dev_password_only}
-export JS_REPORT=${JS_REPORT:-dev_password_only}
-export JS_REPORT_SECRET=${JS_REPORT_SECRET:-dev_secret_only}
 
 if [ "$1" == "init" ]; then
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d es-analytics
@@ -25,7 +23,6 @@ if [ "$1" == "init" ]; then
     echo "Setting passwords in config files..."
     sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../elastic-pipeline/docker/pipeline/*.conf
     sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../elastic-pipeline/docker/logstash.yml
-    sed -i "s/dev_password_only/$ES_ELASTIC/g" "$composeFilePath"/../../cdr/docker/jsreport/scripts/*/content.js
     echo "Done"
 
     docker-compose -p instant -f "$composeFilePath"/docker-compose.yml up -d

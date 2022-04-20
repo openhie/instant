@@ -1,6 +1,6 @@
 {
   "name": "instant",
-  "version": "0.0.6",
+  "version": "0.0.12",
   "main": "instant.ts",
   "repository": "git@github.com:openhie/instant.git",
   "author": "Jembi and IntraHealth",
@@ -16,14 +16,12 @@
     "typescript": "^3.9.6"
   },
   "scripts": {
-    "instant": "ts-node instant.ts",
     "test:local": "docker run --rm --name test-helper -v instant:/instant --network instant_default openhie/package-test local",
     "test:local:dev": "docker run --rm --name test-helper -v </absolute/path/to/instant>:/instant --network instant_default openhie/package-test local",
     "test:remote": "docker run --rm --name test-helper --network host -v instant:/instant -v </absolute/path/to/instant/.env.remote>:/instant/.env.remote openhie/package-test remote",
     "test:remote:dev": "docker run --rm --name test-helper --network host -v </absolute/path/to/instant>:/instant openhie/package-test remote",
     "test:container": "./test.sh",
-    "docker:build": "docker build -t openhie/instant:latest .",
-    "docker:instant": "./deploy.sh",
+    "docker:build:test": "docker build -t openhie/package-test -f PackageTest.dockerfile .",
     "docker:instant:win": "docker volume rm instant & docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %USERPROFILE%\\.kube:/root/.kube/config:ro  --mount='type=volume,src=instant,dst=/instant' --network host openhie/instant:latest",
     "docker:instant:aws": "docker volume rm instant ; docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.kube/config:/root/.kube/config:ro -v ~/.minikube:/home/$USER/.minikube:ro --mount='type=volume,src=instant,dst=/instant' --network host -v ~/.aws:/root/.aws openhie/instant:latest",
     "docker:test": "yarn docker:instant test",
@@ -32,7 +30,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.0.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "chai": "^4.2.0",
     "prettier": "^2.0.5"
   }

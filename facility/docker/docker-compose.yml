@@ -14,8 +14,6 @@ services:
     ports:
       - "8092:8080"
     restart: always
-    depends_on:
-      - redis
     environment:
       - hapi.fhir.partitioning.enabled=true
       - hapi.fhir.partitioning.allow_references_across_partitions=false
@@ -31,7 +29,16 @@ services:
       - spring.jpa.properties.hibernate.search.backend.lucene_version=lucene_current
       # file:// can only deal with absolute paths, have to use classpath
     #   SPRING_CONFIG_LOCATION: 'classpath:./application.yaml'
-
+  facility-recon:
+    container_name: facility-recon
+    image: openhie/facility-recon:latest
+    environment: 
+      - HEARTH_URL=http://hearth:3447
+      - REDIS_HOST=redis
+      - DB_HOST=mongo
+    depends_on:
+      - redis
+      
   hapi-cli:
     container_name: hapi-cli
     image: intrahealth/hapi-fhir-cli:latest
@@ -49,11 +56,5 @@ services:
       - mCSD__server__basePath=fhir
       - REDIS_HOST=redis
     ports:
-      - "4000:4000"
+      - "3000:3000"
     restart: always
-
-# join core network
-# networks:
-#   default:
-#     external: true
-#     name: instant_default

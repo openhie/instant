@@ -1,4 +1,4 @@
-FROM node:fermium-buster
+FROM node:gallium-bullseye-slim
 
 WORKDIR /instant
 

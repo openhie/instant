@@ -82,6 +82,13 @@ Each command also takes a list of package IDs to operate on. If this is left out
 
 E.g only run `core` package: `yarn docker:instant init -t k8s core`
 
+### Supported options
+
+Instant supports a few options after the main command in the form: `instant <main_command> [options] [package-ids]` e.g. `yarn docker:instant init -t k8s`
+
+* --target, -t : specify a target to deploy to, defaults to docker. Allowed values: docker, kubernetes, k8s
+* --only, -o : if supplied only the specified packages will be acted upon in the order they are provided, ignoring dependencies
+
 ## Custom packages
 
 To add a custom package to your instant instance use the following flag
@@ -94,37 +101,56 @@ For example, if you had downloaded the [who-covid19-surveillance-package](https:
 yarn docker:instant init core covid19surveillance -c="../who-covid19-surveillance-package"
 ```
 
-> We hope to support package urls soon
+Urls are supported. The custom package will be downloaded and then mounted to the instant instance.
 
-### Docker or Kubernetes without the Instant OpenHIE repo
+`-c="https://github.com/jembi/who-covid19-surveillance-package"`
+
+> Only github repos and urls pointing to files with extensions "zip" and "tar.gz"
+
+> Packages that are nested in folders can also be mounted by specifying the path or url of the root folder. Packages can be nested 5 levels down. For example one can mount a package within the following folder `test/test1/test2/test3/test4/package` by using the path to the `test` folder. This also allows us to mount multiple packages contained in a folder by specifying the path to that folder.
+
+### Go CLI Binary (Cross platform)
 
 The Instant OpenHIE project is available as a Docker image therefore we do not need the whole GitHub repository to run the containers.
 
-For a minimum Instant OpenHIE set up, download [this deploy script from GitHub](https://raw.githubusercontent.com/openhie/instant/master/deploy.sh).
-Once downloaded make sure it's executable: `sudo chmod +x deploy.sh`
+For a minimum Instant OpenHIE set up, download [the Go Binary for your distribution](https://github.com/openhie/instant/releases).
+The binaries are in the assets section of each release and you have a choice of linux, mac, and windows to choose from.
 
-Then, run the following command to add your custom package and initialise the system in docker.
+#### Binary Interactive Mode
+
+To run the `go cli` binary, launch the project as follows:
+
+* **Linux**. From terminal run: `./instant-linux`
+* Mac. From terminal run: `./instant-macos`
+  > Warning: Mac has an issue with the binary as it views the file as a security risk. See [this article](https://www.lifewire.com/fix-developer-cannot-be-verified-error-5183898) to bypass warning
+* Windows. Double click: `instant.exe`
+
+Then choose your options and deploy!
+
+#### Binary Non-interactive Mode (Linux/Mac)
+
+From a terminal, run the following command to add your custom package and initialise the system in docker.
 
 ```sh
-./deploy init -t docker core <your_package_ids> -c="../path/to/your/package"
+./instant-{os} init -t docker core <your_package_ids> -c="../path/to/your/package"
 ```
 
 To remove the instant project, run the following:
 
-./deploy destroy -t docker core covid19surveillance
+./instant-{os} destroy -t docker core covid19surveillance
 
 > The custom package location is not needed for `up`, `down`, or `destroy` commands on an existing system.
 
 To initialise kubernetes, run the following:
 
 ```sh
-./deploy init -t k8s core <your_package_ids> -c="../path/to/your/package"
+./instant-{os} init -t k8s core <your_package_ids> -c="../path/to/your/package"
 ```
 
 Multiple custom packages can be chained together as follows:
 
 ```sh
-./deploy init test1 test2 test3 -c="../test1" -c="../test2" -c="../test3"
+./instant-{os} init test1 test2 test3 -c="../test1" -c="../test2" -c="../test3"
 ```
 
 ### Running tests on running packages
