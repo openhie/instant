@@ -2,7 +2,7 @@ FROM openhie/package-base:0.1.0
 # Add default instant OpenHIE packages
 ADD . .
 
-RUN apt-get install -y unzip
+RUN apt-get update && apt-get install -y unzip
 
 # install aws cli - for credential fetching
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
