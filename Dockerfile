@@ -1,7 +1,8 @@
-FROM openhie/package-base:0.1.0
+FROM openhie/package-base:latest
 # Add default instant OpenHIE packages
 ADD . .
 
+RUN apt-get update
 RUN apt-get install -y unzip
 
 # install aws cli - for credential fetching
