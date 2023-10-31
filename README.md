@@ -1,3 +1,6 @@
+> [!WARNING]
+> Instant OpenHIE v1 has been discontinued in favour of Instant OpenHIE v2. Please see the [Instant OpenHIE v2 docs](https://jembi.gitbook.io/instant-v2/) for more details.
+
 # Instant OpenHIE
 
 > Note: This repo is not for production. Rather, it contains strawpersons to facilitate discussion and demonstrations of progress on the Instant OpenHIE project. As such, it implies no endorsement or support from any institution especially and including the OpenHIE Community of Practice. This is for open discussion in the community. Please join the OpenHIE Dev-Ops Sub-community and give us your thoughts!
