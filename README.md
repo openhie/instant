@@ -3,6 +3,17 @@
 
 # Instant OpenHIE
 
+Welcome to Instant OpenHIE. Open Health Information Exchange (OpenHIE) is a global, mission-driven community of practice dedicated to improving the health of the underserved through open and collaborative development and support of country driven, large scale health information sharing architectures. 
+
+The central technical output of OpenHIE is the consensus-driven OpenHIE Architecture, an open framework to develop health information exchanges (HIEs) to improve patient care, public health, and the management of health resources. The architecture is based upon real-world implementations and needs.
+
+Instant OpenHIE is meant to help implementers to test and try OpenHIE Architecture components and workflows. The goals of Instant OpenHIE are to support:
+* **Demonstrations**: A simple way to launch containers with OpenHIE components and demonstrate workflows.
+* **Simplify life for developers**: A way for implementers to rapidly develop their tooling around the OpenHIE Architecture and the versions of it without having to unnecessary time configuring many components.
+* **QA**: Run workflows in a CI/CD system like GitHub Actions.
+
+Instant OpenHIE is not meant for production and is not a substitute for enterprise-level IT configuration. Implementers should consult the product owners' documentation for production set-up.
+
 > Note: This repo is not for production. Rather, it contains strawpersons to facilitate discussion and demonstrations of progress on the Instant OpenHIE project. As such, it implies no endorsement or support from any institution especially and including the OpenHIE Community of Practice. This is for open discussion in the community. Please join the OpenHIE Dev-Ops Sub-community and give us your thoughts!
 
 View the [user documentation](https://openhie.github.io/instant/) for more information.
