@@ -1,0 +1,43 @@
+{
+  "app_id": "aa",
+  "archived": false,
+  "attachments": {
+    "form.xml": {
+      "content_type": "text/xml",
+      "length": 11528,
+      "url": "https://www.commcarehq.org/a/x.xml"
+    }
+  },
+  "form": {
+    "#type": "data",
+    "@name": "Register New Patient",
+    "@uiVersion": "1",
+    "@version": "1",
+    "patient_data": {
+      "age": {
+        "age_at_registration_days": "181",
+        "gender": "female",
+        "birthDate": "2020-10-11",
+        "first_name": "test",
+        "last_name": "case"
+      },
+      "locations": {
+        "city": "k",
+        "clinic_code": "test_clinic",
+        "country": "Kenya"
+      },
+      "patient_id": "test_clinic-0009-01"
+    },
+    "case": {
+      "@case_id": "xxx",
+      "@date_modified": "2021-01-21T07:08:19.431000Z",
+      "@user_id": "aaa",
+      "@xmlns": "http://commcarehq.org/case/transaction/v2",
+      "create": {
+        "case_name": "test case",
+        "case_type": "patient",
+        "owner_id": "aaa"
+      }
+    }   
+}
+}

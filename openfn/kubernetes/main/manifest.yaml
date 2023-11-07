@@ -1,0 +1,121 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: openfn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openfn-microservice-data
+  namespace: openfn
+  labels:
+    app: openfn-microservice
+    needed_early: t
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+
+
+# kubectl -n openfn get pods -o name
+# tar cf - ../../docker/example/volume/* | kubectl exec -i -n openfn <some-pod> -- tar xf - -C /tmp/bar
+# --overrides='{ "apiVersion": "v1", "spec": { "volumes": { "name": "openfn-microservice-data", "persistentVolumeClaim": "claimName": "openfn-microservice-data" } }'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice-deployment
+  namespace: openfn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openfn-microservice
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: openfn-microservice
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - openfn-microservice
+                topologyKey: 'kubernetes.io/hostname'
+      containers:
+        - image: openfn/microservice:v0.3.3
+          name: openfn-microservice
+          resources:
+            requests:
+              cpu: '250m'
+              memory: '256Mi'
+            limits:
+              memory: '768Mi'
+          ports:
+            - containerPort: 4001
+              protocol: TCP
+          env:
+            - name: HOST_URL
+              value: "localhost"
+            - name: PORT
+              value: "4001"
+            - name: ENDPOINT_STYLE
+              value: "async"
+            - name: PROJECT_DIR
+              value: "/opt/app/project"
+          # command: ['./prod/rel/open_fn/bin/open_fn']
+          # args: ['start']
+          volumeMounts:
+            - mountPath: /opt/app/project
+              name: openfn-microservice-data
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: openfn-microservice-data
+          persistentVolumeClaim:
+            claimName: openfn-microservice-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openfn-service
+  namespace: openfn
+  annotations:
+    cloud.google.com/app-protocols: '{"service-https-port":"HTTPS"}'
+    cloud.google.com/neg: '{"ingress": true}' # Creates a NEG after an Ingress is created
+spec:
+  ports:
+    - name: service-https
+      port: 443
+      protocol: TCP
+      targetPort: 4001
+  selector:
+    app: openfn-microservice
+  type: NodePort
+---
+# apiVersion: networking.k8s.io/v1beta1
+# kind: Ingress
+# metadata:
+#   name: openfn-ingress
+#   annotations:
+#     kubernetes.io/ingress.global-static-ip-name: staging-managed-ip
+#     ingress.gcp.kubernetes.io/pre-shared-cert: 'staging'
+#     kubernetes.io/ingress.allow-http: 'false'
+# spec:
+#   backend:
+#     serviceName: openfn-service
+#     servicePort: service-https
+# ---
